@@ -12,14 +12,6 @@ window.addEventListener("keydown", (e) => {
 	else if(e.key === "s"){
 		enemy.velocity.y = 10
 	}
-	else if(e.key === "d"){//tmp
-		circle.velocity.x += 1
-	}
-	else if(e.key === "a"){
-		circle.velocity.x -= 1
-	}
-
-
 })
 
 window.addEventListener("keyup", (e) => {
