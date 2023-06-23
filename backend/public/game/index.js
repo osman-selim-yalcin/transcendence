@@ -4,6 +4,8 @@ const c = canvas.getContext("2d")
 const scoreDiv = document.querySelector("#score")
 scoreDiv.innerHTML = "0 - 0"
 
+const socket = io();
+
 canvas.width = document.body.clientWidth
 canvas.height = document.body.clientHeight
 
