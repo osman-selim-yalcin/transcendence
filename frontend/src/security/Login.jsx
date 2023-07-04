@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react"
 import { UserContext } from "../context/context"
-import { login } from "../api/api"
+import { login, authenticationTry } from "../api/api"
 
 export default function Login() {
   const { user, setUser } = useContext(UserContext)
@@ -28,7 +28,14 @@ export default function Login() {
       >
         Login
       </button>
-      {user?.username}
+			{user?.username}
+			<button
+        onClick={() => {
+          authenticationTry()
+        }}
+      >
+        users
+      </button>
     </div>
   )
 }

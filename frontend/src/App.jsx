@@ -1,5 +1,6 @@
 import Login from "./security/Login"
-import Register from "./security/register"
+import Register from "./security/Register"
+import Logout from "./security/Logout"
 import { UserContext } from "./context/context"
 import React, { useState } from "react"
 
@@ -9,9 +10,9 @@ function App() {
   return (
     <div>
       <UserContext.Provider value={{ user, setUser }}>
-        <Login></Login>
         <Register></Register>
-        {user ? "s" : "sd"}
+        <Login></Login>
+        <Logout></Logout>
       </UserContext.Provider>
     </div>
   )
