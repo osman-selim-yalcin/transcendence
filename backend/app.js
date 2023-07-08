@@ -23,7 +23,7 @@ app.use(cors())
 
 app.use("/api/user", routerUser)
 
-app.post("/try", (req, res) => {
+app.get("/api/user/allUsers", (req, res) => {
 	const authHeader = req.headers["authorization"]
   const token = authHeader  && authHeader.split(" ")[1]
   if (!token) return res.status(401).send("Access denied")

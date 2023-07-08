@@ -3,11 +3,13 @@ import axios from "axios"
 export const authenticationTry = () => {
   axios
     .post(
-      "http://localhost:3000/try",
+      "http://localhost:3000/api/user/allUsers",
       {},
       {
         headers: {
-          Authorization: "Bearer " + localStorage.getItem("token")
+          authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
         }
       }
     )
@@ -26,7 +28,9 @@ export const login = (username, password, setUser) => {
       password
     })
     .then(response => {
+      console.log(response.data)
       localStorage.setItem("token", response.data)
+      console.log(localStorage.getItem("token"))
       setUser({
         username
       })
@@ -43,6 +47,7 @@ export const register = (username, password, setUser) => {
       password
     })
     .then(response => {
+      console.log(response.data)
       localStorage.setItem("token", response.data)
       setUser({
         username
