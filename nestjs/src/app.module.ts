@@ -3,6 +3,7 @@ import { UserModule } from './users/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './typeorm/entities/User';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
       synchronize: true,
     }),
     ConfigModule.forRoot({ isGlobal: true }),
+    AuthModule,
   ],
   controllers: [],
   providers: [],

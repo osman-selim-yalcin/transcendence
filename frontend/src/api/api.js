@@ -2,8 +2,8 @@ import axios from "axios"
 
 export const authenticationTry = () => {
   axios
-    .post(
-      "http://localhost:3000/api/user/allUsers",
+    .get(
+      "http://localhost:3000/api/user/42login",
       {},
       {
         headers: {

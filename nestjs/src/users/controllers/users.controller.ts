@@ -3,10 +3,10 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   Param,
   ParseIntPipe,
   Post,
+  Redirect,
   Req,
   UsePipes,
   ValidationPipe,
@@ -24,6 +24,13 @@ export class UsersController {
   @UsePipes(new ValidationPipe())
   register(@Body() userData: CreateUserDto) {
     return this.usersService.registerUser(userData);
+  }
+
+  @Get('42login')
+  @Redirect('http://localhost:3000/api/auth/42/login')
+  lay() {
+    console.log('user redirect');
+    return '42 acll';
   }
 
   @Post('login')
