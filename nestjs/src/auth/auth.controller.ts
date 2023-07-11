@@ -1,12 +1,27 @@
-import { Controller, Get, Redirect, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Redirect,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
+import { AuthService } from './auth.service';
+import { Request } from 'express';
 
-interface IGetUserAuthInfoRequest extends Request {
-  user: string;
+interface reqWithModifiy extends Request {
+  user: {
+    username: string;
+  };
+  logout: (any) => void;
 }
 
 @Controller('api/auth')
 export class AuthController {
+  @Inject(AuthService)
+  public authService: AuthService;
+
   @Get('42/login')
   @UseGuards(FortyTwoStrategyGuard)
   handleLogin() {
@@ -21,10 +36,21 @@ export class AuthController {
     return { msg: '42 Redirect' };
   }
 
+  @Get('logout')
+  @Redirect('http://localhost:5173/login')
+  handleLogout(@Req() req: reqWithModifiy) {
+    req.logout((err) => {
+      console.log(err);
+    });
+    return { msg: 'Logout' };
+  }
+
   @Get('user')
-  handleUser(@Req() request: IGetUserAuthInfoRequest) {
+  handleUser(@Req() request: reqWithModifiy) {
     if (!request.user) return null;
-    console.log('user in2');
-    return { user: request.user };
+    return {
+      token: this.authService.createToken(request.user.username),
+      username: request.user.username,
+    };
   }
 }

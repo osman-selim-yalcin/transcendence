@@ -1,9 +1,9 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { UsersController } from './controllers/users.controller';
-import { UsersService } from './services/users.service';
-import { ExampleMiddleware } from './middleware/example.middleware';
+import { UsersController } from './user.controller';
+import { UsersService } from './user.service';
+import { userMiddelware } from '../middleware/user.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/typeorm/entities/User';
+import { User } from 'src/typeorm/User';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -13,8 +13,8 @@ import { ConfigModule } from '@nestjs/config';
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(ExampleMiddleware).forRoutes('api/user');
-    // consumer.apply(ExampleMiddleware).forRoutes({
+    consumer.apply(userMiddelware).forRoutes('api/user');
+    // consumer.apply(userMiddelware).forRoutes({
     //   path: 'api/user',
     //   method: RequestMethod.GET,
     // });

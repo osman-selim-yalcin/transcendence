@@ -1,57 +1,24 @@
-import React, { useState, useContext } from "react"
+import React from "react"
+import { useEffect, useContext } from "react"
 import { UserContext } from "../context/context"
-import { login, authenticationTry, authentication42Try } from "../api/api"
+import { getUser } from "../api/index"
 
 export default function Login() {
-  const { user, setUser } = useContext(UserContext)
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const { setUser } = useContext(UserContext)
 
-  const forty = () => {
-    const data = window.open("http://localhost:3000/api/auth/42/login", "_self")
-    console.log("gagagagaga")
-    console.log(data)
-  }
-
- 
+  useEffect(() => {
+    getUser(setUser)
+  }, [])
 
   return (
     <div>
-      <input
-        placeholder="Username"
-        onChange={event => {
-          setUsername(event.target.value)
-        }}
-      />
-      <input
-        placeholder="Password"
-        onChange={event => {
-          setPassword(event.target.value)
-        }}
-      />
       <button
-        onClick={() => {
-          login(username, password, setUser)
-        }}
+        onClick={() =>
+          window.open("http://localhost:3000/api/auth/42/login", "_self")
+        }
       >
-        Login
+        forty
       </button>
-      <button
-        onClick={() => {
-          authenticationTry()
-        }}
-      >
-        users
-      </button>
-      <button onClick={forty}>forty</button>
-      <button
-        onClick={() => {
-          authentication42Try()
-        }}
-      >
-        users42
-      </button>
-      {user?.username}
     </div>
   )
 }

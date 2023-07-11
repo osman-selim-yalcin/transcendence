@@ -1,15 +1,12 @@
-import React, { useContext } from "react"
-import { UserContext } from "../context/context"
+import React from "react"
 
 export default function Login() {
-  const { user, setUser } = useContext(UserContext)
   return (
     <div>
       <button
-        onClick={() => {
-					setUser(null)
-					localStorage.clear();
-        }}
+        onClick={() =>
+          window.open("http://localhost:3000/api/auth/logout", "_self")
+        }
       >
         Logout
       </button>
