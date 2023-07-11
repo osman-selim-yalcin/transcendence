@@ -1,11 +1,19 @@
 import React, { useState, useContext } from "react"
 import { UserContext } from "../context/context"
-import { login, authenticationTry } from "../api/api"
+import { login, authenticationTry, authentication42Try } from "../api/api"
 
 export default function Login() {
   const { user, setUser } = useContext(UserContext)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+
+  const forty = () => {
+    const data = window.open("http://localhost:3000/api/auth/42/login", "_self")
+    console.log("gagagagaga")
+    console.log(data)
+  }
+
+ 
 
   return (
     <div>
@@ -28,14 +36,22 @@ export default function Login() {
       >
         Login
       </button>
-			{user?.username}
-			<button
+      <button
         onClick={() => {
           authenticationTry()
         }}
       >
         users
       </button>
+      <button onClick={forty}>forty</button>
+      <button
+        onClick={() => {
+          authentication42Try()
+        }}
+      >
+        users42
+      </button>
+      {user?.username}
     </div>
   )
 }

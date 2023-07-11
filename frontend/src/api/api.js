@@ -1,9 +1,21 @@
 import axios from "axios"
 
+export const authentication42Try = () => {
+  axios
+    .get("http://localhost:3000/api/auth/allUsers/42")
+    .then(response => {
+			console.log("gagagagaga")
+      console.log(response.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
 export const authenticationTry = () => {
   axios
-    .get(
-      "http://localhost:3000/api/user/42login",
+    .post(
+      "http://localhost:3000/api/user/allUsers",
       {},
       {
         headers: {

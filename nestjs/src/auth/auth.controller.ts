@@ -1,5 +1,9 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Redirect, Req, UseGuards } from '@nestjs/common';
 import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
+
+interface IGetUserAuthInfoRequest extends Request {
+  user: string;
+}
 
 @Controller('api/auth')
 export class AuthController {
@@ -11,8 +15,16 @@ export class AuthController {
 
   @Get('42/redirect')
   @UseGuards(FortyTwoStrategyGuard)
+  @Redirect('http://localhost:5173/')
   handleRedirect() {
-    console.log('redirect');
-    return '42 Redirect';
+    console.log('42 Redirect');
+    return { msg: '42 Redirect' };
+  }
+
+  @Get('user')
+  handleUser(@Req() request: IGetUserAuthInfoRequest) {
+    if (!request.user) return null;
+    console.log('user in2');
+    return { user: request.user };
   }
 }
