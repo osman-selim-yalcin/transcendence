@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './users/user.module';
+import { UserModule } from './modules/users/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './typeorm/User';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { socketGateway } from './gateway/socket.gateway';
 
 @Module({
   imports: [
@@ -24,6 +25,6 @@ import { PassportModule } from '@nestjs/passport';
     AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [socketGateway],
 })
 export class AppModule {}

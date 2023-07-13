@@ -1,5 +1,5 @@
 import { HttpException, Injectable, NestMiddleware } from '@nestjs/common';
-import { UsersService } from 'src/users/user.service';
+import { UsersService } from 'src/modules/users/user.service';
 
 @Injectable()
 export class userMiddelware implements NestMiddleware {
