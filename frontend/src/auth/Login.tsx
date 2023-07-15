@@ -1,4 +1,3 @@
-import React from "react"
 import { useEffect, useContext } from "react"
 import { UserContext } from "../context/context"
 import { getUser } from "../api/index"

@@ -1,6 +1,4 @@
-import React from "react"
-
-export default function Login() {
+export default function logout() {
   return (
     <div>
       <button
