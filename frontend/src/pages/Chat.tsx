@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { WebsocketContext } from "../context/WebsocketContext"
 
 export default function Chat() {
   const socket = useContext(WebsocketContext)
   const [send, setSend] = useState("")
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState<string[]>([])
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -12,8 +12,8 @@ export default function Chat() {
     })
     socket.on("onMessage", data => {
       console.log("data came", data)
-      messages.push(data)
-      setMessages([...messages])
+      console.log("messages", messages)
+      setMessages(messages => [data, ...messages])
     })
     return () => {
       console.log("unmounting")
@@ -23,7 +23,7 @@ export default function Chat() {
   }, [])
 
   const handle = () => {
-		console.log("gere")
+    console.log("gere")
     socket.emit("message", send)
     setSend("")
   }
@@ -31,8 +31,8 @@ export default function Chat() {
   return (
     <div>
       Chat
-			<input type="text" value={send} onChange={e => setSend(e.target.value)} />
-			<button onClick={handle}> send msg</button>
+      <input type="text" value={send} onChange={e => setSend(e.target.value)} />
+      <button onClick={handle}> send msg</button>
       {messages.map((message, index) => {
         return <div key={index}>{message}</div>
       })}

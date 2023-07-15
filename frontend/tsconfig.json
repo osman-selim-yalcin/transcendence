@@ -17,9 +17,8 @@
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/main.jsx"],
+  "include": ["src", "src/main.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

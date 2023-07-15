@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export const getUser = async setUser => {
+export const getUser = async (setUser: any) => {
   axios
     .get("http://localhost:3000/api/auth/user", {
       withCredentials: true
