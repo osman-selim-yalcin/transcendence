@@ -12,7 +12,7 @@ import { socketGateway } from './gateway/socket.gateway';
     UserModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'postgresDB', //postgresDB
       port: 5432,
       username: 'test',
       password: 'test',

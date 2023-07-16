@@ -1,0 +1,30 @@
+services:
+  postgresDB:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_USER=test
+      - POSTGRES_DB=osyalcin
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  backend:
+    build: ./nestjs
+    depends_on:
+      - postgresDB
+    env_file:
+      - ./nestjs/.env
+    ports:
+      - 3000:3000
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - 5173:5173
+
+
+volumes:
+  postgres-volume:

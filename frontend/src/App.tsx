@@ -3,7 +3,7 @@ import { useState } from "react"
 import { socket, WebsocketContext } from "./context/WebsocketContext"
 import { RouterProvider } from "react-router-dom"
 import { router } from "./utils/routeSetup"
-import "./styles/App.scss"
+import "./styles/app.scss"
 
 type userPayload = {
   username: string
