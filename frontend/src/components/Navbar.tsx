@@ -9,6 +9,7 @@ export default function Navbar() {
         <Link to="/">Home</Link>
         <Link to="/login">Login page</Link>
         <Link to="/chat">Chat</Link>
+        <Link to="/game">Game</Link>
       </div>
       <div className="navbar_child">
         <Login />
