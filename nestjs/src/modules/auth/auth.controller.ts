@@ -13,6 +13,8 @@ import { Request } from 'express';
 interface reqWithModifiy extends Request {
   user: {
     username: string;
+    avatar: string;
+    id: number;
   };
   logout: (any) => void;
 }
@@ -49,8 +51,14 @@ export class AuthController {
   handleUser(@Req() request: reqWithModifiy) {
     if (!request.user) return null;
     return {
-      token: this.authService.createToken(request.user.username),
-      username: request.user.username,
+      token: this.authService.createToken(
+        request.user.username,
+        request.user.id,
+      ),
+      user: {
+        username: request.user.username,
+        avatar: request.user.avatar,
+      },
     };
   }
 }

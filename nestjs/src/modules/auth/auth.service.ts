@@ -26,9 +26,9 @@ export class AuthService {
     return user;
   }
 
-  createToken(username: string) {
+  createToken(username: string, id: number) {
     const token = jwt.sign(
-      { username: username },
+      { username: username, id: id },
       this.config.get('accessTokenSecret'),
       { expiresIn: '1h' },
     );

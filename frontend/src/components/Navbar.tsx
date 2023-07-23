@@ -10,6 +10,7 @@ export default function Navbar() {
         <Link to="/login">Login page</Link>
         <Link to="/chat">Chat</Link>
         <Link to="/game">Game</Link>
+        <Link to="/Profile">Profile</Link>
       </div>
       <div className="navbar_child">
         <Login />
