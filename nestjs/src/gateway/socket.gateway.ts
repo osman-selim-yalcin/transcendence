@@ -24,6 +24,7 @@ export class socketGateway implements OnModuleInit {
   @SubscribeMessage('message')
   handleMessage(client: any, payload: any) {
     console.log('handleMessage', payload);
+    console.log('handleMessage', client);
     this.server.emit('onMessage', payload);
   }
 }

@@ -26,9 +26,41 @@ export class AuthService {
     return user;
   }
 
-  createToken(username: string, id: number) {
+  async tmpCreate(userDetails: any) {
+    const newUser = await this.userRep.create(userDetails);
+    return this.userRep.save(newUser);
+  }
+
+  async tmpGetUser(token: any) {
+    const user = this.verifyToken(token);
+    return { user: user };
+  }
+
+  async tmpLogin(userDetails: any) {
+    const user = await this.userRep.findOne({
+      where: {
+        username: userDetails.username,
+      },
+    });
+    if (!user) return;
+    const token = this.createToken(
+      user.username,
+      'https://source.unsplash.com/featured/300x202',
+      user.id,
+    );
+    return {
+      token,
+      user: {
+        username: user.username,
+        avatar: 'https://source.unsplash.com/featured/300x202',
+        id: user.id,
+      },
+    };
+  }
+
+  createToken(username: string, avatar: string, id: number) {
     const token = jwt.sign(
-      { username: username, id: id },
+      { username: username, avatar: avatar, id: id },
       this.config.get('accessTokenSecret'),
       { expiresIn: '1h' },
     );
@@ -43,7 +75,7 @@ export class AuthService {
         if (err) {
           return false;
         }
-        return true;
+        return decoded;
       },
     );
   }

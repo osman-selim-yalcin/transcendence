@@ -5,9 +5,10 @@ import { userMiddelware } from '../../middleware/user.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/User';
 import { ConfigModule } from '@nestjs/config';
+import { Chat } from 'src/typeorm/Chat';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ConfigModule],
+  imports: [TypeOrmModule.forFeature([User, Chat]), ConfigModule],
   controllers: [UsersController],
   providers: [UsersService],
 })

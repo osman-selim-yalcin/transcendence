@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { socketGateway } from './gateway/socket.gateway';
+import { Chat } from './typeorm/Chat';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { socketGateway } from './gateway/socket.gateway';
       username: 'test',
       password: 'test',
       database: 'osyalcin',
-      entities: [User],
+      entities: [User, Chat],
       synchronize: true,
     }),
     PassportModule.register({ session: true }),

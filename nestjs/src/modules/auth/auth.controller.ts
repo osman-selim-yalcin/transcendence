@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   Inject,
+  Post,
   Redirect,
   Req,
   UseGuards,
@@ -53,6 +55,7 @@ export class AuthController {
     return {
       token: this.authService.createToken(
         request.user.username,
+        request.user.avatar,
         request.user.id,
       ),
       user: {
@@ -60,5 +63,24 @@ export class AuthController {
         avatar: request.user.avatar,
       },
     };
+  }
+
+  @Post('tmp/create')
+  tmpCreate(@Body() body: any) {
+    console.log(body);
+    this.authService.tmpCreate(body);
+    return { msg: 'success' };
+  }
+
+  @Post('tmp/login')
+  tmpLogin(@Body() body: any) {
+    console.log(body);
+    return this.authService.tmpLogin(body);
+  }
+
+  @Get('tmp/getUser')
+  tmpGetUser(@Req() req: any) {
+    const token = req.headers?.authorization?.split(' ')[1];
+    return this.authService.tmpGetUser(token);
   }
 }

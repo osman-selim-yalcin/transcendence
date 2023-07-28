@@ -15,31 +15,23 @@ export class UsersController {
     const token = req.headers?.authorization?.split(' ')[1];
     return this.usersService.allFriends(token);
   }
-
-  @Post('tmp/create')
-  tmpCreate(@Body() body: any) {
-    console.log(body);
-    this.usersService.tmpCreate(body);
-    return { msg: 'success' };
-  }
-
   @Post('addfriend')
   addfriend(@Req() req: any, @Body() body: any) {
-    //tmp
-    const token = req.headers?.authorization?.split(' ')[1];
-    //tmp
-
+    const token = req.token;
     this.usersService.addfriend(token, body.username);
     return { msg: 'success' };
   }
 
-	@Post('removeFriend')
+  @Post('removeFriend')
   removeFriend(@Req() req: any, @Body() body: any) {
-    //tmp
-    const token = req.headers?.authorization?.split(' ')[1];
-    //tmp
-
+    const token = req.token;
     this.usersService.removeFriend(token, body.username);
     return { msg: 'success' };
+  }
+
+  @Post('startChat')
+  startChat(@Req() req: any, @Body() body: any) {
+    const token = req.token;
+    return this.usersService.startChat(token, body.username);
   }
 }

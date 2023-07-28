@@ -6,6 +6,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
+import { Chat } from './Chat';
 // import { Game } from './Game';
 
 @Entity({ name: 'users' })
@@ -25,6 +26,10 @@ export class User {
   @ManyToMany(() => User, (user) => user.friends)
   @JoinTable()
   friends: User[];
+
+  @ManyToMany(() => Chat, (chat) => chat.users)
+  @JoinTable()
+  chats: Chat[];
 
   // @Column()
   // stats: {

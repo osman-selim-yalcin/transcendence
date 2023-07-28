@@ -4,10 +4,14 @@ import { User } from 'src/typeorm/User';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { Chat } from 'src/typeorm/Chat';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private userRep: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRep: Repository<User>,
+    @InjectRepository(Chat) private chatRep: Repository<Chat>,
+  ) {}
 
   @Inject(ConfigService)
   public config: ConfigService;
@@ -24,24 +28,8 @@ export class UsersService {
     return user.friends;
   }
 
-  tmpCreate(userDetails: any) {
-    const newUser = this.userRep.create(userDetails);
-    return this.userRep.save(newUser);
-  }
-
   async addfriend(token: string, friendname: string) {
-    //tmp
-    const loginUserInfo = jwt.verify(
-      token,
-      this.config.get('accessTokenSecret'),
-      (err, decoded) => {
-        if (err) {
-          return null;
-        }
-        return decoded;
-      },
-    );
-    //tmp
+    const loginUserInfo = this.verifyToken(token);
 
     const friendUser = await this.userRep.findOneBy({ username: friendname });
     const loginUser = await this.userRep.findOne({
@@ -56,19 +44,7 @@ export class UsersService {
   }
 
   async removeFriend(token: string, friendname: string) {
-    //tmp
-    const loginUserInfo = jwt.verify(
-      token,
-      this.config.get('accessTokenSecret'),
-      (err, decoded) => {
-        if (err) {
-          return null;
-        }
-        return decoded;
-      },
-    );
-    //tmp
-
+    const loginUserInfo = this.verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
       relations: {
@@ -81,6 +57,24 @@ export class UsersService {
     return this.userRep.save(loginUser);
   }
 
+  async startChat(token: string, friendname: string) {
+    const loginUserInfo = this.verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { username: loginUserInfo.username },
+      relations: {
+        friends: true,
+      },
+    });
+    const friendUser = await this.userRep.findOneBy({ username: friendname });
+    const chatDeatils = {
+      users: [loginUser, friendUser],
+      createdAt: new Date(),
+    };
+    const chat = await this.chatRep.create(chatDeatils);
+    await this.chatRep.save(chat);
+    return chat.id;
+  }
+
   verifyToken(token: string) {
     return jwt.verify(
       token,
@@ -89,7 +83,7 @@ export class UsersService {
         if (err) {
           return false;
         }
-        return true;
+        return decoded;
       },
     );
   }
