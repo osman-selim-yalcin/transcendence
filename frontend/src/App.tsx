@@ -10,7 +10,7 @@ type userPayload = {
 }
 
 function App() {
-  const [user, setUser] = useState<userPayload>({ username: "" })
+  const [user, setUser] = useState<userPayload>(null)
 
   return (
     <div>
