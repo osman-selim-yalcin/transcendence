@@ -1,13 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { User } from 'src/typeorm/User';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { User } from 'src/typeorm/User';
+import { Session } from 'src/typeorm/Session';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectRepository(User) private userRep: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRep: Repository<User>,
+    @InjectRepository(Session) private sessionRep: Repository<Session>,
+  ) {}
 
   @Inject(ConfigService)
   public config: ConfigService;
@@ -56,6 +60,27 @@ export class AuthService {
         id: user.id,
       },
     };
+  }
+
+  async findSession(sessionID: string) {
+    const session = await this.sessionRep.findOneBy({ id: sessionID });
+    return session;
+  }
+
+  async changeSessionStatus(sessionID: string, status: boolean) {
+    const session = await this.sessionRep.findOneBy({ id: sessionID });
+    session.connected = status;
+    return this.sessionRep.save(session);
+  }
+
+  async saveSession(sessionID: string, session: any) {
+    const newSession = this.sessionRep.create({
+      id: sessionID,
+      userID: session.userID,
+      username: session.username,
+      connected: session.connected,
+    });
+    return this.sessionRep.save(newSession);
   }
 
   createToken(username: string, avatar: string, id: number) {

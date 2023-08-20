@@ -1,11 +1,13 @@
 import {
   Column,
   Entity,
-  JoinTable,
+  JoinColumn,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
+import { Message } from './Message';
 
 @Entity({ name: 'chats' })
 export class Chat {
@@ -13,12 +15,13 @@ export class Chat {
   id: number;
 
   @ManyToMany(() => User, (user) => user.chats)
-  @JoinTable()
+  @JoinColumn()
   users: User[];
 
-  // @OneToMany((type) => Message, (message) => message.chat)
-  // messages: Message[];
+  @OneToMany(() => Message, (message) => message.chat)
+  @JoinColumn()
+  messages: Message[];
 
-  @Column()
-  createdAt: Date;
+  // @Column()
+  // createdAt: Date;
 }

@@ -6,6 +6,7 @@ export const login = (username: string, setUser: any) => {
       username: username
     })
     .then(res => {
+			
 			console.log("here51", res)
       localStorage.setItem("token", res.data.token)
       setUser(res.data.user)

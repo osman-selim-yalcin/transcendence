@@ -34,4 +34,9 @@ export class UsersController {
     const token = req.token;
     return this.usersService.startChat(token, body.username);
   }
+
+  @Post('findChat')
+  findChat(@Req() req: any, @Body() body: any) {
+    return this.usersService.findChat(body.id);
+  }
 }

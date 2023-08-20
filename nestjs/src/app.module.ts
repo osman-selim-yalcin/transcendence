@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from './modules/users/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './typeorm/User';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
-import { socketGateway } from './gateway/socket.gateway';
+import { User } from './typeorm/User';
 import { Chat } from './typeorm/Chat';
+import { Message } from './typeorm/Message';
+import { Session } from './typeorm/Session';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Chat } from './typeorm/Chat';
       username: 'test',
       password: 'test',
       database: 'osyalcin',
-      entities: [User, Chat],
+      entities: [User, Chat, Message, Session],
       synchronize: true,
     }),
     PassportModule.register({ session: true }),
@@ -26,6 +27,6 @@ import { Chat } from './typeorm/Chat';
     AuthModule,
   ],
   controllers: [],
-  providers: [socketGateway],
+  providers: [],
 })
 export class AppModule {}

@@ -11,7 +11,6 @@ export const getUser = async (setUser: any) => {
         }
       })
       .then(res => {
-        console.log("here", res)
         setUser(res.data.user)
       })
       .catch(err => {

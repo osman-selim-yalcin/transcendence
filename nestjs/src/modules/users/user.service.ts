@@ -1,10 +1,10 @@
+import { ConfigService } from '@nestjs/config';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/typeorm/User';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
 import { Chat } from 'src/typeorm/Chat';
+import { User } from 'src/typeorm/User';
 
 @Injectable()
 export class UsersService {
@@ -61,18 +61,26 @@ export class UsersService {
     const loginUserInfo = this.verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
-      relations: {
-        friends: true,
-      },
     });
     const friendUser = await this.userRep.findOneBy({ username: friendname });
     const chatDeatils = {
-      users: [loginUser, friendUser],
-      createdAt: new Date(),
+      users: [friendUser, loginUser],
     };
-    const chat = await this.chatRep.create(chatDeatils);
+    let chat = await this.chatRep.findOne({
+      relations: ['users'],
+      where: { users: [friendUser] },
+    });
+    if (chat) return chat.id;
+    chat = this.chatRep.create(chatDeatils);
     await this.chatRep.save(chat);
     return chat.id;
+  }
+
+  async findChat(chatId: number) {
+    return this.chatRep.findOne({
+      where: { id: chatId },
+      relations: ['messages', 'users'],
+    });
   }
 
   verifyToken(token: string) {

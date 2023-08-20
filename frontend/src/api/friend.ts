@@ -57,7 +57,6 @@ export const getAllFriends = (setFriends: any) => {
       }
     })
     .then(response => {
-      console.log(response.data)
       setFriends(response.data)
     })
     .catch(err => {

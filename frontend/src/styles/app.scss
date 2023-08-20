@@ -11,3 +11,102 @@
 		justify-content: space-between;
 	}
 }
+
+.chat {
+	position: absolute;
+	background-color: aqua;
+	bottom: 0;
+	right: 0;
+	width: 100vw;
+	height: 600px;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: flex-end;
+	gap: 10px;
+
+	&_div{
+		width: 500px;
+		height: 600px;
+		
+		&_search{
+			background-color: blueviolet;
+			height: 100px;
+		}
+		
+		&_friends{
+			background-color: darkblue;
+			height: 500px;
+			&_friend{
+				background-color: darkcyan;
+				height: 100px;
+				border: 1px solid black;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+					&_info{
+						display: flex;
+						justify-content: start;
+						align-items: center;
+						
+						&_img{
+							border-radius: 50%;
+							height: 50px;
+						}
+					}
+				// &_buttons{
+
+				// }
+			}
+		}
+	}
+
+	&_room {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+
+		background-color: rosybrown;
+		width: 200px;
+		height: 300px;
+
+		&_messages {
+			background-color: darkred;
+			height: 90%;
+			overflow-y: scroll;
+
+			&_msg{
+				background-color: darkorange;
+				height: 10%;
+				border: 1px solid black;
+			}
+		}
+
+		&_input {
+			display: flex;
+			height: 10%;
+			background-color: darkgreen;
+			
+			input{
+				width: 100%;
+			}
+		}
+	}
+}
+
+
+.hidden {
+	display: none;
+}
+
+
+.new-messages {
+  color: white;
+  background-color: red;
+  width: 20px;
+  border-radius: 5px;
+  text-align: center;
+  float: right;
+  margin-top: 10px;
+}

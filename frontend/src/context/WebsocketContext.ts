@@ -1,5 +1,10 @@
 import { createContext } from "react"
 import { Socket, io } from "socket.io-client"
 
-export const socket = io("http://localhost:3000")
+const socket1 = io("http://localhost:3000", { autoConnect: false })
+socket1.onAny((event, ...args) => {
+  console.log(event, args)
+})
+
+export const socket = socket1
 export const WebsocketContext = createContext<Socket>(socket)
