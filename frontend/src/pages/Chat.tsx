@@ -72,6 +72,7 @@ export default function Chat() {
         users.find((item: Props) => {
           if (item.username === user.username) {
             item.connected = true
+            setUsers([...users])
             return true
           }
           return false
@@ -90,6 +91,7 @@ export default function Chat() {
           break
         }
       }
+      setUsers([...users])
     })
 
     socket.on("private message", ({ content, from }) => {
@@ -110,7 +112,6 @@ export default function Chat() {
     })
 
     return () => {
-      console.log("unmounting")
       socket.off("connect")
       socket.off("disconnect")
       socket.off("users")
@@ -142,14 +143,12 @@ export default function Chat() {
   }
 
   const initReactiveProperties = (user: Props) => {
-    user.connected = true
     user.messages = []
     user.hasNewMessages = false
   }
 
   return (
     <div className="chat">
-			{socket.userID}
       {selectedUser && (
         <Room
           onMessage={onMessage}
@@ -185,6 +184,7 @@ export default function Chat() {
                   onClick={() => onSelectUser(item)}
                 >
                   <div className="chat_div_friends_friend_info">
+                    {item.connected ? "online" : "offline"}
                     <img
                       src={item.avatar}
                       alt=""
