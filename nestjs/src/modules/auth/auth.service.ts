@@ -83,6 +83,11 @@ export class AuthService {
     return this.sessionRep.save(newSession);
   }
 
+  async findAllSessions() {
+    const sessions = await this.sessionRep.find();
+    return sessions;
+  }
+
   createToken(username: string, avatar: string, id: number) {
     const token = jwt.sign(
       { username: username, avatar: avatar, id: id },

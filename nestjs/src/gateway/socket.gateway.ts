@@ -46,7 +46,7 @@ export class socketGateway implements OnModuleInit {
       next();
     });
 
-    this.server.on('connection', (socket: CustomSocket) => {
+    this.server.on('connection', async (socket: CustomSocket) => {
       this.authService.saveSession(socket.sessionID, {
         userID: socket.userID,
         username: socket.username,
@@ -58,17 +58,22 @@ export class socketGateway implements OnModuleInit {
         userID: socket.userID,
       });
 
+      socket.join(socket.userID);
+
       const users = [];
-      for (const [id, connectedSocket] of this.server.of('/').sockets) {
+      const sessions = await this.authService.findAllSessions();
+      sessions.forEach((session) => {
         users.push({
-          userID: id,
-          username: (connectedSocket as CustomSocket).username,
+          userID: session.userID,
+          username: session.username,
+          connected: session.connected,
         });
-      }
+      });
 
       socket.broadcast.emit('user connected', {
-        userID: socket.id,
+        userID: socket.userID,
         username: socket.username,
+        connected: true,
       });
 
       socket.emit('users', users);
@@ -77,7 +82,8 @@ export class socketGateway implements OnModuleInit {
         console.log('private message', { content, to });
         socket.to(to).emit('private message', {
           content,
-          from: socket.id,
+          from: socket.userID,
+          to,
         });
       });
 
