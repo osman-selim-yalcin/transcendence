@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { WebsocketContext } from "../context/WebsocketContext"
 import { findChat } from "../api/chat"
 
@@ -10,10 +10,23 @@ type msg = {
 export default function Room(props: any) {
   const socket = useContext(WebsocketContext)
   const [send, setSend] = useState("")
+  const chatSliderRef = useRef(null);
+  const inputRef = useRef(null);
 
-  const handle = (msg: string) => {
-    props.onMessage(msg)
-    setSend("")
+	useEffect(() => {
+		if (chatSliderRef.current) {
+			// @ts-ignore: Object is possibly 'null'.
+			chatSliderRef.current.scrollIntoView({ behavior: 'smooth', block: "end" });
+		}
+	});
+	
+	
+	const handle = (msg: string) => {
+		props.onMessage(msg)
+		setSend("")
+	// @ts-ignore: Object is possibly 'null'.
+	inputRef.current.focus();
+
   }
 
   const displaySender = (message: msg, index: any) => {
@@ -35,21 +48,22 @@ export default function Room(props: any) {
                   {message.fromSelf ? "(yourself)" : props.user.username}
                 </div>
               )}
-              <p key={index} className="chat_room_messages_msg">
+              <p key={index} className="chat_room_messages_msg" ref={chatSliderRef}>
                 {message.content}
               </p>
             </div>
           )
         })}
       </div>
-      <div className="chat_room_input">
-        <input
-          type="text"
-          value={send}
-          onChange={e => setSend(e.target.value)}
-        />
-        <button onClick={() => handle(send)}>send</button>
-      </div>
+		<form className="chat_room_input" onSubmit={(e) => {e.preventDefault();handle(send)}}>
+            <input
+          	  type="text"
+              value={send}
+              onChange={e => setSend(e.target.value)}
+			  ref={inputRef}
+			/>
+        	<button>send</button>
+		  </form>
     </div>
   )
 }
