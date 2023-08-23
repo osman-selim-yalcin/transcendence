@@ -1,5 +1,10 @@
 import { OnModuleInit } from '@nestjs/common';
-import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  MessageBody,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'; // Import the 'Socket' type
 import { AuthService } from 'src/modules/auth/auth.service';
 
@@ -23,74 +28,36 @@ export class socketGateway implements OnModuleInit {
   onModuleInit() {
     this.server.use(async (socket: CustomSocket, next) => {
       const sessionID = socket.handshake.auth.sessionID;
-      console.log('sessionID', sessionID);
       if (sessionID) {
-        const session = await this.authService.findSession(sessionID);
-        console.log('session', session);
-        if (session) {
-          socket.sessionID = sessionID;
-          socket.userID = session.userID;
-          socket.username = session.username;
-          return next();
-        }
+        socket.sessionID = sessionID;
+        return next();
       }
-
-      const username = socket.handshake.auth.username;
-
-      if (!username) {
-        return next(new Error('invalid username'));
-      }
-      socket.sessionID = Math.floor(Math.random() * 1000).toString(16);
-      socket.userID = Math.floor(Math.random() * 1000).toString(16);
-      socket.username = username;
-      next();
+      return next(new Error('invalid sessionID'));
     });
 
     this.server.on('connection', async (socket: CustomSocket) => {
-      this.authService.saveSession(socket.sessionID, {
-        userID: socket.userID,
-        username: socket.username,
-        connected: true,
-      });
+      console.log('connected', socket.sessionID);
+      socket.join(socket.sessionID);
 
-      socket.emit('session', {
-        sessionID: socket.sessionID,
-        userID: socket.userID,
-      });
+      socket.on('disconnect', () => {});
+    });
+  }
 
-      socket.join(socket.userID);
+  @SubscribeMessage('join room')
+  onJoinRoom(client: CustomSocket, payload: any) {
+    payload.clients.forEach(async (client) => {
+      // console.log('join room2', client);
+      // console.log('join room2', await this.server.in(client));
+      // this.server.in(client).fetchSockets();
+      this.server.in(client).socketsJoin(payload.room);
+    });
+  }
 
-      const users = [];
-      const sessions = await this.authService.findAllSessions();
-      sessions.forEach((session) => {
-        users.push({
-          userID: session.userID,
-          username: session.username,
-          connected: session.connected,
-        });
-      });
-
-      socket.broadcast.emit('user connected', {
-        userID: socket.userID,
-        username: socket.username,
-        connected: true,
-      });
-
-      socket.emit('users', users);
-
-      socket.on('private message', ({ content, to }) => {
-        console.log('private message', { content, to });
-        socket.to(to).emit('private message', {
-          content,
-          from: socket.userID,
-          to,
-        });
-      });
-
-      socket.on('disconnect', () => {
-        this.authService.changeSessionStatus(socket.sessionID, false);
-        socket.broadcast.emit('user disconnected', socket.id);
-      });
+  @SubscribeMessage('private message')
+  onPrivateMessage(client: CustomSocket, payload: any) {
+    this.server.to(payload.to).emit('private message', {
+      content: payload.content,
+      from: payload.from,
     });
   }
 }

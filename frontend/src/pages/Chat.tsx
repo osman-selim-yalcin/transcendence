@@ -1,13 +1,19 @@
 import { useContext, useEffect, useState } from "react"
 import { WebsocketContext } from "../context/WebsocketContext"
 import { UserContext } from "../context/context"
-import Room from "./Room"
-import { addFriend, removeFriend } from "../api/friend"
+import { addFriend, removeFriend, getAllFriends } from "../api/friend"
 import { getAllUsers } from "../api"
+import Room from "./Room"
+import { startRoom } from "../api/room"
 
 type msg = {
   content: string
   fromSelf: boolean
+}
+
+type typeRoom = {
+  roomID: number
+  friend: Props
 }
 
 type Props = {
@@ -17,8 +23,7 @@ type Props = {
   avatar: string
   messages: msg[]
   userID: string
-  connected: boolean
-  self: boolean
+  sessionID: string
   hasNewMessages: boolean
 }
 
@@ -26,136 +31,49 @@ export default function Chat() {
   const socket = useContext(WebsocketContext)
   const show = false
   const [allUsers, setAllUsers] = useState([])
+  const [friends, setFriends] = useState([])
+  const [rooms, setRooms] = useState<typeRoom[]>([])
   const { user } = useContext(UserContext)
 
-  const [users, setUsers] = useState<Props[]>([])
-  const [selectedUser, setSelectedUser] = useState<Props>(null)
-
   useEffect(() => {
-    const sessionID = localStorage.getItem("sessionID")
-    if (sessionID) {
-      socket.auth = { sessionID }
+    if (user) {
+      getAllFriends(setFriends)
+      socket.auth = { sessionID: user.sessionID }
       socket.connect()
     }
 
-    socket.on("session", ({ sessionID, userID }) => {
-      socket.auth = { sessionID }
-      localStorage.setItem("sessionID", sessionID)
-      socket.userID = userID
-    })
+    socket.on("user connected", user => {})
 
-    socket.on("connect_error", err => {
-      if (err.message === "invalid username") {
-        console.log("invalid username")
-      }
-    })
+    socket.on("user disconnected", id => {})
 
-    socket.on("users", users => {
-      users.forEach((user: Props) => {
-        user.self = user.userID === socket.userID
-        initReactiveProperties(user)
-      })
-
-      // put the current user first, and then sort by username
-      setUsers(
-        users.sort((a: Props, b: Props) => {
-          if (a.self) return -1
-          if (b.self) return 1
-          if (a.username < b.username) return -1
-          return a.username > b.username ? 1 : 0
-        })
-      )
-    })
-
-    socket.on("user connected", user => {
-      if (
-        users.find((item: Props) => {
-          if (item.username === user.username) {
-            item.connected = true
-            setUsers([...users])
-            return true
-          }
-          return false
-        })
-      )
-        return
-      initReactiveProperties(user)
-      setUsers([...users, user])
-    })
-
-    socket.on("user disconnected", id => {
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i]
-        if (user.userID === id) {
-          user.connected = false
-          break
-        }
-      }
-      setUsers([...users])
-    })
-
-    socket.on("private message", ({ content, from }) => {
-      for (let i = 0; i < users.length; i++) {
-        const user = users[i]
-        if (user.userID === from) {
-          user.messages.push({
-            content,
-            fromSelf: false
-          })
-          if (user !== selectedUser) {
-            user.hasNewMessages = true
-          }
-          break
-        }
-      }
-      setUsers([...users])
-    })
+    socket.on("private message", ({ content, from }) => {})
 
     return () => {
-      socket.off("connect")
-      socket.off("disconnect")
-      socket.off("users")
+      socket.disconnect()
       socket.off("user connected")
       socket.off("user disconnected")
-      socket.off("private message")
     }
-  }, [user, users])
+  }, [user])
 
-  const handleStartChat = async (username: string) => {}
-
-  const onMessage = (content: string) => {
-    if (selectedUser) {
-      socket.emit("private message", {
-        content,
-        to: selectedUser.userID
-      })
-      selectedUser.messages.push({
-        content,
-        fromSelf: true
-      })
-    }
-  }
-
-  const onSelectUser = (user: Props) => {
-    user.hasNewMessages = false
-    setSelectedUser(user)
-    setUsers([...users])
-  }
-
-  const initReactiveProperties = (user: Props) => {
-    user.messages = []
-    user.hasNewMessages = false
+  const handleStartRoom = async (friend: Props) => {
+    const roomID = await startRoom(friend.username)
+    console.log(roomID)
+    socket.emit("join room", {
+      room: roomID,
+      clients: [friend.sessionID, user.sessionID]
+    })
+    rooms.push({ roomID, friend })
+    setRooms([...rooms])
   }
 
   return (
     <div className="chat">
-      {selectedUser && (
-        <Room
-          onMessage={onMessage}
-          user={selectedUser}
-          // onSelectUser={onSelectUser}
-        />
-      )}
+      {rooms.length}
+      <div className="chat_rooms">
+        {rooms?.map((room: typeRoom, index: number) => {
+          return <Room key={index} roomID={room.roomID} friend={room.friend} />
+        })}
+      </div>
       <div className="chat_div" hidden={show}>
         <div className="chat_div_search">
           <div>
@@ -175,16 +93,15 @@ export default function Chat() {
           </div>
         </div>
         <div className="chat_div_friends">
-          {users?.length !== 0 ? (
-            users.map((item: Props, index) => {
+          {friends?.length !== 0 ? (
+            friends.map((item: Props, index) => {
               return (
                 <div
                   key={index}
                   className="chat_div_friends_friend"
-                  onClick={() => onSelectUser(item)}
+                  onClick={() => handleStartRoom(item)}
                 >
                   <div className="chat_div_friends_friend_info">
-                    {item.connected ? "online" : "offline"}
                     <img
                       src={item.avatar}
                       alt=""
@@ -194,13 +111,9 @@ export default function Chat() {
                   </div>
                   <div className="chat_div_friends_friend_buttons">
                     <button onClick={() => removeFriend(item.username)}>
-                      remove friend
-                    </button>
-                    <button onClick={() => handleStartChat(item.username)}>
-                      start chat
+                      X
                     </button>
                   </div>
-                  {item.hasNewMessages && <div className="new-messages">!</div>}
                 </div>
               )
             })

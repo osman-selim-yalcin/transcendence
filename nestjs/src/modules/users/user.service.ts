@@ -3,14 +3,16 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
-import { Chat } from 'src/typeorm/Chat';
+import { Room } from 'src/typeorm/Room';
 import { User } from 'src/typeorm/User';
+import { Message } from 'src/typeorm/Message';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRep: Repository<User>,
-    @InjectRepository(Chat) private chatRep: Repository<Chat>,
+    @InjectRepository(Room) private roomRep: Repository<Room>,
+    @InjectRepository(Message) private messageRep: Repository<Message>,
   ) {}
 
   @Inject(ConfigService)
@@ -34,9 +36,7 @@ export class UsersService {
     const friendUser = await this.userRep.findOneBy({ username: friendname });
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
-      relations: {
-        friends: true,
-      },
+      relations: ['friends'],
     });
     if (!loginUser.friends) loginUser.friends = [friendUser];
     else loginUser.friends.push(friendUser);
@@ -47,9 +47,7 @@ export class UsersService {
     const loginUserInfo = this.verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
-      relations: {
-        friends: true,
-      },
+      relations: ['friends'],
     });
     loginUser.friends = loginUser.friends?.filter(
       (friend) => friend.username !== friendname,
@@ -57,30 +55,61 @@ export class UsersService {
     return this.userRep.save(loginUser);
   }
 
-  async startChat(token: string, friendname: string) {
+  async startRoom(token: string, friendname: string) {
     const loginUserInfo = this.verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
     });
     const friendUser = await this.userRep.findOneBy({ username: friendname });
-    const chatDeatils = {
+
+    const roomDeatils = {
       users: [friendUser, loginUser],
+      createdAt: new Date(),
     };
-    let chat = await this.chatRep.findOne({
+
+    const tmp = [friendUser.id, loginUser.id];
+
+    const rooms = await this.roomRep.find({
       relations: ['users'],
-      where: { users: [friendUser] },
+      where: { users: roomDeatils.users },
     });
-    if (chat) return chat.id;
-    chat = this.chatRep.create(chatDeatils);
-    await this.chatRep.save(chat);
-    return chat.id;
+
+    for (const r of rooms) {
+      const ids = r.users.map((u) => u.id);
+      if (ids.length === 2 && ids.sort().toString() === tmp.sort().toString())
+        return r.id;
+    }
+
+    const room = this.roomRep.create(roomDeatils);
+    await this.roomRep.save(room);
+    return room.id;
   }
 
-  async findChat(chatId: number) {
-    return this.chatRep.findOne({
-      where: { id: chatId },
+  async findRoom(roomId: number) {
+    const room = await this.roomRep.findOne({
+      where: { id: roomId },
       relations: ['messages', 'users'],
     });
+    return room;
+  }
+
+  async createMsg(token: string, details: any) {
+    const room = await this.roomRep.findOne({
+      relations: ['messages'],
+      where: { id: details.roomID },
+    });
+    const msg = this.messageRep.create({
+      owner: details.owner,
+      content: details.msg,
+      createdAt: new Date(),
+      room,
+    });
+
+    if (!room.messages) room.messages = [msg];
+    else room.messages.push(msg);
+
+    await this.roomRep.save(room);
+    return this.messageRep.save(msg);
   }
 
   verifyToken(token: string) {

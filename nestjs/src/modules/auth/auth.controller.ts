@@ -17,6 +17,7 @@ interface reqWithModifiy extends Request {
     username: string;
     avatar: string;
     id: number;
+    sessionID: string;
   };
   logout: (any) => void;
 }
@@ -53,23 +54,32 @@ export class AuthController {
   handleUser(@Req() request: reqWithModifiy) {
     if (!request.user) return null;
     return {
-      token: this.authService.createToken(
-        request.user.username,
-        request.user.avatar,
-        request.user.id,
-      ),
+      token: this.authService.createToken({
+        username: request.user.username,
+        avatar: request.user.avatar,
+        id: request.user.id,
+        sessionID: request.user.sessionID,
+      }),
       user: {
         username: request.user.username,
         avatar: request.user.avatar,
+        sessionID: request.user.sessionID,
       },
     };
   }
 
   @Post('tmp/create')
   tmpCreate(@Body() body: any) {
-    console.log(body);
-    this.authService.tmpCreate(body);
-    return { msg: 'success' };
+    const sessionID = Math.floor(
+      Math.random() * (1000000000 - 100000000) + 100000000,
+    ).toString(16);
+    if (!sessionID) return;
+    const details = {
+      ...body,
+      status: 'online',
+      sessionID,
+    };
+    return this.authService.tmpCreate(details);
   }
 
   @Post('tmp/login')

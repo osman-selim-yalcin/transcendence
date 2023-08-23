@@ -4,14 +4,10 @@ import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/typeorm/User';
-import { Session } from 'src/typeorm/Session';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User) private userRep: Repository<User>,
-    @InjectRepository(Session) private sessionRep: Repository<Session>,
-  ) {}
+  constructor(@InjectRepository(User) private userRep: Repository<User>) {}
 
   @Inject(ConfigService)
   public config: ConfigService;
@@ -31,7 +27,9 @@ export class AuthService {
   }
 
   async tmpCreate(userDetails: any) {
+    console.log('here');
     const newUser = await this.userRep.create(userDetails);
+    console.log(newUser);
     return this.userRep.save(newUser);
   }
 
@@ -47,53 +45,27 @@ export class AuthService {
       },
     });
     if (!user) return;
-    const token = this.createToken(
-      user.username,
-      'https://source.unsplash.com/featured/300x202',
-      user.id,
-    );
+    const token = this.createToken({
+      username: user.username,
+      avatar: 'https://source.unsplash.com/featured/300x202',
+      id: user.id,
+      sessionID: user.sessionID,
+    });
     return {
       token,
       user: {
         username: user.username,
         avatar: 'https://source.unsplash.com/featured/300x202',
         id: user.id,
+        sessionID: user.sessionID,
       },
     };
   }
 
-  async findSession(sessionID: string) {
-    const session = await this.sessionRep.findOneBy({ id: sessionID });
-    return session;
-  }
-
-  async changeSessionStatus(sessionID: string, status: boolean) {
-    const session = await this.sessionRep.findOneBy({ id: sessionID });
-    session.connected = status;
-    return this.sessionRep.save(session);
-  }
-
-  async saveSession(sessionID: string, session: any) {
-    const newSession = this.sessionRep.create({
-      id: sessionID,
-      userID: session.userID,
-      username: session.username,
-      connected: session.connected,
+  createToken(tokenDetails: any) {
+    const token = jwt.sign(tokenDetails, this.config.get('accessTokenSecret'), {
+      expiresIn: '1h',
     });
-    return this.sessionRep.save(newSession);
-  }
-
-  async findAllSessions() {
-    const sessions = await this.sessionRep.find();
-    return sessions;
-  }
-
-  createToken(username: string, avatar: string, id: number) {
-    const token = jwt.sign(
-      { username: username, avatar: avatar, id: id },
-      this.config.get('accessTokenSecret'),
-      { expiresIn: '1h' },
-    );
     return token;
   }
 

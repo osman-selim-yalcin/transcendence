@@ -9,19 +9,19 @@ import {
 import { User } from './User';
 import { Message } from './Message';
 
-@Entity({ name: 'chats' })
-export class Chat {
+@Entity({ name: 'rooms' })
+export class Room {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany(() => User, (user) => user.chats)
+  @ManyToMany(() => User, (user) => user.rooms)
   @JoinColumn()
   users: User[];
 
-  @OneToMany(() => Message, (message) => message.chat)
+  @OneToMany(() => Message, (message) => message.room)
   @JoinColumn()
   messages: Message[];
 
-  // @Column()
-  // createdAt: Date;
+  @Column()
+  createdAt: Date;
 }

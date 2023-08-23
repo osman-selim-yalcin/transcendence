@@ -29,14 +29,20 @@ export class UsersController {
     return { msg: 'success' };
   }
 
-  @Post('startChat')
-  startChat(@Req() req: any, @Body() body: any) {
+  @Post('startRoom')
+  startRoom(@Req() req: any, @Body() body: any) {
     const token = req.token;
-    return this.usersService.startChat(token, body.username);
+    return this.usersService.startRoom(token, body.username);
   }
 
-  @Post('findChat')
-  findChat(@Req() req: any, @Body() body: any) {
-    return this.usersService.findChat(body.id);
+  @Post('findRoom')
+  findRoom(@Req() req: any, @Body() body: any) {
+    return this.usersService.findRoom(body.roomId);
+  }
+
+  @Post('createMsg')
+  createMsg(@Req() req: any, @Body() body: any) {
+    const token = req.token;
+    return this.usersService.createMsg(token, body);
   }
 }

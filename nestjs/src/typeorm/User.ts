@@ -2,11 +2,11 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToMany,
   ManyToMany,
+  JoinColumn,
   JoinTable,
 } from 'typeorm';
-import { Chat } from './Chat';
+import { Room } from './Room';
 // import { Game } from './Game';
 
 @Entity({ name: 'users' })
@@ -18,6 +18,9 @@ export class User {
   username: string;
 
   @Column()
+  sessionID: string;
+
+  @Column()
   avatar: string;
 
   @Column({ enum: ['online', 'offline', 'ingame'] })
@@ -27,9 +30,9 @@ export class User {
   @JoinTable()
   friends: User[];
 
-  @ManyToMany(() => Chat, (chat) => chat.users)
+  @ManyToMany(() => Room, (room) => room.users)
   @JoinTable()
-  chats: Chat[];
+  rooms: Room[];
 
   // @Column()
   // stats: {

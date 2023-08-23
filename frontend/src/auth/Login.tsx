@@ -2,13 +2,11 @@ import { useEffect, useContext, useState } from "react"
 import { UserContext } from "../context/context"
 import { getUser } from "../api/index"
 import { login } from "../api/tmp.ts"
-import { WebsocketContext } from "../context/WebsocketContext"
 
 export default function Login() {
-  const { user, setUser } = useContext(UserContext)
+  const { setUser } = useContext(UserContext)
   const [loginWith, setLoginWith] = useState(localStorage.getItem("loginWith"))
   const [username, setUsername] = useState("")
-  const socket = useContext(WebsocketContext)
 
   useEffect(() => {
     getUser(setUser)
@@ -54,8 +52,6 @@ export default function Login() {
         <input type="text" onChange={e => setUsername(e.target.value)} />{" "}
         <button
           onClick={() => {
-            socket.auth = { username }
-            socket.connect()
             login(username, setUser)
           }}
         >
