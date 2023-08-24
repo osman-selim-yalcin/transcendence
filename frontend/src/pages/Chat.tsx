@@ -5,27 +5,7 @@ import { addFriend, removeFriend, getAllFriends } from "../api/friend"
 import { getAllUsers } from "../api"
 import Room from "./Room"
 import { startRoom } from "../api/room"
-
-type msg = {
-  content: string
-  fromSelf: boolean
-}
-
-type typeRoom = {
-  roomID: number
-  friend: Props
-}
-
-type Props = {
-  username: string
-  id: number
-  status: string
-  avatar: string
-  messages: msg[]
-  userID: string
-  sessionID: string
-  hasNewMessages: boolean
-}
+import { typeRoom, typeUser } from "../types"
 
 export default function Chat() {
   const socket = useContext(WebsocketContext)
@@ -42,7 +22,7 @@ export default function Chat() {
       socket.connect()
     }
 
-		socket.on("user connected", user => {})
+    socket.on("user connected", user => {})
 
     socket.on("user disconnected", id => {})
 
@@ -56,7 +36,7 @@ export default function Chat() {
     }
   }, [])
 
-  const handleStartRoom = async (friend: Props) => {
+  const handleStartRoom = async (friend: typeUser) => {
     const roomID = await startRoom(friend.username)
     console.log(roomID)
     socket.emit("join room", {
@@ -81,7 +61,7 @@ export default function Chat() {
             <button onClick={() => getAllUsers(setAllUsers)}>
               show all users
             </button>
-            {allUsers?.map((item: Props) => {
+            {allUsers?.map((item: typeUser) => {
               if (item.username === user.username) return null
               return (
                 <div key={item.id}>
@@ -95,7 +75,7 @@ export default function Chat() {
         </div>
         <div className="chat_div_friends">
           {friends?.length !== 0 ? (
-            friends.map((item: Props, index) => {
+            friends.map((item: typeUser, index) => {
               return (
                 <div
                   key={index}

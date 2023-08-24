@@ -2,17 +2,13 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { WebsocketContext } from "../context/WebsocketContext"
 import { createMsg, findRoom } from "../api/room"
 import { UserContext } from "../context/context"
-
-type msg = {
-  content: string
-  owner: string
-}
+import { typeMsg } from "../types"
 
 export default function Room(props: any) {
   const socket = useContext(WebsocketContext)
   const { user } = useContext(UserContext)
   const [send, setSend] = useState("")
-  const [messages, setMessages] = useState<msg[]>([])
+  const [messages, setMessages] = useState<typeMsg[]>([])
   const chatSliderRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -32,7 +28,6 @@ export default function Room(props: any) {
   }, [])
 
   if (chatSliderRef.current) {
-    // @ts-ignore: Object is possibly 'null'.
     chatSliderRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
   }
 
@@ -49,7 +44,6 @@ export default function Room(props: any) {
 
     setSend("")
 
-    // @ts-ignore: Object is possibly 'null'.
     inputRef.current.focus()
   }
 
@@ -65,7 +59,7 @@ export default function Room(props: any) {
         </div>
       </div>
       <div className="chat_room_messages">
-        {messages?.map((message: msg, index: any) => {
+        {messages?.map((message: typeMsg, index: any) => {
           return (
             <div key={index}>
               <p>{message.owner}</p>

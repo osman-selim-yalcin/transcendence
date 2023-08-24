@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
-import Login from "../auth/Login"
 import Logout from "../auth/Logout"
 import { useContext } from "react"
 import { UserContext } from "../context/context"
 
 export default function Navbar() {
+  // @ts-ignore: Object is possibly 'null'.
   const { user } = useContext(UserContext)
 
   return (
