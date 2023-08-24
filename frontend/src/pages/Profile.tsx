@@ -13,7 +13,7 @@ export default function Profile() {
       <h1>Profile</h1>
       <div>
         {user?.username}
-        <img src={user?.avatar} alt="" />
+        {/* <img src={user?.avatar} alt="" /> */}
       </div>
     </div>
   )

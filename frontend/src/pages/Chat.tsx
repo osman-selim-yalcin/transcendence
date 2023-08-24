@@ -42,7 +42,7 @@ export default function Chat() {
       socket.connect()
     }
 
-    socket.on("user connected", user => {})
+		socket.on("user connected", user => {})
 
     socket.on("user disconnected", id => {})
 
@@ -51,9 +51,10 @@ export default function Chat() {
     return () => {
       socket.disconnect()
       socket.off("user connected")
+      socket.off("private message")
       socket.off("user disconnected")
     }
-  }, [user])
+  }, [])
 
   const handleStartRoom = async (friend: Props) => {
     const roomID = await startRoom(friend.username)
@@ -102,11 +103,11 @@ export default function Chat() {
                   onClick={() => handleStartRoom(item)}
                 >
                   <div className="chat_div_friends_friend_info">
-                    <img
+                    {/* <img
                       src={item.avatar}
                       alt=""
                       className="chat_div_friends_friend_info_img"
-                    />
+                    /> */}
                     <p>{item.username}</p>
                   </div>
                   <div className="chat_div_friends_friend_buttons">

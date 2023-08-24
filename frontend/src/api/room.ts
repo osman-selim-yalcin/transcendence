@@ -57,9 +57,6 @@ export const createMsg = async (msg: string, owner: string, roomID: number) => {
         }
       }
     )
-    .then(res => {
-      console.log("createMsg", res.data)
-    })
     .catch(err => {
       console.log(err)
     })

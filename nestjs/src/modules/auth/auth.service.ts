@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
@@ -44,7 +44,7 @@ export class AuthService {
         username: userDetails.username,
       },
     });
-    if (!user) return;
+    if (!user) throw new HttpException('user not found', HttpStatus.BAD_REQUEST);
     const token = this.createToken({
       username: user.username,
       avatar: 'https://source.unsplash.com/featured/300x202',

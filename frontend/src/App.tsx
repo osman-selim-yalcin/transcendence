@@ -1,9 +1,10 @@
 import { UserContext } from "./context/context"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { socket, WebsocketContext } from "./context/WebsocketContext"
 import { RouterProvider } from "react-router-dom"
 import { router } from "./utils/routeSetup"
 import "./styles/App.scss"
+import { getUser } from "./api"
 
 type userPayload = {
   username: string
@@ -11,6 +12,10 @@ type userPayload = {
 
 function App() {
   const [user, setUser] = useState<userPayload>(null)
+
+	useEffect(() => {
+    getUser(setUser)
+  }, [])
 
   return (
     <div>
