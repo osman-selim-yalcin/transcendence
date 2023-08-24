@@ -48,24 +48,24 @@ export default function Room(props: any) {
   }
 
   return (
-    <div className="chat_room">
-      <div className="chat_room_header">
-        {/* <div className="chat_room_header_avatar">
+    <div className="chat_rooms_room">
+      <div className="chat_rooms_room_header">
+        {/* <div className="chat_rooms_room_header_avatar">
           <img src={props.friend.avatar} alt="avatar" />
         </div> */}
-        <div className="chat_room_header_info">
+        <div className="chat_rooms_room_header_info">
           <p>{props.friend.username}</p>
           {/* <p>{props.friend.status}</p> */}
         </div>
       </div>
-      <div className="chat_room_messages">
+      <div className="chat_rooms_room_messages">
         {messages?.map((message: typeMsg, index: any) => {
           return (
             <div key={index}>
               <p>{message.owner}</p>
               <p
                 key={index}
-                className="chat_room_messages_msg"
+                className="chat_rooms_room_messages_msg"
                 ref={chatSliderRef}
               >
                 {message.content}
@@ -75,7 +75,7 @@ export default function Room(props: any) {
         })}
       </div>
       <form
-        className="chat_room_input"
+        className="chat_rooms_room_input"
         onSubmit={e => {
           e.preventDefault()
           handle(send)

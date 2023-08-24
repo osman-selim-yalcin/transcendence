@@ -62,6 +62,8 @@ export class UsersService {
     });
     const friendUser = await this.userRep.findOneBy({ username: friendname });
 
+    if (loginUser.id === friendUser.id) return;
+
     const roomDeatils = {
       users: [friendUser, loginUser],
       createdAt: new Date(),

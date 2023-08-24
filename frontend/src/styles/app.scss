@@ -15,7 +15,6 @@
 
 .chat {
 	position: absolute;
-	background-color: aqua;
 	bottom: 0;
 	right: 0;
 	width: 100vw;
@@ -63,34 +62,39 @@
 		}
 	}
 
-	&_room {
+	&_rooms{
 		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-
-		background-color: rosybrown;
-		width: 200px;
-		height: 300px;
-
-		&_messages {
-			background-color: darkred;
-			height: 90%;
-			overflow-y: scroll;
-
-			&_msg{
-				background-color: darkorange;
-				height: 10%;
-				border: 1px solid black;
-			}
-		}
-
-		&_input {
+		flex-direction: row;
+		gap: 10px;
+		&_room {
 			display: flex;
-			height: 10%;
-			background-color: darkgreen;
+			flex-direction: column;
+			justify-content: space-between;
 			
-			input{
-				width: 100%;
+			background-color: rosybrown;
+			width: 200px;
+			height: 300px;
+			
+			&_messages {
+				background-color: darkred;
+				height: 90%;
+				overflow-y: scroll;
+				
+				&_msg{
+					background-color: darkorange;
+					height: 10%;
+					border: 1px solid black;
+				}
+			}
+			
+			&_input {
+				display: flex;
+				height: 10%;
+				background-color: darkgreen;
+				
+				input{
+					width: 100%;
+				}
 			}
 		}
 	}
