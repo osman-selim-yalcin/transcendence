@@ -1,3 +1,8 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+
 .navbar {
 	display: flex;
 	width: 100vw;
@@ -82,8 +87,11 @@
 				
 				&_msg{
 					background-color: darkorange;
-					height: 10%;
+					height: 15%;
 					border: 1px solid black;
+					&_content{
+						background-color: darkorchid;
+					}
 				}
 			}
 			

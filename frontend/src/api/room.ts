@@ -17,8 +17,8 @@ export const startRoom = async (username: string) => {
   return (await response).data
 }
 
-export const findRoom = async (roomId: number, setMessages: Function) => {
-  axios
+export const findRoom = async (roomId: number) => {
+  return await axios
     .post(
       "http://localhost:3000/api/user/findRoom",
       {
@@ -33,7 +33,7 @@ export const findRoom = async (roomId: number, setMessages: Function) => {
       }
     )
     .then(res => {
-      setMessages(res.data.messages)
+      return res.data.messages
     })
     .catch(err => {
       console.log(err)
@@ -47,7 +47,7 @@ export const createMsg = async (msg: string, owner: string, roomID: number) => {
       {
         msg,
         owner,
-				roomID
+        roomID
       },
       {
         headers: {

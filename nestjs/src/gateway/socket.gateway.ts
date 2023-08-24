@@ -58,6 +58,7 @@ export class socketGateway implements OnModuleInit {
     this.server.to(payload.to).emit('private message', {
       content: payload.content,
       from: payload.from,
+      to: payload.to,
     });
   }
 }

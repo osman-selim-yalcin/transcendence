@@ -3,6 +3,11 @@ export type typeMsg = {
   owner: string
 }
 
+export type typeAllMsg = {
+  roomID: number
+  messages: typeMsg[]
+}
+
 export type typeRoom = {
   roomID: number
   friend: typeUser
