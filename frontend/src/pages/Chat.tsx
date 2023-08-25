@@ -19,8 +19,13 @@ export default function Chat() {
   const { user } = useContext(UserContext)
 
   useEffect(() => {
+    const handleSet = async () => {
+      const tmp = await getAllFriends(setFriends)
+			setData({ list: tmp, buttons: [handleStartRoom, removeFriend] })
+    }
+
     if (user) {
-      getAllFriends(setFriends)
+			handleSet()
       getAllUsers(setAllUsers)
       socket.auth = { sessionID: user.sessionID }
       socket.connect()

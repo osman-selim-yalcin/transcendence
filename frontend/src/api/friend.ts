@@ -1,4 +1,3 @@
-
 import axios from "axios"
 
 export const addFriend = (username: string) => {
@@ -47,8 +46,8 @@ export const removeFriend = (username: string) => {
     })
 }
 
-export const getAllFriends = (setFriends: any) => {
-  axios
+export const getAllFriends = async (setFriends: Function) => {
+  return await axios
     .get("http://localhost:3000/api/user/allFriends", {
       headers: {
         authorization:
@@ -58,6 +57,7 @@ export const getAllFriends = (setFriends: any) => {
     })
     .then(response => {
       setFriends(response.data)
+			return response.data
     })
     .catch(err => {
       console.log(err)
