@@ -26,6 +26,9 @@ export class User {
   @Column({ enum: ['online', 'offline', 'ingame'] })
   status: string;
 
+  @Column({ default: new Date() })
+  lastSeen: Date;
+
   @ManyToMany(() => User, (user) => user.friends)
   @JoinTable()
   friends: User[];

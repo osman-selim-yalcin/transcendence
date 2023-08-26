@@ -21,13 +21,22 @@ export class AuthService {
     return this.userRep.save(newUser);
   }
 
-  async findUser(username: string) {
+  async findUserByUsername(username: string) {
     const user = await this.userRep.findOneBy({ username: username });
     return user;
   }
 
+  async findUserBySessionID(sessionID: string) {
+    const user = await this.userRep.findOneBy({ sessionID: sessionID });
+    return user;
+  }
+
+  async handleStatusChange(user: any, status: string) {
+    const updatedUser = await this.userRep.update(user.id, { status: status });
+    return updatedUser;
+  }
+
   async tmpCreate(userDetails: any) {
-    console.log('here');
     const newUser = await this.userRep.create(userDetails);
     console.log(newUser);
     return this.userRep.save(newUser);
@@ -44,7 +53,8 @@ export class AuthService {
         username: userDetails.username,
       },
     });
-    if (!user) throw new HttpException('user not found', HttpStatus.BAD_REQUEST);
+    if (!user)
+      throw new HttpException('user not found', HttpStatus.BAD_REQUEST);
     const token = this.createToken({
       username: user.username,
       avatar: 'https://source.unsplash.com/featured/300x202',

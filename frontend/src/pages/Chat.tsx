@@ -21,11 +21,11 @@ export default function Chat() {
   useEffect(() => {
     const handleSet = async () => {
       const tmp = await getAllFriends(setFriends)
-			setData({ list: tmp, buttons: [handleStartRoom, removeFriend] })
+      setData({ list: tmp, buttons: [handleStartRoom, removeFriend] })
     }
 
     if (user) {
-			handleSet()
+      handleSet()
       getAllUsers(setAllUsers)
       socket.auth = { sessionID: user.sessionID }
       socket.connect()
@@ -33,7 +33,10 @@ export default function Chat() {
 
     socket.on("user connected", user => {})
 
-    socket.on("user disconnected", id => {})
+    socket.on("user disconnected", id => {
+			console.log("user disconnected")
+      console.log(id)
+    })
 
     socket.on("private message", ({ content, from, to }) => {
       const room = allMessages.find(item => item.roomID === to)

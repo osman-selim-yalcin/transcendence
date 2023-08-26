@@ -1,7 +1,10 @@
+import { typeUser } from "../types"
+
+
 export default function List(props: any) {
   return (
     <div>
-      {props.list.map((item: any, index: number) => {
+      {props.list.map((item: typeUser, index: number) => {
         return (
           <div
             className="chat_div_friends_friend"
@@ -14,7 +17,8 @@ export default function List(props: any) {
                 alt=""
                 className="chat_div_friends_friend_info_img"
               /> */}
-              <p>{item.username}</p>
+              <p>{item.username}</p> ///
+							<p>{item.status}</p>
             </div>
             <div className="chat_div_friends_friend_buttons">
               <button onClick={() => props.buttons[1](item.username)}>X</button>

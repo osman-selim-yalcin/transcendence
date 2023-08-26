@@ -36,8 +36,7 @@ export default function Room(props: any) {
           <img src={props.friend.avatar} alt="avatar" />
         </div> */}
         <div className="chat_rooms_room_header_info">
-          <p>{props.friend.username}</p>
-          {/* <p>{props.friend.status}</p> */}
+          <p>{props.friend.username} / {props.friend.status}</p>
         </div>
       </div>
       <div className="chat_rooms_room_messages">

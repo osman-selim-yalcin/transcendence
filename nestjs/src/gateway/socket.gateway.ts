@@ -36,19 +36,22 @@ export class socketGateway implements OnModuleInit {
     });
 
     this.server.on('connection', async (socket: CustomSocket) => {
-      console.log('connected', socket.sessionID);
       socket.join(socket.sessionID);
+      const socketUser = await this.authService.findUserBySessionID(
+        socket.sessionID,
+      );
+      this.authService.handleStatusChange(socketUser, 'online');
 
-      socket.on('disconnect', () => {});
+      socket.on('disconnect', async () => {
+        this.authService.handleStatusChange(socketUser, 'offline');
+        this.server.emit('user disconnected', socket.sessionID);
+      });
     });
   }
 
   @SubscribeMessage('join room')
   onJoinRoom(client: CustomSocket, payload: any) {
     payload.clients.forEach(async (client) => {
-      // console.log('join room2', client);
-      // console.log('join room2', await this.server.in(client));
-      // this.server.in(client).fetchSockets();
       this.server.in(client).socketsJoin(payload.room);
     });
   }
