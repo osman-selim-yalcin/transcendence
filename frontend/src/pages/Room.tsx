@@ -11,9 +11,9 @@ export default function Room(props: any) {
   const chatSliderRef = useRef(null)
   const inputRef = useRef(null)
 
-  if (chatSliderRef.current) {
-    chatSliderRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
-  }
+  useEffect(() => {
+	chatSliderRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
+  }, [props.messages[props.messages.length - 1]])
 
   const handle = (msg: string) => {
     if (msg === "") return
@@ -45,7 +45,6 @@ export default function Room(props: any) {
             <div key={index} className="chat_rooms_room_messages_msg">
               {message.owner}
               <div
-                key={index}
                 className="chat_rooms_room_messages_msg_content"
                 ref={chatSliderRef}
               >
