@@ -71,6 +71,7 @@ body {
 		display: flex;
 		flex-direction: row;
 		gap: 10px;
+		align-items: end;
 		&_room {
 			display: flex;
 			flex-direction: column;
@@ -79,12 +80,31 @@ body {
 			background-color: rosybrown;
 			width: 200px;
 			height: 300px;
+
+			transition: 500ms;
+
+			&_header {
+				position: relative;
+				&_button  {
+					position: absolute;
+					top: 1em;
+					right: 1em;
+					width: 20px;
+					height: 20px;
+					background-color:azure;
+					text-align: center;
+				}
+				&_button:active {
+					background-color: grey;
+				}
+
+			}
 			
 			&_messages {
 				background-color: darkred;
 				height: 90%;
 				overflow-y: scroll;
-				
+
 				&_msg{
 					background-color: darkorange;
 					height: 15%;
@@ -121,4 +141,14 @@ body {
   text-align: center;
   float: right;
   margin-top: 10px;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
