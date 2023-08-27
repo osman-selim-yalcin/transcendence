@@ -13,6 +13,13 @@ export type typeRoom = {
   friend: typeUser
 }
 
+export type typeAllRooms = {
+  id: number
+  users: typeUser
+  messages: typeMsg[]
+  createdAt: string
+}
+
 export type typeUser = {
   username: string
   id: number

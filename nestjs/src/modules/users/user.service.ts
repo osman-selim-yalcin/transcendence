@@ -95,6 +95,15 @@ export class UsersService {
     return room;
   }
 
+  async getUsersRooms(token: string) {
+    const loginUserInfo = this.verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { username: loginUserInfo.username },
+      relations: ['rooms', 'rooms.users', 'rooms.messages'],
+    });
+    return loginUser.rooms;
+  }
+
   async createMsg(token: string, details: any) {
     const room = await this.roomRep.findOne({
       relations: ['messages'],

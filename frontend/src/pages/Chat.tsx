@@ -1,49 +1,46 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { WebsocketContext } from "../context/WebsocketContext"
 import { UserContext } from "../context/context"
-import { addFriend, removeFriend, getAllFriends } from "../api/friend"
-import { getAllUsers } from "../api"
 import Room from "./Room"
-import { findRoom, startRoom } from "../api/room"
-import { typeRoom, typeUser, typeAllMsg } from "../types"
+import { getUsersRooms } from "../api/room"
+import { typeAllRooms, typeRoom, typeUser } from "../types"
 import List from "../components/List"
 
 export default function Chat() {
   const socket = useContext(WebsocketContext)
   const show = false
-  const [allUsers, setAllUsers] = useState([])
-  const [friends, setFriends] = useState([])
-  const [allMessages, setAllMessages] = useState<typeAllMsg[]>([])
-  const [data, setData] = useState({ list: [], buttons: [] })
   const [rooms, setRooms] = useState<typeRoom[]>([])
+  const [allRooms, setAllRooms] = useState<typeAllRooms[]>([])
   const { user } = useContext(UserContext)
 
   useEffect(() => {
-    const handleSet = async () => {
-      const tmp = await getAllFriends(setFriends)
-      setData({ list: tmp, buttons: [handleStartRoom, removeFriend] })
-    }
+		let tmp : typeAllRooms[];
+		const handle = async () => {
+			tmp = await getUsersRooms(setAllRooms, user)
+		}
 
     if (user) {
-      handleSet()
-      getAllUsers(setAllUsers)
-      socket.auth = { sessionID: user.sessionID }
+			handle()
+			socket.auth = { sessionID: user.sessionID }
       socket.connect()
     }
 
-    socket.on("user connected", user => {})
+    socket.on("user connected", user => {
+			console.log("user connected")
+			console.log(user)
+		})
 
     socket.on("user disconnected", id => {
-			console.log("user disconnected")
+      console.log("user disconnected")
       console.log(id)
     })
 
     socket.on("private message", ({ content, from, to }) => {
-      const room = allMessages.find(item => item.roomID === to)
+			const room = tmp.find(item => item.id === to);
       if (room) {
         room.messages.push({ content, owner: from })
       }
-      setAllMessages([...allMessages])
+      setAllRooms([...tmp])
     })
 
     return () => {
@@ -54,26 +51,19 @@ export default function Chat() {
     }
   }, [])
 
-  const handleStartRoom = async (friend: typeUser) => {
-    const roomID = await startRoom(friend.username)
-    console.log(roomID)
+  const handleStartRoom = async (friend: typeUser, roomID: number) => {
     if (rooms.find((item: typeRoom) => item.roomID === roomID) || !roomID)
       return
+
     socket.emit("join room", {
       room: roomID,
       clients: [friend.sessionID, user.sessionID]
     })
+
     if (rooms.length >= 3) rooms.shift()
 
-    const msgs = await findRoom(roomID)
-    allMessages.push({ roomID, messages: [...msgs] })
     rooms.push({ roomID, friend })
     setRooms([...rooms])
-    setAllMessages([...allMessages])
-  }
-
-  const handleData = (data: any) => {
-    setData(data)
   }
 
   return (
@@ -86,7 +76,7 @@ export default function Chat() {
               roomID={room.roomID}
               friend={room.friend}
               messages={
-                allMessages.find(item => item.roomID === room.roomID).messages
+                allRooms.find(item => item.id === room.roomID)?.messages
               }
             />
           )
@@ -95,29 +85,9 @@ export default function Chat() {
       <div className="chat_div" hidden={show}>
         <div className="chat_div_search">
           {user.username} - {user.sessionID}
-          <button
-            onClick={() =>
-              handleData({
-                list: friends,
-                buttons: [handleStartRoom, removeFriend]
-              })
-            }
-          >
-            friends
-          </button>
-          <button
-            onClick={() =>
-              handleData({
-                list: allUsers,
-                buttons: [handleStartRoom, addFriend]
-              })
-            }
-          >
-            all users
-          </button>
         </div>
         <div className="chat_div_friends">
-          <List list={data.list} buttons={data.buttons}></List>
+          <List list={allRooms} buttons={handleStartRoom}></List>
         </div>
       </div>
     </div>

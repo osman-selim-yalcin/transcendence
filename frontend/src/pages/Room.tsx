@@ -9,15 +9,15 @@ export default function Room(props: any) {
   const { user } = useContext(UserContext)
   const [send, setSend] = useState("")
   const [minimize, setMinimize] = useState(false)
-  const roomRef = useRef(null);
-  const roomMessageRef = useRef(null);
-  const roomInputRef = useRef(null);
+  const roomRef = useRef(null)
+  const roomMessageRef = useRef(null)
+  const roomInputRef = useRef(null)
   const chatSliderRef = useRef(null)
   const inputRef = useRef(null)
 
-  useEffect(() => {
-	chatSliderRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
-  }, [props.messages[props.messages.length - 1]])
+  // useEffect(() => {
+  //   chatSliderRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
+  // }, [props.messages[props.messages.length - 1]])
 
   const handle = (msg: string) => {
     if (msg === "") return
@@ -34,21 +34,24 @@ export default function Room(props: any) {
   }
 
   function minimizer() {
-	if (minimize) {
-		roomRef.current.style.height = "300px";
-		setMinimize(false)
-		roomMessageRef.current.classList.remove("hidden");
-		roomInputRef.current.classList.remove("hidden");
-		setTimeout(() => {
-			chatSliderRef.current.scrollIntoView({ behavior: "smooth", block: "end" })
-		}, 500)
-		inputRef.current.focus()
-	} else {
-		roomRef.current.style.height = "50px";
-		setMinimize(true)
-		roomMessageRef.current.classList.add("hidden");
-		roomInputRef.current.classList.add("hidden");
-	}
+    if (minimize) {
+      roomRef.current.style.height = "300px"
+      setMinimize(false)
+      roomMessageRef.current.classList.remove("hidden")
+      roomInputRef.current.classList.remove("hidden")
+      setTimeout(() => {
+        chatSliderRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "end"
+        })
+      }, 500)
+      inputRef.current.focus()
+    } else {
+      roomRef.current.style.height = "50px"
+      setMinimize(true)
+      roomMessageRef.current.classList.add("hidden")
+      roomInputRef.current.classList.add("hidden")
+    }
   }
 
   return (
@@ -58,12 +61,16 @@ export default function Room(props: any) {
           <img src={props.friend.avatar} alt="avatar" />
         </div> */}
         <div className="chat_rooms_room_header_info">
-          <p>{props.friend.username} / {props.friend.status}</p>
+          <p>
+            {props.friend.username} / {props.friend.status}
+          </p>
         </div>
-		<div className="chat_rooms_room_header_button noselect"
-			onClick={minimizer}
-		>_
-		</div>
+        <div
+          className="chat_rooms_room_header_button noselect"
+          onClick={minimizer}
+        >
+          _
+        </div>
       </div>
       <div className="chat_rooms_room_messages" ref={roomMessageRef}>
         {props.messages?.map((message: typeMsg, index: any) => {
@@ -82,7 +89,7 @@ export default function Room(props: any) {
       </div>
       <form
         className="chat_rooms_room_input"
-		ref={roomInputRef}
+        ref={roomInputRef}
         onSubmit={e => {
           e.preventDefault()
           handle(send)

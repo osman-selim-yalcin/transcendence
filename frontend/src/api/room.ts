@@ -1,4 +1,5 @@
 import axios from "axios"
+import { typeUser } from "../types"
 
 export const startRoom = async (username: string) => {
   const response = axios.post(
@@ -57,6 +58,28 @@ export const createMsg = async (msg: string, owner: string, roomID: number) => {
         }
       }
     )
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const getUsersRooms = async (setAllRooms: Function, user: typeUser) => {
+ return await axios
+    .get("http://localhost:3000/api/user/getUsersRooms", {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      response.data.forEach((room: any) => {
+        const tmp = room.users.filter((u: any) => u.username !== user.username)
+        room.users = { ...tmp[0] }
+      })
+      setAllRooms(response.data)
+      return response.data
+    })
     .catch(err => {
       console.log(err)
     })

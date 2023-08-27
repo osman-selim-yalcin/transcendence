@@ -12,9 +12,16 @@ export class UsersController {
 
   @Get('allFriends')
   allFriends(@Req() req: any) {
-    const token = req.headers?.authorization?.split(' ')[1];
+    const token = req.token;
     return this.usersService.allFriends(token);
   }
+
+  @Get('getUsersRooms')
+  getUsersRooms(@Req() req: any) {
+    const token = req.token;
+    return this.usersService.getUsersRooms(token);
+  }
+
   @Post('addfriend')
   addfriend(@Req() req: any, @Body() body: any) {
     const token = req.token;

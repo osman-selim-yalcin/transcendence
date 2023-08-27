@@ -52,12 +52,19 @@ body {
 				align-items: center;
 					&_info{
 						display: flex;
-						justify-content: start;
-						align-items: center;
-						
-						&_img{
-							border-radius: 50%;
-							height: 50px;
+						flex-direction: column;
+						justify-content: center;
+						align-items: flex-start;
+						&_up{
+							display: flex;
+							flex-direction: row;
+							justify-content: center;
+							align-items: center;
+
+							&_img{
+								border-radius: 50%;
+								height: 30px;
+							}
 						}
 					}
 				// &_buttons{
