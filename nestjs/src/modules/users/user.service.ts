@@ -61,6 +61,7 @@ export class UsersService {
 
   async removeFriend(token: string, friendname: string) {
     const loginUserInfo = this.verifyToken(token);
+    const friendUser = await this.userRep.findOneBy({ username: friendname });
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
       relations: ['friends'],
@@ -68,6 +69,10 @@ export class UsersService {
     loginUser.friends = loginUser.friends?.filter(
       (friend) => friend.username !== friendname,
     );
+    friendUser.friends = friendUser.friends?.filter(
+      (friend) => friend.username !== loginUserInfo.username,
+    );
+    await this.userRep.save(friendUser);
     return this.userRep.save(loginUser);
   }
 
