@@ -1,7 +1,7 @@
 import axios from "axios"
 
 export const addFriend = (username: string) => {
-  axios
+  return axios
     .post(
       "http://localhost:3000/api/user/addFriend",
       {
@@ -16,10 +16,12 @@ export const addFriend = (username: string) => {
       }
     )
     .then(response => {
-      console.log(response)
+			console.log(response)
+      return 1
     })
     .catch(err => {
-      console.log(err)
+			console.log(err)
+			return 0
     })
 }
 

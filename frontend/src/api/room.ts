@@ -73,10 +73,7 @@ export const getUsersRooms = async (setAllRooms: Function, user: typeUser) => {
       }
     })
     .then(response => {
-      response.data.forEach((room: any) => {
-        const tmp = room.users.filter((u: any) => u.username !== user.username)
-        room.users = { ...tmp[0] }
-      })
+			console.log(response.data)
       setAllRooms(response.data)
       return response.data
     })

@@ -15,7 +15,7 @@ export type typeRoom = {
 
 export type typeAllRooms = {
   id: number
-  users: typeUser
+  user: typeUser
   messages: typeMsg[]
   createdAt: string
 }

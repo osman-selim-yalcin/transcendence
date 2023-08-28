@@ -5,6 +5,7 @@ import Room from "./Room"
 import { getUsersRooms } from "../api/room"
 import { typeAllRooms, typeRoom, typeUser } from "../types"
 import List from "../components/List"
+import Modal from "../components/modals/modal"
 
 export default function Chat() {
   const socket = useContext(WebsocketContext)
@@ -12,23 +13,25 @@ export default function Chat() {
   const [rooms, setRooms] = useState<typeRoom[]>([])
   const [allRooms, setAllRooms] = useState<typeAllRooms[]>([])
   const { user } = useContext(UserContext)
+  const dialogRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
-		let tmp : typeAllRooms[];
-		const handle = async () => {
-			tmp = await getUsersRooms(setAllRooms, user)
-		}
+    let tmp: typeAllRooms[]
+    const handle = async () => {
+      tmp = await getUsersRooms(setAllRooms, user)
+			console.log(tmp)
+    }
 
     if (user) {
-			handle()
-			socket.auth = { sessionID: user.sessionID }
+      handle()
+      socket.auth = { sessionID: user.sessionID }
       socket.connect()
     }
 
     socket.on("user connected", user => {
-			console.log("user connected")
-			console.log(user)
-		})
+      console.log("user connected")
+      console.log(user)
+    })
 
     socket.on("user disconnected", id => {
       console.log("user disconnected")
@@ -36,7 +39,7 @@ export default function Chat() {
     })
 
     socket.on("private message", ({ content, from, to }) => {
-			const room = tmp.find(item => item.id === to);
+      const room = tmp.find(item => item.id === to)
       if (room) {
         room.messages.push({ content, owner: from })
       }
@@ -66,6 +69,10 @@ export default function Chat() {
     setRooms([...rooms])
   }
 
+  const handleModal = () => {
+    dialogRef.current?.showModal()
+  }
+
   return (
     <div className="chat">
       <div className="chat_rooms">
@@ -85,11 +92,28 @@ export default function Chat() {
       <div className="chat_div" hidden={show}>
         <div className="chat_div_search">
           {user.username} - {user.sessionID}
+          <button onClick={handleModal}>asd</button>
         </div>
-        <div className="chat_div_friends">
-          <List list={allRooms} buttons={handleStartRoom}></List>
+        <div className="list">
+          {allRooms.map((item: typeAllRooms) => (
+            <List
+              key={item.id}
+              user={item.user}
+              avatar={item.user.avatar}
+              name={item.user.username}
+              messages={item.messages}
+              item={item}
+              mainButton={handleStartRoom}
+            />
+          ))}
         </div>
       </div>
+      <Modal
+        dialogRef={dialogRef}
+        allRooms={allRooms}
+        setAllRooms={setAllRooms}
+				handleStartRoom={handleStartRoom}
+      ></Modal>
     </div>
   )
 }

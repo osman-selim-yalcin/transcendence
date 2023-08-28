@@ -1,36 +1,50 @@
 import { typeAllRooms } from "../types"
 
-export default function List(props: any) {
-
+export default function List({
+  buttons,
+  name,
+  item,
+  messages,
+  mainButton,
+  user,
+  avatar
+}: {
+  mainButton: any
+  messages?: any
+  user: any
+  avatar: string
+  name: string
+  item: any
+  buttons?: any
+}) {
   return (
-    <div>
-      {props.list.map((item: typeAllRooms, index: number) => {
-        return (
-          <div
-            className="chat_div_friends_friend"
-            key={item.id}
-            onClick={() => props.buttons(item.users, item.id)}
-          >
-            <div className="chat_div_friends_friend_info">
-              <div className="chat_div_friends_friend_info_up">
-                <img
-                  src={item.users.avatar}
-                  alt=""
-                  className="chat_div_friends_friend_info_up_img"
-                />
-                <p>
-                  {item.users.username} /// {item.users.status}
-                </p>
-              </div>
-              <div className="chat_div_friends_friend_info_msg">
-                <p>{item.messages[0] ? item.messages[0].content : "start the chat"}</p>
-              </div>
-            </div>
-            <div className="chat_div_friends_friend_buttons">
-            </div>
-          </div>
-        )
-      })}
+    <div className="list_item" onClick={() => mainButton(user, item.id)}>
+      <div className="list_item_info">
+        <div className="list_item_info_up">
+          <img src={avatar} alt="" className="list_item_info_up_img" />
+          <p>{name}</p>
+        </div>
+        <div className="list_item_info_msg">
+          <p>
+            {item.messages?.[0]
+              ? `${item.messages[0].owner} : ${item.messages[0].content}`
+              : "start the chat"}
+          </p>
+        </div>
+      </div>
+      <div className="list_item_buttons">
+        {buttons?.map((button: any, index: number) => {
+          return (
+            <button
+              key={index}
+              onClick={event => button.action(event, user, item.id)}
+              className="list_item_buttons_item"
+            >
+              {button.name}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }

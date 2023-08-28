@@ -25,15 +25,13 @@ export class UsersController {
   @Post('addfriend')
   addfriend(@Req() req: any, @Body() body: any) {
     const token = req.token;
-    this.usersService.addfriend(token, body.username);
-    return { msg: 'success' };
+    return this.usersService.addfriend(token, body.username);
   }
 
   @Post('removeFriend')
   removeFriend(@Req() req: any, @Body() body: any) {
     const token = req.token;
-    this.usersService.removeFriend(token, body.username);
-    return { msg: 'success' };
+    return this.usersService.removeFriend(token, body.username);
   }
 
   @Post('startRoom')

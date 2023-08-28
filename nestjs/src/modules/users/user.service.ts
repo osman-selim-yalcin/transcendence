@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
@@ -38,9 +38,25 @@ export class UsersService {
       where: { username: loginUserInfo.username },
       relations: ['friends'],
     });
+    if (loginUser.id === friendUser.id)
+      throw new HttpException('same user', 400);
+
+    if (loginUser.friends) {
+      for (const friend of loginUser.friends) {
+        if (friend.id === friendUser.id)
+          throw new HttpException('already friend', 400);
+      }
+    }
+
     if (!loginUser.friends) loginUser.friends = [friendUser];
     else loginUser.friends.push(friendUser);
-    return this.userRep.save(loginUser);
+
+    if (!friendUser.friends) friendUser.friends = [loginUser];
+    else friendUser.friends.push(loginUser);
+
+    await this.userRep.save(friendUser);
+    await this.userRep.save(loginUser);
+    return { msg: 'success' };
   }
 
   async removeFriend(token: string, friendname: string) {
@@ -78,13 +94,14 @@ export class UsersService {
 
     for (const r of rooms) {
       const ids = r.users.map((u) => u.id);
-      if (ids.length === 2 && ids.sort().toString() === tmp.sort().toString())
-        return r.id;
+      if (ids.length === 2 && ids.sort().toString() === tmp.sort().toString()) {
+        return this.roomHelper(r, loginUser);
+      }
     }
 
     const room = this.roomRep.create(roomDeatils);
     await this.roomRep.save(room);
-    return room.id;
+    return this.roomHelper(room, loginUser);
   }
 
   async findRoom(roomId: number) {
@@ -101,7 +118,28 @@ export class UsersService {
       where: { username: loginUserInfo.username },
       relations: ['rooms', 'rooms.users', 'rooms.messages'],
     });
-    return loginUser.rooms;
+    const rooms = loginUser.rooms.map((room) => {
+      return this.roomHelper(room, loginUser);
+    });
+    return rooms;
+  }
+
+  roomHelper(room: Room, loginUser: User) {
+    const tmp = room.users.filter((u) => u.username !== loginUser.username);
+    const user = {
+      id: tmp[0].id,
+      username: tmp[0].username,
+      avatar: tmp[0].avatar,
+      status: tmp[0].status,
+      lastSeen: tmp[0].lastSeen,
+      sessionID: tmp[0].sessionID,
+    };
+    return {
+      id: room.id,
+      user,
+      messages: room.messages,
+      createdAt: room.createdAt,
+    };
   }
 
   async createMsg(token: string, details: any) {
