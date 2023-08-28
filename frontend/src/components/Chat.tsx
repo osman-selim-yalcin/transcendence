@@ -4,8 +4,8 @@ import { UserContext } from "../context/context"
 import Room from "./Room"
 import { getUsersRooms } from "../api/room"
 import { typeAllRooms, typeRoom, typeUser } from "../types"
-import List from "../components/List"
-import Modal from "../components/modals/modal"
+import List from "./List"
+import Modal from "./modals/Modal"
 
 export default function Chat() {
   const socket = useContext(WebsocketContext)
@@ -19,7 +19,7 @@ export default function Chat() {
     let tmp: typeAllRooms[]
     const handle = async () => {
       tmp = await getUsersRooms(setAllRooms, user)
-			console.log(tmp)
+      console.log(tmp)
     }
 
     if (user) {
