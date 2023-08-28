@@ -16,8 +16,9 @@ export default function Room(props: any) {
   const inputRef = useRef(null)
 
   useEffect(() => {
+		inputRef.current?.focus()
     chatSliderRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
-  }, [props.messages[props.messages.length - 1]])
+  }, [props.messages?.[props.messages.length - 1]])
 
   const handle = (msg: string) => {
     if (msg === "") return

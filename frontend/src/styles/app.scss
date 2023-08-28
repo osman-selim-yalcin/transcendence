@@ -129,11 +129,10 @@ body {
 }
 
 .modal {
-
 	height: 80vh;
 	width: 60vw;
-
 	&_swaps{
+		cursor: pointer;
 		display: flex;
 		justify-content: space-around;
 		height: 10%;

@@ -1,5 +1,3 @@
-import { typeAllRooms } from "../types"
-
 export default function List({
   buttons,
   name,
@@ -26,8 +24,10 @@ export default function List({
         </div>
         <div className="list_item_info_msg">
           <p>
-            {item.messages?.[0]
-              ? `${item.messages[0].owner} : ${item.messages[0].content}`
+            {item.messages?.[item.messages.length - 1]
+              ? `${item.messages[item.messages.length - 1].owner} : ${
+                  item.messages[item.messages.length - 1].content
+                }`
               : "start the chat"}
           </p>
         </div>

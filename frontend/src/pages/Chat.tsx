@@ -92,7 +92,7 @@ export default function Chat() {
       <div className="chat_div" hidden={show}>
         <div className="chat_div_search">
           {user.username} - {user.sessionID}
-          <button onClick={handleModal}>asd</button>
+          <button onClick={handleModal}>Open Modal</button>
         </div>
         <div className="list">
           {allRooms.map((item: typeAllRooms) => (
@@ -112,7 +112,7 @@ export default function Chat() {
         dialogRef={dialogRef}
         allRooms={allRooms}
         setAllRooms={setAllRooms}
-				handleStartRoom={handleStartRoom}
+        handleStartRoom={handleStartRoom}
       ></Modal>
     </div>
   )
