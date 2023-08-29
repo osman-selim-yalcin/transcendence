@@ -19,7 +19,6 @@ export default function Chat() {
     let tmp: typeAllRooms[]
     const handle = async () => {
       tmp = await getUsersRooms(setAllRooms, user)
-      console.log(tmp)
     }
 
     if (user) {
@@ -41,7 +40,13 @@ export default function Chat() {
     socket.on("private message", ({ content, from, to }) => {
       const room = tmp.find(item => item.id === to)
       if (room) {
-        room.messages.push({ content, owner: from })
+        room.messages.push({
+          content,
+          owner: from,
+          createdAt: new Date().toLocaleString("tr-TR", {
+            timeZone: "Europe/Istanbul"
+          })
+        })
       }
       setAllRooms([...tmp])
     })
@@ -73,6 +78,16 @@ export default function Chat() {
     dialogRef.current?.showModal()
   }
 
+  const buttons = [
+    {
+      name: "...",
+      action: (event: any) => {
+        alert("bi dur abi yapacaz")
+        event.stopPropagation()
+      }
+    }
+  ]
+
   return (
     <div className="chat">
       <div className="chat_rooms">
@@ -101,9 +116,10 @@ export default function Chat() {
               user={item.user}
               avatar={item.user.avatar}
               name={item.user.username}
-              messages={item.messages}
               item={item}
+              status={item.user.status}
               mainButton={handleStartRoom}
+              buttons={buttons}
             />
           ))}
         </div>

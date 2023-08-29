@@ -60,17 +60,31 @@ body {
 
 			&_header {
 				position: relative;
-				&_button  {
-					position: absolute;
-					top: 1em;
-					right: 1em;
-					width: 20px;
-					height: 20px;
-					background-color:azure;
-					text-align: center;
+				display: flex;
+				justify-content: space-between;
+				border-bottom: 2px solid black;
+				&_avatar{
+					height: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					img{
+						height: 50px;
+					}
 				}
-				&_button:active {
-					background-color: grey;
+				&_buttons{
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					&_button  {
+						width: 20px;
+						height: 20px;
+						background-color:azure;
+						text-align: center;
+					}
+					&_button:active {
+						background-color: grey;
+					}
 				}
 
 			}
@@ -183,19 +197,16 @@ body {
 		align-items: center;
 			&_info{
 				display: flex;
-				flex-direction: column;
+				flex-direction: row;
 				justify-content: center;
-				align-items: flex-start;
-				&_up{
-					display: flex;
-					flex-direction: row;
-					justify-content: center;
-					align-items: center;
-
-					&_img{
-						border-radius: 50%;
-						height: 30px;
-					}
+				align-items: center;
+				gap: 10px;
+				&_img{
+					border-radius: 50%;
+					height: 50px;
+				}
+				&_msg{
+					
 				}
 			}
 	}

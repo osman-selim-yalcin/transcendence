@@ -1,5 +1,6 @@
 export type typeMsg = {
   content: string
+	createdAt: string
   owner: string
 }
 

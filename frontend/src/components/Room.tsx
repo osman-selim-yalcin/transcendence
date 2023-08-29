@@ -1,8 +1,9 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { WebsocketContext } from "../context/WebsocketContext"
-import { createMsg } from "../api/room"
+import { createMsg, deleteRoom } from "../api/room"
 import { UserContext } from "../context/context"
 import { typeMsg } from "../types"
+import { getTime } from "../functions"
 
 export default function Room(props: any) {
   const socket = useContext(WebsocketContext)
@@ -16,7 +17,7 @@ export default function Room(props: any) {
   const inputRef = useRef(null)
 
   useEffect(() => {
-		inputRef.current?.focus()
+    inputRef.current?.focus()
     chatSliderRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
   }, [props.messages?.[props.messages.length - 1]])
 
@@ -55,29 +56,41 @@ export default function Room(props: any) {
     }
   }
 
+  const handleCloseRoom = () => {
+    deleteRoom(props.roomID)
+  }
+
   return (
     <div className="chat_rooms_room" ref={roomRef}>
       <div className="chat_rooms_room_header">
-        {/* <div className="chat_rooms_room_header_avatar">
+        <div className="chat_rooms_room_header_avatar">
           <img src={props.friend.avatar} alt="avatar" />
-        </div> */}
+        </div>
         <div className="chat_rooms_room_header_info">
           <p>
             {props.friend.username} / {props.friend.status}
           </p>
         </div>
-        <div
-          className="chat_rooms_room_header_button noselect"
-          onClick={minimizer}
-        >
-          _
+        <div className="chat_rooms_room_header_buttons">
+          <div
+            className="chat_rooms_room_header_buttons_button noselect"
+            onClick={minimizer}
+          >
+            _
+          </div>
+          <div
+            className="chat_rooms_room_header_buttons_button noselect"
+            onClick={() => {}}
+          >
+            X
+          </div>
         </div>
       </div>
       <div className="chat_rooms_room_messages" ref={roomMessageRef}>
         {props.messages?.map((message: typeMsg, index: any) => {
           return (
             <div key={index} className="chat_rooms_room_messages_msg">
-              {message.owner}
+              {message.owner} {getTime(message.createdAt)}
               <div
                 className="chat_rooms_room_messages_msg_content"
                 ref={chatSliderRef}

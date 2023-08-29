@@ -1,14 +1,16 @@
+import { getTime } from "../functions"
+
 export default function List({
   buttons,
   name,
   item,
-  messages,
   mainButton,
   user,
+  status,
   avatar
 }: {
   mainButton: any
-  messages?: any
+  status?: string
   user: any
   avatar: string
   name: string
@@ -18,11 +20,11 @@ export default function List({
   return (
     <div className="list_item" onClick={() => mainButton(user, item.id)}>
       <div className="list_item_info">
-        <div className="list_item_info_up">
-          <img src={avatar} alt="" className="list_item_info_up_img" />
-          <p>{name}</p>
-        </div>
+        <img src={avatar} alt="" className="list_item_info_img" />
         <div className="list_item_info_msg">
+          <p>
+            {name} {status && `/ ${status}`}
+          </p>
           <p>
             {item.messages?.[item.messages.length - 1]
               ? `${item.messages[item.messages.length - 1].owner} : ${
@@ -31,6 +33,13 @@ export default function List({
               : "start the chat"}
           </p>
         </div>
+      </div>
+      <div>
+        {item.messages?.[item.messages.length - 1] && (
+          <p>
+            {getTime(item.messages[item.messages.length - 1].createdAt)}
+          </p>
+        )}
       </div>
       <div className="list_item_buttons">
         {buttons?.map((button: any, index: number) => {

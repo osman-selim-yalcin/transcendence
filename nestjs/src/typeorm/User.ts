@@ -26,8 +26,12 @@ export class User {
   @Column({ enum: ['online', 'offline', 'ingame'] })
   status: string;
 
-  @Column({ default: new Date() })
-  lastSeen: Date;
+  @Column({
+    default: new Date().toLocaleString('tr-TR', {
+      timeZone: 'Europe/Istanbul',
+    }),
+  })
+  lastSeen: string;
 
   @ManyToMany(() => User, (user) => user.friends)
   @JoinTable()

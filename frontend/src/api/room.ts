@@ -64,7 +64,7 @@ export const createMsg = async (msg: string, owner: string, roomID: number) => {
 }
 
 export const getUsersRooms = async (setAllRooms: Function, user: typeUser) => {
- return await axios
+  return await axios
     .get("http://localhost:3000/api/user/getUsersRooms", {
       headers: {
         authorization:
@@ -73,9 +73,26 @@ export const getUsersRooms = async (setAllRooms: Function, user: typeUser) => {
       }
     })
     .then(response => {
-			console.log(response.data)
+			console.log(response.data[0].createdAt)
       setAllRooms(response.data)
       return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const deleteRoom = async (roomID: number) => {
+  return await axios
+    .delete("http://localhost:3000/api/user/deleteRoom/" + roomID, {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response
     })
     .catch(err => {
       console.log(err)

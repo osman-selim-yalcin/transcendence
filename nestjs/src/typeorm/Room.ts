@@ -23,5 +23,5 @@ export class Room {
   messages: Message[];
 
   @Column()
-  createdAt: Date;
+  createdAt: string;
 }

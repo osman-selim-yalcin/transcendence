@@ -30,7 +30,7 @@ export default function Modal({
     const room = await startRoom(friend.username)
 
     handleStartRoom(friend, room.id)
-		dialogRef.current.close()
+    dialogRef.current.close()
     if (allRooms.find((item: typeAllRooms) => item.id === room.id) || !room.id)
       return
 
@@ -108,6 +108,7 @@ export default function Modal({
         <div className="list">
           {data?.map((item: typeUser) => (
             <List
+              status={item.status}
               key={item.id}
               name={item.username}
               avatar={item.avatar}

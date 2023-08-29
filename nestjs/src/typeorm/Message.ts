@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Room } from './Room';
 
 @Entity({ name: 'messages' })
@@ -17,7 +10,7 @@ export class Message {
   content: string;
 
   @Column()
-  createdAt: Date;
+  createdAt: string;
 
   @Column()
   owner: string;

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req } from '@nestjs/common';
 import { UsersService } from 'src/modules/users/user.service';
 
 @Controller('api/user')
@@ -43,6 +43,11 @@ export class UsersController {
   @Post('findRoom')
   findRoom(@Req() req: any, @Body() body: any) {
     return this.usersService.findRoom(body.roomId);
+  }
+
+  @Delete('deleteRoom/:roomID')
+  deleteRoom(@Req() req: any, @Body() body: any) {
+    return this.usersService.deleteRoom(req.params.roomID);
   }
 
   @Post('createMsg')

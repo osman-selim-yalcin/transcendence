@@ -87,7 +87,9 @@ export class UsersService {
 
     const roomDeatils = {
       users: [friendUser, loginUser],
-      createdAt: new Date(),
+      createdAt: new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+      }),
     };
 
     const tmp = [friendUser.id, loginUser.id];
@@ -115,6 +117,15 @@ export class UsersService {
       relations: ['messages', 'users'],
     });
     return room;
+  }
+
+  async deleteRoom(roomID: number) {
+    const room = await this.roomRep.findOne({
+      where: { id: roomID },
+      relations: ['messages', 'users'],
+    });
+    await this.roomRep.remove(room);
+    return { msg: 'success' };
   }
 
   async getUsersRooms(token: string) {
@@ -155,7 +166,9 @@ export class UsersService {
     const msg = this.messageRep.create({
       owner: details.owner,
       content: details.msg,
-      createdAt: new Date(),
+      createdAt: new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+      }),
       room,
     });
 
