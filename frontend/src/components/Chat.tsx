@@ -78,6 +78,20 @@ export default function Chat() {
     dialogRef.current?.showModal()
   }
 
+  const closeRoom = (roomID: number) => {
+    if (rooms.length === 1) {
+      setRooms([])
+      return
+    }
+    for (let i = 0; i < rooms.length; ++i) {
+      if (rooms[i].roomID === roomID) {
+        rooms.splice(i, 1)
+        setRooms([...rooms]);
+        break
+      }
+    }
+  }
+
   const buttons = [
     {
       name: "...",
@@ -100,6 +114,7 @@ export default function Chat() {
               messages={
                 allRooms.find(item => item.id === room.roomID)?.messages
               }
+              closeRoom={closeRoom}
             />
           )
         })}

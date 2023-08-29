@@ -80,7 +80,7 @@ export default function Room(props: any) {
           </div>
           <div
             className="chat_rooms_room_header_buttons_button noselect"
-            onClick={() => {}}
+            onClick={() => {props.closeRoom(props.roomID)}}
           >
             X
           </div>
