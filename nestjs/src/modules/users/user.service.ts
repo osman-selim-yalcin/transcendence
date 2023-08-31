@@ -83,7 +83,8 @@ export class UsersService {
     });
     const friendUser = await this.userRep.findOneBy({ username: friendname });
 
-    if (loginUser.id === friendUser.id) return;
+    if (loginUser.id === friendUser.id)
+      throw new HttpException('same user', 400);
 
     const roomDeatils = {
       users: [friendUser, loginUser],
@@ -141,21 +142,50 @@ export class UsersService {
   }
 
   roomHelper(room: Room, loginUser: User) {
-    const tmp = room.users.filter((u) => u.username !== loginUser.username);
-    const user = {
-      id: tmp[0].id,
-      username: tmp[0].username,
-      avatar: tmp[0].avatar,
-      status: tmp[0].status,
-      lastSeen: tmp[0].lastSeen,
-      sessionID: tmp[0].sessionID,
-    };
+    if (!room.name) {
+      const tmp = room.users.filter((u) => u.username !== loginUser.username);
+      return {
+        users: room.users,
+        room: {
+          roomID: room.id,
+          name: tmp[0].username,
+          avatar: tmp[0].avatar,
+        },
+        messages: room.messages,
+        createdAt: room.createdAt,
+      };
+    }
     return {
       id: room.id,
-      user,
+      users: room.users,
+      room: {
+        roomID: room.id,
+        name: room.name,
+        avatar: room.avatar,
+      },
       messages: room.messages,
       createdAt: room.createdAt,
     };
+  }
+
+  async createGroup(token: string, details: any) {
+    const loginUserInfo = this.verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { username: loginUserInfo.username },
+    });
+    if (!details.name) details.name = 'Group';
+    const roomDeatils = {
+      ...details,
+      creator: loginUser.id,
+      users: [loginUser, ...details.users],
+      createdAt: new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+      }),
+    };
+
+    const room = this.roomRep.create(roomDeatils);
+    await this.roomRep.save(room);
+    return room;
   }
 
   async createMsg(token: string, details: any) {

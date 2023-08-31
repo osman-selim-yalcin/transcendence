@@ -64,11 +64,11 @@ export default function Room(props: any) {
     <div className="chat_rooms_room" ref={roomRef}>
       <div className="chat_rooms_room_header">
         <div className="chat_rooms_room_header_avatar">
-          <img src={props.friend.avatar} alt="avatar" />
+          <img src={props.avatar} alt="avatar" />
         </div>
         <div className="chat_rooms_room_header_info">
           <p>
-            {props.friend.username} / {props.friend.status}
+            {props.name}
           </p>
         </div>
         <div className="chat_rooms_room_header_buttons">

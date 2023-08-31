@@ -73,7 +73,7 @@ export const getUsersRooms = async (setAllRooms: Function, user: typeUser) => {
       }
     })
     .then(response => {
-			console.log(response.data[0].createdAt)
+      console.log(response.data)
       setAllRooms(response.data)
       return response.data
     })
@@ -97,4 +97,19 @@ export const deleteRoom = async (roomID: number) => {
     .catch(err => {
       console.log(err)
     })
+}
+
+export const createGroup = async () => {
+  const response = axios.post(
+    "http://localhost:3000/api/user/createGroup",
+    {},
+    {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    }
+  )
+  return (await response).data
 }

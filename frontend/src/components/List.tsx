@@ -5,20 +5,20 @@ export default function List({
   name,
   item,
   mainButton,
-  user,
+  users,
   status,
   avatar
 }: {
   mainButton: any
   status?: string
-  user: any
+  users: any
   avatar: string
   name: string
   item: any
   buttons?: any
 }) {
   return (
-    <div className="list_item" onClick={() => mainButton(user, item.id)}>
+    <div className="list_item" onClick={mainButton}>
       <div className="list_item_info">
         <img src={avatar} alt="" className="list_item_info_img" />
         <div className="list_item_info_msg">
@@ -46,7 +46,7 @@ export default function List({
           return (
             <button
               key={index}
-              onClick={event => button.action(event, user, item.id)}
+              onClick={event => button.action(event, users, item.id)}
               className="list_item_buttons_item"
             >
               {button.name}

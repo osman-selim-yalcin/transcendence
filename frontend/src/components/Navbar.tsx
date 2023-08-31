@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import Logout from "../auth/Logout"
 import { useContext } from "react"
 import { UserContext } from "../context/context"
+import { createGroup } from "../api/room"
 
 export default function Navbar() {
   // @ts-ignore: Object is possibly 'null'.
@@ -16,6 +17,7 @@ export default function Navbar() {
       <div className="navbar_right">
         {!user ? <Link to="/login">Login</Link> : <Logout />}
       </div>
+      <button onClick={() => createGroup()}></button>
     </div>
   )
 }

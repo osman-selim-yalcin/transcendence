@@ -10,7 +10,12 @@ export default function Modal({
   allRooms,
   setAllRooms,
   handleStartRoom
-}: any) {
+}: {
+  dialogRef: any
+  allRooms: typeAllRooms[]
+  setAllRooms: Function
+  handleStartRoom: Function
+}) {
   const [allUsers, setAllUsers] = useState<typeUser[]>([])
   const [friends, setFriends] = useState<typeUser[]>([])
   const [data, setData] = useState<typeUser[]>([])
@@ -26,15 +31,15 @@ export default function Modal({
     handle()
   }, [])
 
-  const handleCreateRoom = async (friend: typeUser, id: number) => {
-    const room = await startRoom(friend.username)
+  const handleCreateRoom = async (friend: typeUser) => {
+    const allRoom : typeAllRooms = await startRoom(friend.username)
 
-    handleStartRoom(friend, room.id)
+    handleStartRoom(allRoom.room, [friend])
     dialogRef.current.close()
-    if (allRooms.find((item: typeAllRooms) => item.id === room.id) || !room.id)
+    if (allRooms.find((item: typeAllRooms) => item.room.roomID === allRoom.room.roomID) || !allRoom.room.roomID)
       return
 
-    setAllRooms([...allRooms, room])
+    setAllRooms([...allRooms, allRoom])
   }
 
   const handleAddFriend = async (
@@ -112,9 +117,9 @@ export default function Modal({
               key={item.id}
               name={item.username}
               avatar={item.avatar}
-              user={item}
+              users={[item]}
               item={item}
-              mainButton={handleCreateRoom}
+              mainButton={() => handleCreateRoom(item)}
               buttons={buttons}
             />
           ))}

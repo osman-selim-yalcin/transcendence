@@ -20,7 +20,7 @@ export class User {
   @Column()
   sessionID: string;
 
-  @Column()
+  @Column({ default: 'https://source.unsplash.com/featured/300x202' })
   avatar: string;
 
   @Column({ enum: ['online', 'offline', 'ingame'] })

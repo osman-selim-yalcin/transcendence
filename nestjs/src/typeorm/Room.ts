@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -24,4 +25,25 @@ export class Room {
 
   @Column()
   createdAt: string;
+
+  @Column({ nullable: true })
+  password: string;
+
+  @Column({ nullable: true })
+  name: string;
+
+  @Column({ default: 'https://source.unsplash.com/featured/300x202' })
+  avatar: string;
+
+  @Column({ nullable: true })
+  creator: number;
+
+  @Column({ array: true, nullable: true })
+  mods: number;
+
+  @Column({ array: true, nullable: true })
+  banlist: number;
+
+  @Column({ default: false })
+  isPrivate: boolean;
 }

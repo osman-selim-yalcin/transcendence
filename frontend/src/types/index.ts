@@ -1,6 +1,6 @@
 export type typeMsg = {
   content: string
-	createdAt: string
+  createdAt: string
   owner: string
 }
 
@@ -11,14 +11,14 @@ export type typeAllMsg = {
 
 export type typeRoom = {
   roomID: number
-  friend: typeUser
+  name: string
+  avatar: string
 }
 
 export type typeAllRooms = {
-  id: number
-  user: typeUser
+  users: typeUser[]
   messages: typeMsg[]
-  createdAt: string
+  room: typeRoom
 }
 
 export type typeUser = {

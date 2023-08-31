@@ -38,7 +38,7 @@ export default function Chat() {
     })
 
     socket.on("private message", ({ content, from, to }) => {
-      const room = tmp.find(item => item.id === to)
+      const room = tmp.find(item => item.room.roomID === to)
       if (room) {
         room.messages.push({
           content,
@@ -59,18 +59,27 @@ export default function Chat() {
     }
   }, [])
 
-  const handleStartRoom = async (friend: typeUser, roomID: number) => {
-    if (rooms.find((item: typeRoom) => item.roomID === roomID) || !roomID)
+  const handleStartRoom = async (item: typeRoom, users: typeUser[]) => {
+    console.log("here")
+		console.log(item)
+    if (
+      rooms.find((room: typeRoom) => room.roomID === item.roomID) ||
+      !item.roomID
+    )
       return
 
+			console.log("here")
+			//const sessionIDs = users.map
+    const sessionIDs = users.map((item: typeUser) => item.sessionID)
+
     socket.emit("join room", {
-      room: roomID,
-      clients: [friend.sessionID, user.sessionID]
+      room: item.roomID,
+      clients: [...sessionIDs]
     })
 
     if (rooms.length >= 3) rooms.shift()
 
-    rooms.push({ roomID, friend })
+    rooms.push({ roomID: item.roomID, avatar: item.avatar, name: item.name })
     setRooms([...rooms])
   }
 
@@ -86,7 +95,7 @@ export default function Chat() {
     for (let i = 0; i < rooms.length; ++i) {
       if (rooms[i].roomID === roomID) {
         rooms.splice(i, 1)
-        setRooms([...rooms]);
+        setRooms([...rooms])
         break
       }
     }
@@ -110,9 +119,10 @@ export default function Chat() {
             <Room
               key={index}
               roomID={room.roomID}
-              friend={room.friend}
+              avatar={room.avatar}
+              name={room.name}
               messages={
-                allRooms.find(item => item.id === room.roomID)?.messages
+                allRooms.find(item => item.room.roomID === room.roomID)?.messages
               }
               closeRoom={closeRoom}
             />
@@ -125,15 +135,14 @@ export default function Chat() {
           <button onClick={handleModal}>Open Modal</button>
         </div>
         <div className="list">
-          {allRooms.map((item: typeAllRooms) => (
+          {allRooms.map((item: typeAllRooms, index: number) => (
             <List
-              key={item.id}
-              user={item.user}
-              avatar={item.user.avatar}
-              name={item.user.username}
+              key={index}
+              users={item.users}
+              avatar={item.room.avatar}
+              name={item.room.name}
               item={item}
-              status={item.user.status}
-              mainButton={handleStartRoom}
+              mainButton={() => handleStartRoom(item.room, item.users)}
               buttons={buttons}
             />
           ))}
