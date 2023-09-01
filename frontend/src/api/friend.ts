@@ -2,7 +2,7 @@ import axios from "axios"
 import { typeUser } from "../types"
 
 export const addFriend = (
-  username: string,
+  username: string
   // setFriends: Function,
   // friends: typeUser[]
 ) => {
@@ -23,11 +23,11 @@ export const addFriend = (
     .then(response => {
       console.log(response.data)
       // setFriends([...friends, response.data])
-			return 1
+      return 1
     })
     .catch(err => {
       console.log(err)
-			return 0
+      return 0
     })
 }
 
@@ -66,6 +66,23 @@ export const getAllFriends = async (setFriends: Function) => {
     .then(response => {
       setFriends(response.data)
       return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const isFriend = async (username: string) => {
+  return await axios
+    .get("http://localhost:3000/api/user/isFriend", {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      console.log(response.data)
     })
     .catch(err => {
       console.log(err)

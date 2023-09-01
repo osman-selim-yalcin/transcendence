@@ -64,4 +64,14 @@ export class socketGateway implements OnModuleInit {
       to: payload.to,
     });
   }
+
+  @SubscribeMessage('notification')
+  onNotification(client: CustomSocket, payload: any) {
+    this.server.to(payload.to).emit('notification', {
+      content: payload.content,
+      type: payload.type,
+      createdAt: payload.createdAt,
+      owner: payload.owner,
+    });
+  }
 }

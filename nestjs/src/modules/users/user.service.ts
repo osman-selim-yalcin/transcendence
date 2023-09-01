@@ -221,7 +221,17 @@ export class UsersService {
     const owner = loginUserInfo.username;
     const user = await this.userRep.findOne({
       where: { username: details.username },
+      relations: ['notifications'],
     });
+
+    user.notifications?.map((n) => {
+      if (n.type === details.type && n.owner === owner) {
+        throw new HttpException('already exist', 400);
+      }
+    });
+
+    if (user.username === owner) throw new HttpException('same user', 400);
+
     const notification = this.notificationRep.create({
       content: details.content,
       owner,

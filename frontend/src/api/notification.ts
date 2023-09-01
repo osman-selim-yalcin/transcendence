@@ -23,7 +23,7 @@ export const createNotification = async (
   username: string,
   type: string
 ) => {
-  axios
+  return axios
     .post(
       "http://localhost:3000/api/user/createNotification",
       {
@@ -39,8 +39,14 @@ export const createNotification = async (
         }
       }
     )
-    .then(res => {})
-    .catch(err => {})
+    .then(res => {
+      console.log("res")
+      return 1
+    })
+    .catch(err => {
+      console.log("err", err.response.data)
+      return 0
+    })
 }
 
 export const deleteNotification = async (id: number) => {

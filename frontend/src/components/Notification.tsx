@@ -21,9 +21,19 @@ export default function Notification() {
   useEffect(() => {
     getNotifications(setNotifications)
 
-    // socket.on("notification", (data: typeNotification) => {
-    //   setNotifications([...notifications, data])
-    // })
+    socket.on("notification", (data: typeNotification) => {
+      console.log("notification socket")
+      console.log(data)
+      console.log(notifications)
+      notifications.push({
+        ...data
+      })
+      setNotifications([...notifications])
+    })
+
+    return () => {
+      socket.off("notification")
+    }
   }, [])
 
   const handleConfirm = (event: React.MouseEvent, item: typeNotification) => {
@@ -31,10 +41,11 @@ export default function Notification() {
     if (item.type === "addFriend") {
       addFriend(item.owner)
     }
-    handleDeleteNotification(item.id)
+    handleDeleteNotification(event, item.id)
   }
 
-  const handleDeleteNotification = (id: number) => {
+  const handleDeleteNotification = (event: React.MouseEvent, id: number) => {
+    event.stopPropagation()
     deleteNotification(id)
     setNotifications(notifications.filter(item => item.id !== id))
   }
@@ -63,12 +74,14 @@ export default function Notification() {
             return (
               <div key={index} className="notification_dialog_list_item">
                 {item.type} / {item.content} / {item.owner} /
-                {getTime(item.createdAt)}
+                {/* {getTime(item.createdAt)} */}
                 <div>
                   <button onClick={event => handleConfirm(event, item)}>
                     confirm
                   </button>
-                  <button onClick={() => handleDeleteNotification(item.id)}>
+                  <button
+                    onClick={event => handleDeleteNotification(event, item.id)}
+                  >
                     reject
                   </button>
                 </div>

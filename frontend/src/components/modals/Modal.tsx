@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react"
 import { getAllUsers } from "../../api"
-import { addFriend, getAllFriends, removeFriend } from "../../api/friend"
+import {
+  addFriend,
+  getAllFriends,
+  isFriend,
+  removeFriend
+} from "../../api/friend"
 import { typeAllRooms, typeUser } from "../../types"
 import List from "../List"
 import { startRoom } from "../../api/room"
 import { createNotification } from "../../api/notification"
+import { socket } from "../../context/WebsocketContext"
+import { getTime } from "../../functions"
 
 export default function Modal({
   dialogRef,
@@ -50,7 +57,22 @@ export default function Modal({
 
   const handleAddFriend = async (event: React.MouseEvent, friend: typeUser) => {
     event.stopPropagation()
-    createNotification("content yapılacak", friend.username, "addFriend")
+
+    const tmp = await createNotification(
+      "content yapılacak",
+      friend.username,
+      "addFriend"
+    )
+    if (!tmp) return
+    socket.emit("notification", {
+      type: "addFriend",
+      owner: friend.username,
+      content: "content yapılacak",
+      createdAt: new Date().toLocaleString("tr-TR", {
+        timeZone: "Europe/Istanbul"
+      }),
+      to: friend.sessionID
+    })
     // console.log(friends)
     // const r = await addFriend(friend.username)
     // if (!r) return
@@ -90,7 +112,20 @@ export default function Modal({
   }
 
   return (
-    <dialog ref={dialogRef}>
+    <dialog
+      ref={dialogRef}
+      onClick={(e) => {
+        const dialogDimensions = dialogRef.current.getBoundingClientRect()
+        if (
+          e.clientX < dialogDimensions.left ||
+          e.clientX > dialogDimensions.right ||
+          e.clientY < dialogDimensions.top ||
+          e.clientY > dialogDimensions.bottom
+        ) {
+          dialogRef.current.close()
+        }
+      }}
+    >
       <div className="modal">
         <div className="modal_swaps">
           <div
