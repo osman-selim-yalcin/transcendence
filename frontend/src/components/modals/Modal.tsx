@@ -29,23 +29,20 @@ export default function Modal({
   const [data, setData] = useState<typeUser[]>([])
   const [buttons, setButtons] = useState([])
 
-
   useEffect(() => {
-      getAllUsers(setAllUsers)
-	  getAllFriends(setFriends)
+    getAllUsers(setAllUsers)
+    getAllFriends(setFriends)
   }, [])
 
-
   useEffect(() => {
-
-      setData(friends)
-      setButtons(friendsButtons)
+    setData(friends)
+    setButtons(friendsButtons)
   }, [friends])
 
   const handleCreateRoom = async (friend: typeUser) => {
     const allRoom: typeAllRooms = await startRoom(friend.username)
 
-    handleStartRoom(allRoom.room, [friend])
+    handleStartRoom(allRoom.room, allRoom.users)
     dialogRef.current.close()
     if (
       allRooms.find(
@@ -61,34 +58,32 @@ export default function Modal({
   const handleAddFriend = async (event: React.MouseEvent, friend: typeUser) => {
     event.stopPropagation()
 
-    // const tmp = await createNotification(
-    //   "content yapılacak",
-    //   friend.username,
-    //   "addFriend"
-    // )
-    // if (!tmp) return
-    // socket.emit("notification", {
-    //   type: "addFriend",
-    //   owner: friend.username,
-    //   content: "content yapılacak",
-    //   createdAt: new Date().toLocaleString("tr-TR", {
-    //     timeZone: "Europe/Istanbul"
-    //   }),
-    //   to: friend.sessionID
-    // })
-    console.log(friends)
-    const r = await addFriend(friend.username)
-    if (!r) return
-    friends.push(friend)
-    setFriends([...friends])
+    const tmp = await createNotification(
+      "content yapılacak",
+      friend.username,
+      "addFriend"
+    )
+    if (!tmp) return
+    socket.emit("notification", {
+      type: "addFriend",
+      owner: friend.username,
+      content: "content yapılacak",
+      createdAt: new Date().toLocaleString("tr-TR", {
+        timeZone: "Europe/Istanbul"
+      }),
+      to: friend.sessionID
+    })
+    // console.log(friends)
+    // const r = await addFriend(friend.username)
+    // if (!r) return
+    // friends.push(friend)
+    // setFriends([...friends])
   }
 
   const handleRemoveFriend = (event: React.MouseEvent, friend: typeUser) => {
     event.stopPropagation()
     removeFriend(friend.username)
-    console.log("here", friends)
     const tmpFriends = friends.filter(item => item.id !== friend.id)
-    console.log("tmpfriends", tmpFriends)
     setFriends(tmpFriends)
     setData(tmpFriends)
   }
@@ -109,19 +104,14 @@ export default function Modal({
   ]
 
   const handleListData = (data: typeUser[], buttons: any) => {
-    console.log(data)
     setData(data)
     setButtons(buttons)
   }
 
-  const osman = () => {
-		console.log(friends);
-	  }
-
   return (
     <dialog
       ref={dialogRef}
-      onClick={(e) => {
+      onClick={e => {
         const dialogDimensions = dialogRef.current.getBoundingClientRect()
         if (
           e.clientX < dialogDimensions.left ||
@@ -143,7 +133,6 @@ export default function Modal({
           >
             Friends
           </div>
-		  <div onClick={osman}>OSMAN DENEME</div>
           <div
             className="modal_swaps_item"
             onClick={() => {

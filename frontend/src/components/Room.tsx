@@ -22,6 +22,8 @@ export default function Room(props: any) {
   }, [props.messages?.[props.messages.length - 1]])
 
   const handle = (msg: string) => {
+    console.log(msg)
+    console.log(props.roomID)
     if (msg === "") return
     createMsg(msg, user.username, props.roomID)
 
@@ -67,9 +69,7 @@ export default function Room(props: any) {
           <img src={props.avatar} alt="avatar" />
         </div>
         <div className="chat_rooms_room_header_info">
-          <p>
-            {props.name}
-          </p>
+          <p>{props.name}</p>
         </div>
         <div className="chat_rooms_room_header_buttons">
           <div
@@ -80,7 +80,9 @@ export default function Room(props: any) {
           </div>
           <div
             className="chat_rooms_room_header_buttons_button noselect"
-            onClick={() => {props.closeRoom(props.roomID)}}
+            onClick={() => {
+              props.closeRoom(props.roomID)
+            }}
           >
             X
           </div>

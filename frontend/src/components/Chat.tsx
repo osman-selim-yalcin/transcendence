@@ -16,22 +16,20 @@ export default function Chat() {
   const [tmp, setTmp] = useState<typeAllRooms[]>([])
 
   useEffect(() => {
-    // let tmp: typeAllRooms[]
     const handle = async () => {
-	
-    //   tmp = await getUsersRooms(setAllRooms, user)
-	  setTmp(await getUsersRooms(setAllRooms, user))
-    }
-	handle()
-	}, []);
-
-
-useEffect(() => {
-    if (user) {
-      socket.auth = { sessionID: user.sessionID }
-      socket.connect()
+      setTmp(await getUsersRooms(setAllRooms, user))
     }
 
+    socket.auth = { sessionID: user.sessionID }
+    socket.connect()
+    handle()
+
+    return () => {
+      socket.disconnect()
+    }
+  }, [])
+
+  useEffect(() => {
     socket.on("user connected", user => {
       console.log("user connected")
       console.log(user)
@@ -57,7 +55,6 @@ useEffect(() => {
     })
 
     return () => {
-      socket.disconnect()
       socket.off("user connected")
       socket.off("private message")
       socket.off("user disconnected")
@@ -65,16 +62,12 @@ useEffect(() => {
   }, [tmp])
 
   const handleStartRoom = async (item: typeRoom, users: typeUser[]) => {
-    console.log("here")
-		console.log(item)
     if (
       rooms.find((room: typeRoom) => room.roomID === item.roomID) ||
       !item.roomID
     )
       return
 
-			console.log("here")
-			//const sessionIDs = users.map
     const sessionIDs = users.map((item: typeUser) => item.sessionID)
 
     socket.emit("join room", {
@@ -127,7 +120,8 @@ useEffect(() => {
               avatar={room.avatar}
               name={room.name}
               messages={
-                allRooms.find(item => item.room.roomID === room.roomID)?.messages
+                allRooms.find(item => item.room.roomID === room.roomID)
+                  ?.messages
               }
               closeRoom={closeRoom}
             />
