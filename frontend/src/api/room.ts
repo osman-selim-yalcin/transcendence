@@ -73,7 +73,6 @@ export const getUsersRooms = async (setAllRooms: Function, user: typeUser) => {
       }
     })
     .then(response => {
-      console.log(response.data)
       setAllRooms(response.data)
       return response.data
     })

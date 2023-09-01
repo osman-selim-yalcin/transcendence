@@ -211,3 +211,29 @@ body {
 			}
 	}
 }
+
+.notification{
+	position: relative;
+	z-index: 10;
+	&_img{
+		border-radius: 50%;
+		height: 20px;
+	}
+	&_dialog{
+		&_list{
+			&_item{
+				border: 1px solid black;
+
+			}
+		}
+	}
+	&_new{
+		position: absolute;
+		top: 0;
+		right: 0;
+		background-color: red;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+	}
+}

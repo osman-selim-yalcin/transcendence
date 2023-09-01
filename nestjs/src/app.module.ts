@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { User } from './typeorm/User';
 import { Room } from './typeorm/Room';
 import { Message } from './typeorm/Message';
+import { Notification } from './typeorm/Notification';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Message } from './typeorm/Message';
       username: 'test',
       password: 'test',
       database: 'osyalcin',
-      entities: [User, Room, Message],
+      entities: [User, Room, Message, Notification],
       synchronize: true,
     }),
     PassportModule.register({ session: true }),

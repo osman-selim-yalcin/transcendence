@@ -31,3 +31,11 @@ export type typeUser = {
   sessionID: string
   hasNewMessages: boolean
 }
+
+export type typeNotification = {
+  id: number
+  content: string
+  createdAt: string
+  owner: string
+  type: string
+}

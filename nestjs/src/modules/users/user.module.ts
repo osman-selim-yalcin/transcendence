@@ -7,9 +7,13 @@ import { User } from 'src/typeorm/User';
 import { ConfigModule } from '@nestjs/config';
 import { Room } from 'src/typeorm/Room';
 import { Message } from 'src/typeorm/Message';
+import { Notification } from 'src/typeorm/Notification';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Room, Message]), ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Room, Message, Notification]),
+    ConfigModule,
+  ],
   controllers: [UsersController],
   providers: [UsersService],
 })

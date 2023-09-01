@@ -52,9 +52,25 @@ export class UsersController {
 
   @Post('createGroup')
   createGroup(@Req() req: any, @Body() body: any) {
-    console.log('createGroup');
     const token = req.token;
     return this.usersService.createGroup(token, body);
+  }
+
+  @Post('createNotification')
+  createNotification(@Req() req: any, @Body() body: any) {
+    const token = req.token;
+    return this.usersService.createNotification(token, body);
+  }
+
+  @Get('getNotifications')
+  getNotifications(@Req() req: any) {
+    const token = req.token;
+    return this.usersService.getNotifications(token);
+  }
+
+  @Delete('deleteNotification/:notificationID')
+  deleteNotification(@Req() req: any) {
+    return this.usersService.deleteNotification(req.params.notificationID);
   }
 
   @Post('createMsg')

@@ -5,8 +5,11 @@ import {
   ManyToMany,
   JoinColumn,
   JoinTable,
+  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Room } from './Room';
+import { Notification } from './Notification';
 // import { Game } from './Game';
 
 @Entity({ name: 'users' })
@@ -40,6 +43,10 @@ export class User {
   @ManyToMany(() => Room, (room) => room.users)
   @JoinTable()
   rooms: Room[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  @JoinColumn()
+  notifications: Notification[];
 
   // @Column()
   // stats: {

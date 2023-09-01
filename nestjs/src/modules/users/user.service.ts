@@ -6,6 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { Room } from 'src/typeorm/Room';
 import { User } from 'src/typeorm/User';
 import { Message } from 'src/typeorm/Message';
+import { Notification } from 'src/typeorm/Notification';
 
 @Injectable()
 export class UsersService {
@@ -13,6 +14,8 @@ export class UsersService {
     @InjectRepository(User) private userRep: Repository<User>,
     @InjectRepository(Room) private roomRep: Repository<Room>,
     @InjectRepository(Message) private messageRep: Repository<Message>,
+    @InjectRepository(Notification)
+    private notificationRep: Repository<Notification>,
   ) {}
 
   @Inject(ConfigService)
@@ -54,14 +57,17 @@ export class UsersService {
     if (!friendUser.friends) friendUser.friends = [loginUser];
     else friendUser.friends.push(loginUser);
 
-    await this.userRep.save(friendUser);
     await this.userRep.save(loginUser);
-    return { msg: 'success' };
+    await this.userRep.save(friendUser);
+    return { msg: 's' };
   }
 
   async removeFriend(token: string, friendname: string) {
     const loginUserInfo = this.verifyToken(token);
-    const friendUser = await this.userRep.findOneBy({ username: friendname });
+    const friendUser = await this.userRep.findOne({
+      where: { username: friendname },
+      relations: ['friends'],
+    });
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
       relations: ['friends'],
@@ -72,6 +78,7 @@ export class UsersService {
     friendUser.friends = friendUser.friends?.filter(
       (friend) => friend.username !== loginUserInfo.username,
     );
+
     await this.userRep.save(friendUser);
     return this.userRep.save(loginUser);
   }
@@ -207,6 +214,41 @@ export class UsersService {
 
     await this.roomRep.save(room);
     return this.messageRep.save(msg);
+  }
+
+  async createNotification(token: string, details: any) {
+    const loginUserInfo = this.verifyToken(token);
+    const owner = loginUserInfo.username;
+    const user = await this.userRep.findOne({
+      where: { username: details.username },
+    });
+    const notification = this.notificationRep.create({
+      content: details.content,
+      owner,
+      createdAt: new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+      }),
+      user,
+      type: details.type,
+    });
+    if (!user.notifications) user.notifications = [notification];
+    else user.notifications.push(notification);
+    await this.userRep.save(user);
+    return this.notificationRep.save(notification);
+  }
+
+  async getNotifications(token: string) {
+    const loginUserInfo = this.verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { username: loginUserInfo.username },
+      relations: ['notifications'],
+    });
+    return loginUser.notifications;
+  }
+
+  async deleteNotification(id: number) {
+    const notification = await this.notificationRep.findOne({ where: { id } });
+    return this.notificationRep.delete({ id: notification.id });
   }
 
   verifyToken(token: string) {

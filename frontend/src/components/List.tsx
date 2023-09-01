@@ -46,7 +46,7 @@ export default function List({
           return (
             <button
               key={index}
-              onClick={event => button.action(event, users, item.id)}
+              onClick={button.action}
               className="list_item_buttons_item"
             >
               {button.name}

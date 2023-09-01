@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { WebsocketContext } from "../context/WebsocketContext"
+import { socket } from "../context/WebsocketContext"
 import { UserContext } from "../context/context"
 import Room from "./Room"
 import { getUsersRooms } from "../api/room"
@@ -8,7 +8,6 @@ import List from "./List"
 import Modal from "./modals/Modal"
 
 export default function Chat() {
-  const socket = useContext(WebsocketContext)
   const show = false
   const [rooms, setRooms] = useState<typeRoom[]>([])
   const [allRooms, setAllRooms] = useState<typeAllRooms[]>([])
@@ -112,7 +111,7 @@ export default function Chat() {
   ]
 
   return (
-    <div className="chat">
+    <div className="chat ">
       <div className="chat_rooms">
         {rooms?.map((room: typeRoom, index: number) => {
           return (

@@ -1,6 +1,11 @@
 import axios from "axios"
+import { typeUser } from "../types"
 
-export const addFriend = (username: string) => {
+export const addFriend = (
+  username: string,
+  // setFriends: Function,
+  // friends: typeUser[]
+) => {
   return axios
     .post(
       "http://localhost:3000/api/user/addFriend",
@@ -16,11 +21,12 @@ export const addFriend = (username: string) => {
       }
     )
     .then(response => {
-			console.log(response)
-      return 1
+      console.log(response.data)
+      // setFriends([...friends, response.data])
+			return 1
     })
     .catch(err => {
-			console.log(err)
+      console.log(err)
 			return 0
     })
 }
@@ -59,7 +65,7 @@ export const getAllFriends = async (setFriends: Function) => {
     })
     .then(response => {
       setFriends(response.data)
-			return response.data
+      return response.data
     })
     .catch(err => {
       console.log(err)
