@@ -29,15 +29,18 @@ export default function Modal({
   const [data, setData] = useState<typeUser[]>([])
   const [buttons, setButtons] = useState([])
 
+
   useEffect(() => {
-    const handle = async () => {
-      const tmp = await getAllFriends(setFriends)
       getAllUsers(setAllUsers)
-      setData(tmp)
-      setButtons(friendsButtons)
-    }
-    handle()
+	  getAllFriends(setFriends)
   }, [])
+
+
+  useEffect(() => {
+
+      setData(friends)
+      setButtons(friendsButtons)
+  }, [friends])
 
   const handleCreateRoom = async (friend: typeUser) => {
     const allRoom: typeAllRooms = await startRoom(friend.username)
@@ -58,26 +61,26 @@ export default function Modal({
   const handleAddFriend = async (event: React.MouseEvent, friend: typeUser) => {
     event.stopPropagation()
 
-    const tmp = await createNotification(
-      "content yapılacak",
-      friend.username,
-      "addFriend"
-    )
-    if (!tmp) return
-    socket.emit("notification", {
-      type: "addFriend",
-      owner: friend.username,
-      content: "content yapılacak",
-      createdAt: new Date().toLocaleString("tr-TR", {
-        timeZone: "Europe/Istanbul"
-      }),
-      to: friend.sessionID
-    })
-    // console.log(friends)
-    // const r = await addFriend(friend.username)
-    // if (!r) return
-    // friends.push(friend)
-    // setFriends([...friends])
+    // const tmp = await createNotification(
+    //   "content yapılacak",
+    //   friend.username,
+    //   "addFriend"
+    // )
+    // if (!tmp) return
+    // socket.emit("notification", {
+    //   type: "addFriend",
+    //   owner: friend.username,
+    //   content: "content yapılacak",
+    //   createdAt: new Date().toLocaleString("tr-TR", {
+    //     timeZone: "Europe/Istanbul"
+    //   }),
+    //   to: friend.sessionID
+    // })
+    console.log(friends)
+    const r = await addFriend(friend.username)
+    if (!r) return
+    friends.push(friend)
+    setFriends([...friends])
   }
 
   const handleRemoveFriend = (event: React.MouseEvent, friend: typeUser) => {
@@ -85,7 +88,7 @@ export default function Modal({
     removeFriend(friend.username)
     console.log("here", friends)
     const tmpFriends = friends.filter(item => item.id !== friend.id)
-    console.log(tmpFriends)
+    console.log("tmpfriends", tmpFriends)
     setFriends(tmpFriends)
     setData(tmpFriends)
   }
@@ -110,6 +113,10 @@ export default function Modal({
     setData(data)
     setButtons(buttons)
   }
+
+  const osman = () => {
+		console.log(friends);
+	  }
 
   return (
     <dialog
@@ -136,6 +143,7 @@ export default function Modal({
           >
             Friends
           </div>
+		  <div onClick={osman}>OSMAN DENEME</div>
           <div
             className="modal_swaps_item"
             onClick={() => {

@@ -13,15 +13,21 @@ export default function Chat() {
   const [allRooms, setAllRooms] = useState<typeAllRooms[]>([])
   const { user } = useContext(UserContext)
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const [tmp, setTmp] = useState<typeAllRooms[]>([])
 
   useEffect(() => {
-    let tmp: typeAllRooms[]
+    // let tmp: typeAllRooms[]
     const handle = async () => {
-      tmp = await getUsersRooms(setAllRooms, user)
+	
+    //   tmp = await getUsersRooms(setAllRooms, user)
+	  setTmp(await getUsersRooms(setAllRooms, user))
     }
+	handle()
+	}, []);
 
+
+useEffect(() => {
     if (user) {
-      handle()
       socket.auth = { sessionID: user.sessionID }
       socket.connect()
     }
@@ -37,7 +43,7 @@ export default function Chat() {
     })
 
     socket.on("private message", ({ content, from, to }) => {
-      const room = tmp.find(item => item.room.roomID === to)
+      const room = allRooms.find(item => item.room.roomID === to)
       if (room) {
         room.messages.push({
           content,
@@ -47,7 +53,7 @@ export default function Chat() {
           })
         })
       }
-      setAllRooms([...tmp])
+      setAllRooms([...allRooms])
     })
 
     return () => {
@@ -56,7 +62,7 @@ export default function Chat() {
       socket.off("private message")
       socket.off("user disconnected")
     }
-  }, [])
+  }, [tmp])
 
   const handleStartRoom = async (item: typeRoom, users: typeUser[]) => {
     console.log("here")
