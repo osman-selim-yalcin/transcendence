@@ -180,7 +180,7 @@ export class UsersService {
     const loginUser = await this.userRep.findOne({
       where: { username: loginUserInfo.username },
     });
-    if (!details.name) details.name = 'Group';
+    if (!details.name) throw new HttpException('name is required', 400);
     const roomDeatils = {
       ...details,
       creator: loginUser.id,
@@ -188,12 +188,19 @@ export class UsersService {
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
+      isPrivate: false,
     };
 
     const room = this.roomRep.create(roomDeatils);
     await this.roomRep.save(room);
     return room;
   }
+
+  async joinGroup(token: string, details: any) {}
+
+  async getGroups(token: string) {}
+
+  async updateGroup(token: string, details: any) {}
 
   async createMsg(token: string, details: any) {
     const room = await this.roomRep.findOne({

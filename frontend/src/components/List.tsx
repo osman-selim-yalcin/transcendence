@@ -3,18 +3,16 @@ import { getTime } from "../functions"
 export default function List({
   buttons,
   name,
-  item,
+  messages,
   mainButton,
-  users,
   status,
   avatar
 }: {
   mainButton: any
   status?: string
-  users: any
   avatar: string
   name: string
-  item: any
+  messages: any
   buttons?: any
 }) {
   return (
@@ -26,18 +24,18 @@ export default function List({
             {name} {status && `/ ${status}`}
           </p>
           <p>
-            {item.messages?.[item.messages.length - 1]
-              ? `${item.messages[item.messages.length - 1].owner} : ${
-                  item.messages[item.messages.length - 1].content
+            {messages?.[messages.length - 1]
+              ? `${messages[messages.length - 1].owner} : ${
+                  messages[messages.length - 1].content
                 }`
               : "start the chat"}
           </p>
         </div>
       </div>
       <div>
-        {item.messages?.[item.messages.length - 1] && (
+        {messages?.[messages.length - 1] && (
           <p>
-            {getTime(item.messages[item.messages.length - 1].createdAt)}
+            {getTime(messages[messages.length - 1].createdAt)}
           </p>
         )}
       </div>

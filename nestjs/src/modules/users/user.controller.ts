@@ -50,6 +50,12 @@ export class UsersController {
     return this.usersService.deleteRoom(req.params.roomID);
   }
 
+  @Get('getGroups')
+  getGroups(@Req() req: any) {
+    const token = req.token;
+    return this.usersService.getGroups(token);
+  }
+
   @Post('createGroup')
   createGroup(@Req() req: any, @Body() body: any) {
     const token = req.token;

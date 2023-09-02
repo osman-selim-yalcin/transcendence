@@ -137,10 +137,9 @@ export default function Chat() {
           {allRooms.map((item: typeAllRooms, index: number) => (
             <List
               key={index}
-              users={item.users}
               avatar={item.room.avatar}
               name={item.room.name}
-              item={item}
+              messages={item.messages}
               mainButton={() => handleStartRoom(item.room, item.users)}
               buttons={buttons}
             />

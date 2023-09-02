@@ -58,26 +58,26 @@ export default function Modal({
   const handleAddFriend = async (event: React.MouseEvent, friend: typeUser) => {
     event.stopPropagation()
 
-    const tmp = await createNotification(
-      "content yapılacak",
-      friend.username,
-      "addFriend"
-    )
-    if (!tmp) return
-    socket.emit("notification", {
-      type: "addFriend",
-      owner: friend.username,
-      content: "content yapılacak",
-      createdAt: new Date().toLocaleString("tr-TR", {
-        timeZone: "Europe/Istanbul"
-      }),
-      to: friend.sessionID
-    })
-    // console.log(friends)
-    // const r = await addFriend(friend.username)
-    // if (!r) return
-    // friends.push(friend)
-    // setFriends([...friends])
+    // const tmp = await createNotification(
+    //   "content yapılacak",
+    //   friend.username,
+    //   "addFriend"
+    // )
+    // if (!tmp) return
+    // socket.emit("notification", {
+    //   type: "addFriend",
+    //   owner: friend.username,
+    //   content: "content yapılacak",
+    //   createdAt: new Date().toLocaleString("tr-TR", {
+    //     timeZone: "Europe/Istanbul"
+    //   }),
+    //   to: friend.sessionID
+    // })
+
+		const r = await addFriend(friend.username)
+    if (!r) return
+    friends.push(friend)
+    setFriends([...friends])
   }
 
   const handleRemoveFriend = (event: React.MouseEvent, friend: typeUser) => {
@@ -154,8 +154,7 @@ export default function Modal({
               key={item.id}
               name={item.username}
               avatar={item.avatar}
-              users={[item]}
-              item={item}
+              messages={item.messages}
               mainButton={() => handleCreateRoom(item)}
               buttons={buttons.map((button: any) => {
                 return {
