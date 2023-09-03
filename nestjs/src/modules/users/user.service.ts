@@ -6,6 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { Room } from 'src/typeorm/Room';
 import { User } from 'src/typeorm/User';
 import { Message } from 'src/typeorm/Message';
+import * as bcrypt from 'bcrypt';
 import { Notification } from 'src/typeorm/Notification';
 
 @Injectable()
@@ -181,14 +182,25 @@ export class UsersService {
       where: { username: loginUserInfo.username },
     });
     if (!details.name) throw new HttpException('name is required', 400);
+
+    const users = [loginUser];
+    for (const u of details.users) {
+      const user = await this.userRep.findOne({ where: { username: u } });
+      if (!user) throw new HttpException('user not found', 400);
+      users.push(user);
+    }
+
+    if (details.password)
+      details.password = this.hashPassword(details.password);
+
     const roomDeatils = {
       ...details,
-      creator: loginUser.id,
-      users: [loginUser, ...details.users],
+      creator: loginUser.username,
+      users,
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
-      isPrivate: false,
+      isGroup: true,
     };
 
     const room = this.roomRep.create(roomDeatils);
@@ -196,9 +208,50 @@ export class UsersService {
     return room;
   }
 
-  async joinGroup(token: string, details: any) {}
+  async joinGroup(token: string, details: any) {
+    const loginUserInfo = this.verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { username: loginUserInfo.username },
+    });
 
-  async getGroups(token: string) {}
+    if (!details.roomID) throw new HttpException('roomID is required', 400);
+
+    const room = await this.roomRep.findOne({
+      where: { id: details.roomID },
+      relations: ['users'],
+    });
+
+    if (!room) throw new HttpException('room not found', 400);
+
+    for (const u of room.users) {
+      if (u.id === loginUser.id) throw new HttpException('already joined', 400);
+    }
+
+    if (room.password) {
+      if (!bcrypt.compareSync(details.password, room.password))
+        throw new HttpException('wrong password', 400);
+    }
+
+    room.users.push(loginUser);
+    await this.roomRep.save(room);
+    return room;
+  }
+
+  async getGroups(token: string) {
+    const loginUserInfo = this.verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { username: loginUserInfo.username },
+    });
+
+    const rooms = await this.roomRep.find({
+      where: { isGroup: true },
+      relations: ['users', 'messages'],
+    });
+
+    return rooms.map((room) => {
+      return this.roomHelper(room, loginUser);
+    });
+  }
 
   async updateGroup(token: string, details: any) {}
 
@@ -266,6 +319,10 @@ export class UsersService {
   async deleteNotification(id: number) {
     const notification = await this.notificationRep.findOne({ where: { id } });
     return this.notificationRep.delete({ id: notification.id });
+  }
+
+  hashPassword(password: string) {
+    return bcrypt.hashSync(password, 10);
   }
 
   verifyToken(token: string) {

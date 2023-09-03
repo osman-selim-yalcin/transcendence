@@ -62,6 +62,12 @@ export class UsersController {
     return this.usersService.createGroup(token, body);
   }
 
+  @Post('joinGroup')
+  joinGroup(@Req() req: any, @Body() body: any) {
+    const token = req.token;
+    return this.usersService.joinGroup(token, body);
+  }
+
   @Post('createNotification')
   createNotification(@Req() req: any, @Body() body: any) {
     const token = req.token;

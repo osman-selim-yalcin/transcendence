@@ -36,14 +36,17 @@ export class Room {
   avatar: string;
 
   @Column({ nullable: true })
-  creator: number;
+  creator: string;
 
   @Column({ array: true, nullable: true })
-  mods: number;
+  mods: string;
 
   @Column({ array: true, nullable: true })
-  banlist: number;
+  banlist: string;
 
   @Column({ default: false })
-  isPrivate: boolean;
+  isGroup: boolean;
+
+  @Column({ default: false })
+  isInviteOnly: boolean;
 }
