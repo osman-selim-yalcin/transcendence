@@ -37,11 +37,11 @@ export class Room {
   @Column({ nullable: true })
   creator: string;
 
-  @Column({ array: true, nullable: true })
-  mods: string;
+  @Column('text', { array: true, nullable: true, default: [] })
+  mods: string[];
 
-  @Column({ array: true, nullable: true })
-  banlist: string;
+  @Column('text', { array: true, nullable: true, default: [] })
+  banlist: string[];
 
   @Column({ default: false })
   isGroup: boolean;

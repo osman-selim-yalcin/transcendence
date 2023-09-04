@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { UsersService } from 'src/modules/users/user.service';
 import { RoomService } from './room.service';
 import { NotificationService } from './notification.service';
@@ -39,7 +39,7 @@ export class UsersController {
 
   @Post('startRoom')
   startRoom(@Req() req: any, @Body() body: any) {
-    return this.roomService.startRoom(req.token, body.username);
+    return this.roomService.startRoom(req.token, body);
   }
 
   @Delete('deleteRoom/:roomID')
@@ -65,6 +65,11 @@ export class UsersController {
   @Post('joinGroup')
   joinGroup(@Req() req: any, @Body() body: any) {
     return this.roomService.joinGroup(req.token, body);
+  }
+
+  @Put('updateGroup')
+  updateGroup(@Req() req: any, @Body() body: any) {
+    return this.roomService.updateGroup(req.token, body);
   }
 
   //NOTIFICATIONS
