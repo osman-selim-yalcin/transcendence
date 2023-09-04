@@ -50,6 +50,24 @@ export class RoomService {
     return roomHelper(room, loginUser);
   }
 
+  async exitRoom(token: string, roomID: number) {
+    const loginUserInfo = verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { username: loginUserInfo.username },
+    });
+
+    const room = await this.roomRep.findOne({
+      where: { id: roomID },
+      relations: ['users'],
+    });
+    if (!room) throw new HttpException('room not found', 400);
+
+    const users = room.users.filter((u) => u.id !== loginUser.id);
+    room.users = users;
+    await this.roomRep.save(room);
+    return { msg: 'success' };
+  }
+
   async deleteRoom(roomID: number) {
     const room = await this.roomRep.findOne({
       where: { id: roomID },
@@ -131,19 +149,14 @@ export class RoomService {
     return room;
   }
 
-  async getGroups(token: string) {
-    const loginUserInfo = verifyToken(token);
-    const loginUser = await this.userRep.findOne({
-      where: { username: loginUserInfo.username },
-    });
-
+  async getGroups() {
     const rooms = await this.roomRep.find({
       where: { isGroup: true },
       relations: ['users', 'messages'],
     });
 
     return rooms.map((room) => {
-      return roomHelper(room, loginUser);
+      return roomHelper(room, null);
     });
   }
 

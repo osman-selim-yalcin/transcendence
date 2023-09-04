@@ -47,9 +47,14 @@ export class UsersController {
     return this.roomService.deleteRoom(req.params.roomID);
   }
 
+  @Post('exitRoom')
+  exitRoom(@Req() req: any, @Body() body: any) {
+    return this.roomService.exitRoom(req.token, body.roomID);
+  }
+
   @Get('getGroups')
-  getGroups(@Req() req: any) {
-    return this.roomService.getGroups(req.token);
+  getGroups() {
+    return this.roomService.getGroups();
   }
 
   @Post('createGroup')
