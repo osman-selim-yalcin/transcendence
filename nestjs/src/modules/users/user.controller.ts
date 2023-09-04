@@ -1,9 +1,15 @@
 import { Body, Controller, Delete, Get, Post, Req } from '@nestjs/common';
 import { UsersService } from 'src/modules/users/user.service';
+import { RoomService } from './room.service';
+import { NotificationService } from './notification.service';
 
 @Controller('api/user')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private roomService: RoomService,
+    private notificationService: NotificationService,
+  ) {}
 
   @Get('allUsers')
   allUsers() {
@@ -12,82 +18,70 @@ export class UsersController {
 
   @Get('allFriends')
   allFriends(@Req() req: any) {
-    const token = req.token;
-    return this.usersService.allFriends(token);
-  }
-
-  @Get('getUsersRooms')
-  getUsersRooms(@Req() req: any) {
-    const token = req.token;
-    return this.usersService.getUsersRooms(token);
+    return this.usersService.allFriends(req.token);
   }
 
   @Post('addfriend')
   addfriend(@Req() req: any, @Body() body: any) {
-    const token = req.token;
-    return this.usersService.addfriend(token, body.username);
+    return this.usersService.addfriend(req.token, body.username);
   }
 
   @Post('removeFriend')
   removeFriend(@Req() req: any, @Body() body: any) {
-    const token = req.token;
-    return this.usersService.removeFriend(token, body.username);
+    return this.usersService.removeFriend(req.token, body.username);
+  }
+
+  //ROOMS
+  @Get('getUsersRooms')
+  getUsersRooms(@Req() req: any) {
+    return this.roomService.getUsersRooms(req.token);
   }
 
   @Post('startRoom')
   startRoom(@Req() req: any, @Body() body: any) {
-    const token = req.token;
-    return this.usersService.startRoom(token, body.username);
-  }
-
-  @Post('findRoom')
-  findRoom(@Req() req: any, @Body() body: any) {
-    return this.usersService.findRoom(body.roomId);
+    return this.roomService.startRoom(req.token, body.username);
   }
 
   @Delete('deleteRoom/:roomID')
-  deleteRoom(@Req() req: any, @Body() body: any) {
-    return this.usersService.deleteRoom(req.params.roomID);
+  deleteRoom(@Req() req: any) {
+    return this.roomService.deleteRoom(req.params.roomID);
   }
 
   @Get('getGroups')
   getGroups(@Req() req: any) {
-    const token = req.token;
-    return this.usersService.getGroups(token);
+    return this.roomService.getGroups(req.token);
   }
 
   @Post('createGroup')
   createGroup(@Req() req: any, @Body() body: any) {
-    const token = req.token;
-    return this.usersService.createGroup(token, body);
+    return this.roomService.createGroup(req.token, body);
   }
 
   @Post('joinGroup')
   joinGroup(@Req() req: any, @Body() body: any) {
-    const token = req.token;
-    return this.usersService.joinGroup(token, body);
+    return this.roomService.joinGroup(req.token, body);
   }
 
+  //NOTIFICATIONS
   @Post('createNotification')
   createNotification(@Req() req: any, @Body() body: any) {
-    const token = req.token;
-    return this.usersService.createNotification(token, body);
+    return this.notificationService.createNotification(req.token, body);
   }
 
   @Get('getNotifications')
   getNotifications(@Req() req: any) {
-    const token = req.token;
-    return this.usersService.getNotifications(token);
+    return this.notificationService.getNotifications(req.token);
   }
 
   @Delete('deleteNotification/:notificationID')
   deleteNotification(@Req() req: any) {
-    return this.usersService.deleteNotification(req.params.notificationID);
+    return this.notificationService.deleteNotification(
+      req.params.notificationID,
+    );
   }
 
   @Post('createMsg')
-  createMsg(@Req() req: any, @Body() body: any) {
-    const token = req.token;
-    return this.usersService.createMsg(token, body);
+  createMsg(@Body() body: any) {
+    return this.usersService.createMsg(body);
   }
 }

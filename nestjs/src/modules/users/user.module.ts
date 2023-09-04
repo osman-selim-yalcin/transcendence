@@ -3,11 +3,13 @@ import { UsersController } from './user.controller';
 import { UsersService } from './user.service';
 import { userMiddelware } from '../../middleware/user.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/typeorm/User';
 import { ConfigModule } from '@nestjs/config';
+import { User } from 'src/typeorm/User';
 import { Room } from 'src/typeorm/Room';
 import { Message } from 'src/typeorm/Message';
 import { Notification } from 'src/typeorm/Notification';
+import { RoomService } from './room.service';
+import { NotificationService } from './notification.service';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { Notification } from 'src/typeorm/Notification';
     ConfigModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, RoomService, NotificationService],
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
