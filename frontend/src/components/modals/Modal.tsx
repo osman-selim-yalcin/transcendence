@@ -1,17 +1,13 @@
-import { Ref, RefObject, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { getAllUsers } from "../../api"
 import {
   addFriend,
   getAllFriends,
-  isFriend,
   removeFriend
 } from "../../api/friend"
-import { typeAllRooms, typeRoom, typeUser } from "../../types"
+import { typeAllRooms, typeUser } from "../../types"
 import List, { GroupList } from "../List"
-import { createGroup, deleteRoom, getGroups, getUsersRooms, startRoom } from "../../api/room"
-import { createNotification } from "../../api/notification"
-import { socket } from "../../context/WebsocketContext"
-import { getTime } from "../../functions"
+import { deleteRoom, getGroups, startRoom } from "../../api/room"
 import GroupCreation from "../forms/GroupCreation"
 
 export default function Modal({
@@ -84,7 +80,7 @@ export default function Modal({
     //   to: friend.sessionID
     // })
 
-		const r = await addFriend(friend.username)
+    const r = await addFriend(friend.username)
     if (!r) return
     friends.push(friend)
     setFriends([...friends])
@@ -108,6 +104,7 @@ export default function Modal({
     deleteRoom(group.room.roomID)
     setGroups(groups.filter(item => item.room.roomID !== group.room.roomID))
     setData(groups.filter(item => item.room.roomID !== group.room.roomID))
+    setAllRooms(allRooms.filter(item => item.room.roomID !== group.room.roomID))
   }
 
   const allUserButtons = [
@@ -182,72 +179,73 @@ export default function Modal({
           >
             All Users
           </div>
-          <div className="modal_swaps_item" 
-              onClick={() => {
-                handleListData(groups, groupsButtons)
-                setIsGroup(true)
-              }}>
+          <div className="modal_swaps_item"
+            onClick={() => {
+              handleListData(groups, groupsButtons)
+              setIsGroup(true)
+            }}>
             Groups
           </div>
         </div>
         <input placeholder="search bar" className="modal_search"></input>
-        {isGroup ? 
-        <div>
-          <button
-            onClick={() => {groupFormRef.current?.showModal()}}
-          >Create Group</button>
-        </div> 
-        : null}
+        {isGroup ?
+          <div>
+            <button
+              onClick={() => { groupFormRef.current?.showModal() }}
+            >Create Group</button>
+          </div>
+          : null}
         <div className="list">
           {!data?.length && <div className="list_item">No data</div>}
           {data?.map((item: any) => (
             isGroup ?
-            <GroupList
-              key={item.id}
-              room={item.room}
-              users={item.users}
-              messages={item.messages}
-              mainButton={null}
-              image={"https://source.unsplash.com/featured/300x202"}
-              buttons={buttons.map((button: any) => {
-                return {
-                  name: button.name,
-                  action: (event: any) => button.action(event, item)
-                }
-              })}
-            />
-            :
-            <List
-              status={item.status}
-              key={item.id}
-              name={item.username}
-              avatar={item.avatar}
-              messages={item.messages}
-              mainButton={() => handleCreateRoom(item)}
-              buttons={buttons.map((button: any) => {
-                return {
-                  name: button.name,
-                  action: (event: any) => button.action(event, item)
-                }
-              })}
-            />
+              <GroupList
+                key={item.id}
+                room={item.room}
+                users={item.users}
+                messages={item.messages}
+                mainButton={null}
+                image={"https://source.unsplash.com/featured/300x202"}
+                buttons={buttons.map((button: any) => {
+                  return {
+                    name: button.name,
+                    action: (event: any) => button.action(event, item)
+                  }
+                })}
+              />
+              :
+              <List
+                status={item.status}
+                key={item.id}
+                name={item.username}
+                avatar={item.avatar}
+                messages={item.messages}
+                mainButton={() => handleCreateRoom(item)}
+                buttons={buttons.map((button: any) => {
+                  return {
+                    name: button.name,
+                    action: (event: any) => button.action(event, item)
+                  }
+                })}
+              />
           ))}
         </div>
         <dialog
-              ref={groupFormRef}
-              onClick={e => {
-                // e.stopPropagation()
-                closeModal(e, groupFormRef)
-              }}
-            >
-              <GroupCreation 
-              parentRef={groupFormRef}
-              friends={friends}
-              setGroups={setGroups}
-              handleListData={handleListData}
-              groupsButtons={groupsButtons}
-              />
-            </dialog>
+          ref={groupFormRef}
+          onClick={e => {
+            // e.stopPropagation()
+            closeModal(e, groupFormRef)
+          }}
+        >
+          <GroupCreation
+            parentRef={groupFormRef}
+            friends={friends}
+            setGroups={setGroups}
+            handleListData={handleListData}
+            groupsButtons={groupsButtons}
+            setAllRooms={setAllRooms}
+          />
+        </dialog>
         <div className="modal_buttons">
           <button
             onClick={() => dialogRef.current.close()}
