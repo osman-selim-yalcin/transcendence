@@ -9,7 +9,7 @@ import { typeAllRooms, typeUser } from "../../types"
 import List, { GroupList } from "../List"
 import { deleteRoom, getGroups, getUsersRooms, joinGroup, startRoom } from "../../api/room"
 import GroupCreation from "../forms/GroupCreation"
-import { UserContext } from "../../context/context"
+import { UserContext } from "../../context/UserContext"
 
 export default function Modal({
   dialogRef,

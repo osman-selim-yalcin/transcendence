@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import Logout from "../auth/Logout"
 import { useContext } from "react"
-import { UserContext } from "../context/context"
+import { UserContext } from "../context/UserContext.ts"
 import Notification from "./Notification.tsx"
 
 export default function Navbar() {
@@ -11,7 +11,7 @@ export default function Navbar() {
     <div className="navbar">
       <div className="navbar_left">
         <Link to="/">Home</Link>
-        <Link to="/Profile">Profile</Link>
+        <Link to="/profile">Profile</Link>
       </div>
       <div className="navbar_right">
         {!user ? (

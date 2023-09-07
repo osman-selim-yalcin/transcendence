@@ -7,4 +7,4 @@ socket1.onAny((event, ...args) => {
 })
 
 export const socket = socket1
-export const WebsocketContext = createContext<Socket>(socket)
+export const WebSocketContext = createContext<Socket>(socket)

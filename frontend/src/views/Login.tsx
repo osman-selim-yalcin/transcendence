@@ -1,5 +1,5 @@
 import { useContext, useState } from "react"
-import { UserContext } from "../context/context"
+import { UserContext } from "../context/UserContext.ts"
 import { login } from "../api/tmp.ts"
 import { useNavigate } from "react-router-dom";
 

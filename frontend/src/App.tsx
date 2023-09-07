@@ -1,8 +1,8 @@
-import { UserContext } from "./context/context"
+import { UserContext } from "./context/UserContext"
 import { useEffect, useState } from "react"
-import { socket, WebsocketContext } from "./context/WebsocketContext"
+import { socket, WebSocketContext } from "./context/WebSocketContext"
 import { RouterProvider } from "react-router-dom"
-import { router } from "./utils/routeSetup"
+import { router } from "./utils/router"
 import "./styles/App.scss"
 import { getUser } from "./api"
 
@@ -20,9 +20,9 @@ function App() {
   return (
     <div>
       <UserContext.Provider value={{ user, setUser }}>
-        <WebsocketContext.Provider value={socket}>
+        <WebSocketContext.Provider value={socket}>
           <RouterProvider router={router} />
-        </WebsocketContext.Provider>
+        </WebSocketContext.Provider>
       </UserContext.Provider>
     </div>
   )

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { socket } from "../context/WebsocketContext"
-import { UserContext } from "../context/context"
+import { socket } from "../context/WebSocketContext"
+import { UserContext } from "../context/UserContext"
 import Room from "./Room"
 import { getUsersRooms } from "../api/room"
 import { typeAllRooms, typeRoom, typeUser } from "../types"

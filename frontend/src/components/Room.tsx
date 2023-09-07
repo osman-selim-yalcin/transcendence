@@ -1,12 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { WebsocketContext } from "../context/WebsocketContext"
+import { WebSocketContext } from "../context/WebSocketContext"
 import { createMsg, deleteRoom } from "../api/room"
-import { UserContext } from "../context/context"
+import { UserContext } from "../context/UserContext"
 import { typeMsg } from "../types"
 import { getTime } from "../functions"
 
 export default function Room(props: any) {
-  const socket = useContext(WebsocketContext)
+  const socket = useContext(WebSocketContext)
   const { user } = useContext(UserContext)
   const [send, setSend] = useState("")
   const [minimize, setMinimize] = useState(false)

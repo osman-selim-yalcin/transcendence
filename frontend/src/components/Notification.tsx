@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react"
 import image from "../public/notification.png"
-import { socket } from "../context/WebsocketContext"
-import { UserContext } from "../context/context"
+import { socket } from "../context/WebSocketContext"
+import { UserContext } from "../context/UserContext"
 import {
   createNotification,
   deleteNotification,
