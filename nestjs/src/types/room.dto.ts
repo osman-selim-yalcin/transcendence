@@ -25,7 +25,7 @@ export class roomDto {
   creator: string;
 
   mods: string[];
-  banlist: string[];
+  banList: string[];
   isInviteOnly: boolean;
   inviteList: string[];
 

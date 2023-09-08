@@ -41,7 +41,7 @@ export class Room {
   mods: string[];
 
   @Column('text', { array: true, nullable: true, default: [] })
-  banlist: string[];
+  banList: string[];
 
   @Column('text', { array: true, nullable: true, default: [] })
   inviteList: string[];

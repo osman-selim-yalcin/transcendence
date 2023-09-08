@@ -22,7 +22,7 @@ interface reqWithModifiy extends Request {
   logout: (any) => void;
 }
 
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
   @Inject(AuthService)
   public authService: AuthService;

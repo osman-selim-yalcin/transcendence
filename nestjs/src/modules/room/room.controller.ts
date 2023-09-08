@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { roomDto } from 'src/types/room.dto';
 import { RoomService } from './room.service';
 
-@Controller('api/room')
+@Controller('room')
 export class RoomController {
   constructor(private roomService: RoomService) {}
 
@@ -27,11 +27,11 @@ export class RoomController {
   }
 
   @Post('join')
-  joinRoom(@Req() req: any, @Body() body: any) {
+  joinRoom(@Req() req: any, @Body() body: roomDto) {
     return this.roomService.joinRoom(req.token, body);
   }
 
-  @Post('createMsg')
+  @Post('message')
   createMsg(@Body() body: any) {
     return this.roomService.createMsg(body);
   }
