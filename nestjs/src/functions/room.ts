@@ -1,29 +1,44 @@
+import { HttpException } from '@nestjs/common';
 import { Room } from 'src/typeorm/Room';
 import { User } from 'src/typeorm/User';
+import * as bcrypt from 'bcrypt';
 
-export function roomHelper(room: Room, loginUser: User) {
-  if (!room.name) {
-    const tmp = room.users.filter((u) => u.username !== loginUser.username);
-    return {
-      users: room.users,
-      room: {
-        roomID: room.id,
-        name: tmp[0].username,
-        avatar: tmp[0].avatar,
-      },
-      messages: room.messages,
-      createdAt: room.createdAt,
-    };
+export function privateHandler(room: Room, loginUser: User) {
+  if (!room.isGroup && room.name === loginUser.username)
+    throw new HttpException('same user', 400);
+
+  const rooms = loginUser.rooms;
+
+  for (const r of rooms) {
+    if (!room.isGroup && r.name === room.name) {
+      throw new HttpException('room already exist', 400);
+    }
   }
-  return {
-    id: room.id,
-    users: room.users,
-    room: {
-      roomID: room.id,
-      name: room.name,
-      avatar: room.avatar,
-    },
-    messages: room.messages,
-    createdAt: room.createdAt,
-  };
+}
+
+export function authorizedHandler(room: Room, loginUser: User) {
+  if (room.creator !== loginUser.username)
+    throw new HttpException('not authorized', 400);
+}
+
+export function checkPassword(room: Room, password: string) {
+  if (room.password) {
+    if (!bcrypt.compareSync(password, room.password)) {
+      throw new HttpException('password uncorrect', 400);
+    }
+  }
+}
+
+export function hashPassword(room: Room) {
+  if (room.password) {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(room.password, salt);
+    room.password = hash;
+  }
+}
+
+export function checkInviteList(room: Room, loginUser: User) {
+  if (room.isInviteOnly && !room.inviteList.includes(loginUser.username)) {
+    throw new HttpException('not invited', 400);
+  }
 }

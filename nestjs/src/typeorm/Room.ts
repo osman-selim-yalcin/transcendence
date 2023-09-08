@@ -14,7 +14,7 @@ export class Room {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany(() => User, (user) => user.rooms)
+  @ManyToMany(() => User, (user) => user.rooms, { cascade: true })
   @JoinColumn()
   users: User[];
 
@@ -28,7 +28,7 @@ export class Room {
   @Column({ nullable: true })
   password: string;
 
-  @Column({ nullable: true })
+  @Column()
   name: string;
 
   @Column({ default: 'https://source.unsplash.com/featured/300x202' })
@@ -42,6 +42,9 @@ export class Room {
 
   @Column('text', { array: true, nullable: true, default: [] })
   banlist: string[];
+
+  @Column('text', { array: true, nullable: true, default: [] })
+  inviteList: string[];
 
   @Column({ default: false })
   isGroup: boolean;

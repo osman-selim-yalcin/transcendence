@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { UserModule } from './modules/users/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -8,10 +8,14 @@ import { User } from './typeorm/User';
 import { Room } from './typeorm/Room';
 import { Message } from './typeorm/Message';
 import { Notification } from './typeorm/Notification';
+import { userMiddelware } from './middleware/user.middleware';
+import { RoomModule } from './modules/room/room.module';
 
 @Module({
   imports: [
     UserModule,
+    AuthModule,
+    RoomModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -24,9 +28,12 @@ import { Notification } from './typeorm/Notification';
     }),
     PassportModule.register({ session: true }),
     ConfigModule.forRoot({ isGlobal: true }),
-    AuthModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(userMiddelware).forRoutes('api/user, api/room, api/msg');
+  }
+}

@@ -40,7 +40,7 @@ export class User {
   @JoinTable()
   friends: User[];
 
-  @ManyToMany(() => Room, (room) => room.users)
+  @ManyToMany(() => Room, (room) => room.users, { onDelete: 'CASCADE' })
   @JoinTable()
   rooms: Room[];
 
