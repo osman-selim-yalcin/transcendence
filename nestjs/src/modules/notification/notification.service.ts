@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { verifyToken } from 'src/functions/user';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
+import { notificationDto } from 'src/types/notification.dto';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -13,31 +14,35 @@ export class NotificationService {
     private notificationRep: Repository<Notification>,
   ) {}
 
-  async createNotification(token: string, details: any) {
+  async createNotification(
+    token: string,
+    notificationDetails: notificationDto,
+  ) {
     const loginUserInfo = verifyToken(token);
-    const owner = loginUserInfo.username;
+    const creator = loginUserInfo.username;
     const user = await this.userRep.findOne({
-      where: { username: details.username },
+      where: { username: notificationDetails.user.username },
       relations: ['notifications'],
     });
 
     user.notifications?.map((n) => {
-      if (n.type === details.type && n.owner === owner) {
+      if (n.type === notificationDetails.type && n.creator === creator) {
         throw new HttpException('already exist', 400);
       }
     });
 
-    if (user.username === owner) throw new HttpException('same user', 400);
+    if (user.username === creator) throw new HttpException('same user', 400);
 
     const notification = this.notificationRep.create({
-      content: details.content,
-      owner,
+      content: notificationDetails.content,
+      creator,
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
       user,
-      type: details.type,
+      type: notificationDetails.type,
     });
+
     if (!user.notifications) user.notifications = [notification];
     else user.notifications.push(notification);
     await this.userRep.save(user);
@@ -53,8 +58,11 @@ export class NotificationService {
     return loginUser.notifications;
   }
 
-  async deleteNotification(id: number) {
-    const notification = await this.notificationRep.findOne({ where: { id } });
+  async deleteNotification(notificationDetails: notificationDto) {
+    const notification = await this.notificationRep.findOne({
+      where: { id: notificationDetails.id },
+    });
+    if (!notification) throw new HttpException('not found', 404);
     return this.notificationRep.delete({ id: notification.id });
   }
 }

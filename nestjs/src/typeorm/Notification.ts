@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './User';
 
 @Entity({ name: 'notifications' })
@@ -19,7 +13,7 @@ export class Notification {
   createdAt: string;
 
   @Column()
-  owner: string;
+  creator: string;
 
   @Column()
   type: string;
