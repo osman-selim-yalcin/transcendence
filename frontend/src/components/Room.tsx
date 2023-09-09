@@ -16,6 +16,12 @@ export default function Room(props: any) {
   const chatSliderRef = useRef(null)
   const inputRef = useRef(null)
 
+useEffect(() => {
+  console.log("roomID", props.roomID)
+
+}, [])
+
+
   useEffect(() => {
     inputRef.current?.focus()
     chatSliderRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { getAllUsers } from "../../api"
 import {
   addFriend,
@@ -7,19 +7,22 @@ import {
 } from "../../api/friend"
 import { typeAllRooms, typeUser } from "../../types"
 import List, { GroupList } from "../List"
-import { deleteRoom, getGroups, startRoom } from "../../api/room"
+import { deleteRoom, getGroups, getUsersRooms, joinGroup, startRoom } from "../../api/room"
 import GroupCreation from "../forms/GroupCreation"
+import { UserContext } from "../../context/context"
 
 export default function Modal({
   dialogRef,
   allRooms,
   setAllRooms,
-  handleStartRoom
+  handleStartRoom,
+  setTmp,
 }: {
   dialogRef: any
   allRooms: typeAllRooms[]
   setAllRooms: Function
   handleStartRoom: Function
+  setTmp: Function
 }) {
   const [allUsers, setAllUsers] = useState<typeUser[]>([])
   const [friends, setFriends] = useState<typeUser[]>([])
@@ -28,18 +31,24 @@ export default function Modal({
   const [groups, setGroups] = useState<typeAllRooms[]>([])
   const [isGroup, setIsGroup] = useState(false)
   const groupFormRef = useRef<HTMLDialogElement>(null)
+  const { user } = useContext(UserContext)
 
 
   useEffect(() => {
     getAllUsers(setAllUsers)
     getAllFriends(setFriends)
     getGroups(setGroups)
+    // console.log("user in modal", user)
   }, [])
 
   useEffect(() => {
     setData(friends)
     setButtons(friendsButtons)
   }, [friends])
+
+useEffect(() => {
+  console.log("data", data)
+}, [data])
 
   // useEffect(() => {
   //   console.log("allRooms", allRooms)
@@ -105,6 +114,14 @@ export default function Modal({
     setGroups(groups.filter(item => item.room.roomID !== group.room.roomID))
     setData(groups.filter(item => item.room.roomID !== group.room.roomID))
     setAllRooms(allRooms.filter(item => item.room.roomID !== group.room.roomID))
+    setTmp(Math.random())
+  }
+
+  const handleJoinGroup = async (event: React.MouseEvent, group: typeAllRooms) => {
+    event.stopPropagation()
+    await joinGroup(group.room)
+    setData([...await getGroups(setGroups)])
+    await getUsersRooms(setAllRooms, user)
   }
 
   const allUserButtons = [
@@ -134,6 +151,12 @@ export default function Modal({
       action: (event: any, group: typeAllRooms) => {
         handleRemoveGroup(event, group)
       }
+    },
+    {
+      name: "Join Group",
+      action: (event: any, group: typeAllRooms) => {
+        handleJoinGroup(event, group)
+      }
     }
   ]
 
@@ -152,6 +175,19 @@ export default function Modal({
     ) {
       ref.current.close()
     }
+  }
+
+  const isUserInGroup = (userArray: any, username: string) => {
+    if (!userArray) {
+      console.log("userArray is null")
+      return false
+    }
+    for (const user of userArray) {
+      if (user.username === username) {
+        return true
+      }
+    }
+    return false
   }
 
   return (
@@ -207,6 +243,9 @@ export default function Modal({
                 mainButton={null}
                 image={"https://source.unsplash.com/featured/300x202"}
                 buttons={buttons.map((button: any) => {
+                  if (button.name === "Join Group" && isUserInGroup(item.users, user.username)) {
+                    return null;
+                  }
                   return {
                     name: button.name,
                     action: (event: any) => button.action(event, item)
@@ -228,7 +267,12 @@ export default function Modal({
                   }
                 })}
               />
-          ))}
+            ))
+          }
+          {/* {data.forEach((item: any, index: number) => {
+          console.log("item", index, item)
+        })
+          } */}
         </div>
         <dialog
           ref={groupFormRef}
@@ -253,6 +297,17 @@ export default function Modal({
           >
             Close Modal
           </button>
+          <button onClick={() => {
+            console.log("-------------")
+            console.log("data", data)
+            console.log("allUsers", allUsers)
+            console.log("friends", friends)
+            console.log("groups", groups)
+            console.log("allRooms", allRooms)
+            console.log("-------------")
+          }
+          }
+          >info</button>
         </div>
       </div>
     </dialog>

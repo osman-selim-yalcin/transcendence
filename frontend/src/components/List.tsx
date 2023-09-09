@@ -99,10 +99,12 @@ export function GroupList(
 		  </div>
 		  <div className="list_item_buttons">
 			{buttons?.map((button: any, index: number) => {
+        if (!button)
+          return null
 			  return (
 				<button
 				  key={index}
-				  onClick={button.action}
+				  onClick={button?.action}
 				  className="list_item_buttons_item"
 				>
 				  {button.name}

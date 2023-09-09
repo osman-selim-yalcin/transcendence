@@ -130,3 +130,18 @@ export const createGroup = async (body: any) => {
   )
   return (await response).data
 }
+
+export const joinGroup = async (body: any) => {
+  const response = axios.post(
+    "http://localhost:3000/api/user/joinGroup",
+    body,
+    {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    }
+  )
+  return (await response).data
+}

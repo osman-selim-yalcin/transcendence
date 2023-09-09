@@ -41,6 +41,7 @@ export default function Chat() {
     })
 
     socket.on("private message", ({ content, from, to }) => {
+      console.log("allroms --->", allRooms, "to -->", to)
       const room = allRooms.find(item => item.room.roomID === to)
       if (room) {
         room.messages.push({
@@ -150,6 +151,7 @@ export default function Chat() {
         dialogRef={dialogRef}
         allRooms={allRooms}
         setAllRooms={setAllRooms}
+        setTmp={setTmp}
         handleStartRoom={handleStartRoom}
       ></Modal>
     </div>
