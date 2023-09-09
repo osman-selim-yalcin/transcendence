@@ -1,6 +1,6 @@
 import { UserContext } from "./context/UserContext"
 import { useEffect, useState } from "react"
-import { socket, WebSocketContext } from "./context/WebSocketContext"
+import { socket, WebSocketContext } from "./context/WebsocketContext"
 import { RouterProvider } from "react-router-dom"
 import { router } from "./utils/router"
 import "./styles/App.scss"

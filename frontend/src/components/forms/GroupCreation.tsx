@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { typeUser } from "../../types"
 import { createGroup, getGroups, getUsersRooms } from "../../api/room";
-import { UserContext } from "../../context/context";
+import { UserContext } from "../../context/UserContext";
 
 export default function GroupCreation(
   {

@@ -108,7 +108,6 @@ export const getGroups = async (setGroups: Function) => {
   })
   .then(response => {
 	setGroups(response.data)
-	console.log("group set")
 	return response.data
   })
   .catch(err => {

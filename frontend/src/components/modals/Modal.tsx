@@ -46,9 +46,9 @@ export default function Modal({
     setButtons(friendsButtons)
   }, [friends])
 
-useEffect(() => {
-  console.log("data", data)
-}, [data])
+// useEffect(() => {
+//   console.log("data", data)
+// }, [data])
 
   // useEffect(() => {
   //   console.log("allRooms", allRooms)

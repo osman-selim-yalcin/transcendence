@@ -1,6 +1,5 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
-import UserInfo from '../components/UserInfo'
 import { Outlet } from 'react-router-dom'
 import Chat from '../components/Chat'
 import { UserContext } from '../context/UserContext'
