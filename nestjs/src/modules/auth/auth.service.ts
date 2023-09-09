@@ -56,17 +56,13 @@ export class AuthService {
     if (!user)
       throw new HttpException('user not found', HttpStatus.BAD_REQUEST);
     const token = this.createToken({
-      username: user.username,
-      avatar: 'https://source.unsplash.com/featured/300x202',
       id: user.id,
-      sessionID: user.sessionID,
     });
     return {
       token,
       user: {
         username: user.username,
         avatar: 'https://source.unsplash.com/featured/300x202',
-        id: user.id,
         sessionID: user.sessionID,
       },
     };

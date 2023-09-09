@@ -56,7 +56,6 @@ export class AuthController {
     return {
       token: this.authService.createToken({
         username: request.user.username,
-        avatar: request.user.avatar,
         id: request.user.id,
         sessionID: request.user.sessionID,
       }),

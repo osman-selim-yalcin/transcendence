@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { roomDto } from 'src/types/room.dto';
 import { RoomService } from './room.service';
+import { messageDto } from 'src/types/message.dto';
 
 @Controller('room')
 export class RoomController {
@@ -32,7 +33,7 @@ export class RoomController {
   }
 
   @Post('message')
-  createMsg(@Body() body: any) {
-    return this.roomService.createMsg(body);
+  createMsg(@Req() req: any, @Body() body: messageDto) {
+    return this.roomService.createMsg(req.token, body);
   }
 }

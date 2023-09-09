@@ -15,6 +15,6 @@ export class Message {
   @Column()
   owner: string;
 
-  @ManyToOne((type) => Room, (room) => room.messages, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Room, (room) => room.messages, { onDelete: 'CASCADE' })
   room: Room;
 }

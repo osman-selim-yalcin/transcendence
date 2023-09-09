@@ -4,6 +4,12 @@ import { User } from 'src/typeorm/User';
 import * as bcrypt from 'bcrypt';
 
 export function privateHandler(room: Room, loginUser: User) {
+  loginUser.rooms.forEach((r) => {
+    r.users.forEach((u) => {
+      console.log(u.username);
+    });
+  });
+
   if (!room.isGroup && room.name === loginUser.username)
     throw new HttpException('same user', 400);
 

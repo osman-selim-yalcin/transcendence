@@ -1,4 +1,4 @@
-import { IsEmpty, IsNotEmpty } from 'class-validator';
+import { IsEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Message } from 'src/typeorm/Message';
 import { User } from 'src/typeorm/User';
 
@@ -7,11 +7,14 @@ export class roomDto {
   id: number;
 
   @IsNotEmpty()
+  @ValidateNested({ each: true })
   users: User[];
 
+  @IsEmpty()
+  @ValidateNested({ each: true })
   messages: Message[];
 
-  @IsNotEmpty()
+  @IsEmpty()
   createdAt: string;
 
   password: string;
@@ -21,7 +24,7 @@ export class roomDto {
 
   avatar: string;
 
-  @IsNotEmpty()
+  @IsEmpty()
   creator: string;
 
   mods: string[];

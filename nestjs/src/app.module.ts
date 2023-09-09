@@ -10,6 +10,9 @@ import { Message } from './typeorm/Message';
 import { Notification } from './typeorm/Notification';
 import { userMiddelware } from './middleware/user.middleware';
 import { RoomModule } from './modules/room/room.module';
+import { UsersController } from './modules/users/user.controller';
+import { RoomController } from './modules/room/room.controller';
+import { NotificationController } from './modules/notification/notification.controller';
 
 @Module({
   imports: [
@@ -34,6 +37,8 @@ import { RoomModule } from './modules/room/room.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(userMiddelware).forRoutes('api/user, api/room, api/msg');
+    consumer
+      .apply(userMiddelware)
+      .forRoutes(UsersController, RoomController, NotificationController);
   }
 }

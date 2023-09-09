@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/User';
 import { verifyToken } from 'src/functions/user';
-import { userDto } from 'src/types/user.dto';
+import { thirdUser, userDto } from 'src/types/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,12 +12,12 @@ export class UsersService {
   async findUsers(token: string) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
-      where: { username: loginUserInfo.username },
+      where: { id: loginUserInfo.id },
       relations: ['friends'],
     });
 
-    const users = await this.userRep.find({ relations: ['friends'] });
-    const friends = loginUser.friends;
+    const users: thirdUser[] = await this.userRep.find();
+    const friends: thirdUser[] = loginUser.friends;
 
     return { users, friends };
   }
@@ -25,13 +25,15 @@ export class UsersService {
   async createUser(token: string, friendUserDetails: userDto) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
-      where: { username: loginUserInfo.username },
+      where: { id: loginUserInfo.id },
       relations: ['friends'],
     });
     const friendUser = await this.userRep.findOne({
-      where: { username: friendUserDetails.username },
+      where: { id: friendUserDetails.id },
       relations: ['friends'],
     });
+
+    if (!friendUser) throw new HttpException('user not found', 404);
 
     if (loginUser.id === friendUser.id)
       throw new HttpException('same user', 400);
@@ -67,19 +69,21 @@ export class UsersService {
   async deleteUser(token: string, friendUserDetails: userDto) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
-      where: { username: loginUserInfo.username },
+      where: { id: loginUserInfo.id },
       relations: ['friends'],
     });
     const friendUser = await this.userRep.findOne({
-      where: { username: friendUserDetails.username },
+      where: { id: friendUserDetails.id },
       relations: ['friends'],
     });
 
+    if (!friendUser) throw new HttpException('user not found', 404);
+
     loginUser.friends = loginUser.friends?.filter(
-      (friend) => friend.username !== friendUserDetails.username,
+      (friend) => friend.id !== friendUserDetails.id,
     );
     friendUser.friends = friendUser.friends?.filter(
-      (friend) => friend.username !== loginUserInfo.username,
+      (friend) => friend.id !== loginUserInfo.id,
     );
 
     await this.userRep.save(friendUser);
@@ -89,16 +93,13 @@ export class UsersService {
   async updateUser(token: string, userDetails: userDto) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
-      where: { username: loginUserInfo.username },
+      where: { id: loginUserInfo.id },
       relations: ['friends'],
     });
 
     if (!loginUser) throw new HttpException('user not found', 404);
-    if (
-      userDetails.id !== loginUser.id ||
-      loginUser.username !== userDetails.username
-    )
-      throw new HttpException('id and username cannot be changed', 401);
+    if (userDetails.id !== loginUser.id)
+      throw new HttpException('id cannot be changed', 401);
 
     return this.userRep.save({ ...loginUser, ...userDetails });
   }
