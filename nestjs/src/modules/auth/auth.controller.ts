@@ -11,6 +11,7 @@ import {
 import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
+import { createToken } from 'src/functions/user';
 
 interface reqWithModifiy extends Request {
   user: {
@@ -54,7 +55,7 @@ export class AuthController {
   handleUser(@Req() request: reqWithModifiy) {
     if (!request.user) return null;
     return {
-      token: this.authService.createToken({
+      token: createToken({
         username: request.user.username,
         id: request.user.id,
         sessionID: request.user.sessionID,
@@ -85,11 +86,5 @@ export class AuthController {
   tmpLogin(@Body() body: any) {
     console.log(body);
     return this.authService.tmpLogin(body);
-  }
-
-  @Get('tmp/getUser')
-  tmpGetUser(@Req() req: any) {
-    const token = req.headers?.authorization?.split(' ')[1];
-    return this.authService.tmpGetUser(token);
   }
 }

@@ -27,7 +27,7 @@ export class RoomService {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { id: loginUserInfo.id },
-      relations: ['rooms', 'rooms.users'],
+      relations: ['rooms', 'rooms.users', 'rooms.messages'],
     });
     const rooms = await this.roomRep.find({
       relations: ['users', 'messages'],

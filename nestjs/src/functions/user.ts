@@ -1,6 +1,4 @@
-import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { Room } from 'src/typeorm/Room';
 
 export function verifyToken(token: string) {
   return jwt.verify(token, process.env.accessTokenSecret, (err, decoded) => {
@@ -9,4 +7,11 @@ export function verifyToken(token: string) {
     }
     return decoded;
   });
+}
+
+export function createToken(tokenDetails: any) {
+  const token = jwt.sign(tokenDetails, process.env.accessTokenSecret, {
+    expiresIn: '1h',
+  });
+  return token;
 }

@@ -3,26 +3,31 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/User';
 import { verifyToken } from 'src/functions/user';
-import { thirdUser, userDto } from 'src/types/user.dto';
+import { currentUser, thirdUser, userDto } from 'src/types/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectRepository(User) private userRep: Repository<User>) {}
 
-  async findUsers(token: string) {
+  async allUsers(token: string) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { id: loginUserInfo.id },
       relations: ['friends'],
     });
 
-    const users: thirdUser[] = await this.userRep.find();
-    const friends: thirdUser[] = loginUser.friends;
+    const users: thirdUser[] = (await this.userRep.find()).map((user) => {
+      return new thirdUser(user);
+    });
+
+    const friends: thirdUser[] = loginUser.friends.map((friend) => {
+      return new thirdUser(friend);
+    });
 
     return { users, friends };
   }
 
-  async createUser(token: string, friendUserDetails: userDto) {
+  async addFriend(token: string, friendUserDetails: userDto) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { id: loginUserInfo.id },
@@ -53,20 +58,11 @@ export class UsersService {
       ? [...friendUser.friends, loginUser]
       : [loginUser];
 
-    await this.userRep.save(friendUser);
-    const user = await this.userRep.save(loginUser);
-
-    return {
-      ...user,
-      friends: [
-        ...user.friends.map((friend) => {
-          return { ...friend, friends: undefined };
-        }),
-      ],
-    };
+    await this.userRep.save(loginUser);
+    return new thirdUser(await this.userRep.save(friendUser));
   }
 
-  async deleteUser(token: string, friendUserDetails: userDto) {
+  async deleteFriend(token: string, friendUserDetails: userDto) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { id: loginUserInfo.id },
@@ -86,21 +82,42 @@ export class UsersService {
       (friend) => friend.id !== loginUserInfo.id,
     );
 
-    await this.userRep.save(friendUser);
-    return this.userRep.save(loginUser);
+    await this.userRep.save(loginUser);
+    return new thirdUser(await this.userRep.save(friendUser));
   }
 
   async updateUser(token: string, userDetails: userDto) {
     const loginUserInfo = verifyToken(token);
     const loginUser = await this.userRep.findOne({
       where: { id: loginUserInfo.id },
-      relations: ['friends'],
     });
 
     if (!loginUser) throw new HttpException('user not found', 404);
     if (userDetails.id !== loginUser.id)
       throw new HttpException('id cannot be changed', 401);
 
-    return this.userRep.save({ ...loginUser, ...userDetails });
+    return new currentUser(
+      await this.userRep.save({ ...loginUser, ...userDetails }),
+    );
+  }
+
+  async getUserInfo(token: string) {
+    const loginUserInfo = verifyToken(token);
+    const loginUser = await this.userRep.findOne({
+      where: { id: loginUserInfo.id },
+    });
+
+    return new currentUser(loginUser);
+  }
+
+  //ENDPOINT END HERE / UTILS START HERE
+
+  async handleStatusChange(user: User, status: string) {
+    user.status = status;
+    return this.userRep.save(user);
+  }
+
+  async findUserBySessionID(sessionID: string) {
+    return this.userRep.findOne({ where: { sessionID: sessionID } });
   }
 }

@@ -6,11 +6,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/User';
 import { SessionSeriliazer } from './utils/Seriliazer';
-import { socketGateway } from 'src/gateway/socket.gateway';
 
 @Module({
   imports: [ConfigModule, TypeOrmModule.forFeature([User])],
-  providers: [AuthService, FortyTwoStrategy, SessionSeriliazer, socketGateway],
+  providers: [AuthService, FortyTwoStrategy, SessionSeriliazer],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -39,3 +39,17 @@ export type typeNotification = {
   owner: string
   type: string
 }
+
+export type currentUser = {
+  username: string
+  sessionID: string
+  status: string
+  avatar: string
+}
+
+export type thirdUser = {
+  username: string
+  id: number
+  status: string
+  avatar: string
+}

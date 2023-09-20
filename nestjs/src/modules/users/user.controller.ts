@@ -6,24 +6,28 @@ import { userDto } from 'src/types/user.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  //USERS
   @Get()
   allUsers(@Req() req: any) {
-    return this.usersService.findUsers(req.token);
+    return this.usersService.allUsers(req.token);
   }
 
   @Post()
-  createUser(@Req() req: any, @Body() body: userDto) {
-    return this.usersService.createUser(req.token, body);
+  addFriend(@Req() req: any, @Body() body: userDto) {
+    return this.usersService.addFriend(req.token, body);
   }
 
   @Delete()
-  deleteUser(@Req() req: any, @Body() body: userDto) {
-    return this.usersService.deleteUser(req.token, body);
+  deleteFriend(@Req() req: any, @Body() body: userDto) {
+    return this.usersService.deleteFriend(req.token, body);
   }
 
   @Put()
   updateUser(@Req() req: any, @Body() body: userDto) {
     return this.usersService.updateUser(req.token, body);
+  }
+
+  @Get('info')
+  getUserInfo(@Req() req: any) {
+    return this.usersService.getUserInfo(req.token);
   }
 }

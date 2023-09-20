@@ -7,6 +7,8 @@ export class userDto {
   username: string;
 
   avatar: string;
+
+  @IsNotEmpty()
   id: number;
 
   @IsEmpty()
@@ -29,15 +31,29 @@ export class userDto {
 }
 
 export class currentUser {
+  constructor(obj: any) {
+    this.username = obj.username;
+    this.sessionID = obj.sessionID;
+    this.status = obj.status;
+    this.avatar = obj.avatar;
+  }
+
   username: string;
   sessionID: string;
+  status: string;
   avatar: string;
 }
 
 export class thirdUser {
-  id: number;
+  constructor(obj: any) {
+    this.username = obj.username;
+    this.id = obj.id;
+    this.status = obj.status;
+    this.avatar = obj.avatar;
+  }
+
   username: string;
-  sessionID: string;
+  id: number;
   status: string;
   avatar: string;
 }

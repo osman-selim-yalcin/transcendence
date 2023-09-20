@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { UserModule } from './modules/users/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -8,7 +8,10 @@ import { User } from './typeorm/User';
 import { Room } from './typeorm/Room';
 import { Message } from './typeorm/Message';
 import { Notification } from './typeorm/Notification';
-import { userMiddelware } from './middleware/user.middleware';
+import {
+  tokenMiddleware,
+  userIdMiddleware,
+} from './middleware/user.middleware';
 import { RoomModule } from './modules/room/room.module';
 import { UsersController } from './modules/users/user.controller';
 import { RoomController } from './modules/room/room.controller';
@@ -38,7 +41,12 @@ import { NotificationController } from './modules/notification/notification.cont
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(userMiddelware)
+      .apply(tokenMiddleware)
       .forRoutes(UsersController, RoomController, NotificationController);
+
+    consumer.apply(userIdMiddleware).forRoutes({
+      path: 'user',
+      method: RequestMethod.PUT,
+    });
   }
 }

@@ -5,7 +5,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'; // Import the 'Socket' type
-import { AuthService } from 'src/modules/auth/auth.service';
+import { UsersService } from 'src/modules/users/user.service';
 
 interface CustomSocket extends Socket {
   username: string;
@@ -19,7 +19,7 @@ interface CustomSocket extends Socket {
   },
 })
 export class socketGateway implements OnModuleInit {
-  constructor(private authService: AuthService) {}
+  constructor(private userService: UsersService) {}
 
   @WebSocketServer()
   server: Server;
@@ -36,13 +36,13 @@ export class socketGateway implements OnModuleInit {
 
     this.server.on('connection', async (socket: CustomSocket) => {
       socket.join(socket.sessionID);
-      const socketUser = await this.authService.findUserBySessionID(
+      const socketUser = await this.userService.findUserBySessionID(
         socket.sessionID,
       );
-      this.authService.handleStatusChange(socketUser, 'online');
+      this.userService.handleStatusChange(socketUser, 'online');
 
       socket.on('disconnect', async () => {
-        this.authService.handleStatusChange(socketUser, 'offline');
+        this.userService.handleStatusChange(socketUser, 'offline');
         this.server.emit('user disconnected', socket.sessionID);
       });
     });
