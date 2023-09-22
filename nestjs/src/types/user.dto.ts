@@ -29,31 +29,3 @@ export class userDto {
   @IsEmpty()
   notifications: Notification[];
 }
-
-export class currentUser {
-  constructor(obj: any) {
-    this.username = obj.username;
-    this.sessionID = obj.sessionID;
-    this.status = obj.status;
-    this.avatar = obj.avatar;
-  }
-
-  username: string;
-  sessionID: string;
-  status: string;
-  avatar: string;
-}
-
-export class thirdUser {
-  constructor(obj: any) {
-    this.username = obj.username;
-    this.id = obj.id;
-    this.status = obj.status;
-    this.avatar = obj.avatar;
-  }
-
-  username: string;
-  id: number;
-  status: string;
-  avatar: string;
-}

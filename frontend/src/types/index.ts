@@ -40,16 +40,11 @@ export type typeNotification = {
   type: string
 }
 
-export type currentUser = {
+export type user = {
+	id: number
   username: string
   sessionID: string
   status: string
   avatar: string
 }
 
-export type thirdUser = {
-  username: string
-  id: number
-  status: string
-  avatar: string
-}

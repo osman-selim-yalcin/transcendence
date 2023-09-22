@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/User';
 import { verifyToken } from 'src/functions/user';
-import { currentUser, thirdUser, userDto } from 'src/types/user.dto';
+import { userDto } from 'src/types/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,13 +16,8 @@ export class UsersService {
       relations: ['friends'],
     });
 
-    const users: thirdUser[] = (await this.userRep.find()).map((user) => {
-      return new thirdUser(user);
-    });
-
-    const friends: thirdUser[] = loginUser.friends.map((friend) => {
-      return new thirdUser(friend);
-    });
+    const users = await this.userRep.find();
+    const friends = loginUser.friends;
 
     return { users, friends };
   }
@@ -59,7 +54,8 @@ export class UsersService {
       : [loginUser];
 
     await this.userRep.save(loginUser);
-    return new thirdUser(await this.userRep.save(friendUser));
+    await this.userRep.save(friendUser);
+    return { msg: 'success' };
   }
 
   async deleteFriend(token: string, friendUserDetails: userDto) {
@@ -83,7 +79,8 @@ export class UsersService {
     );
 
     await this.userRep.save(loginUser);
-    return new thirdUser(await this.userRep.save(friendUser));
+    await this.userRep.save(friendUser);
+    return { msg: 'success' };
   }
 
   async updateUser(token: string, userDetails: userDto) {
@@ -96,18 +93,15 @@ export class UsersService {
     if (userDetails.id !== loginUser.id)
       throw new HttpException('id cannot be changed', 401);
 
-    return new currentUser(
-      await this.userRep.save({ ...loginUser, ...userDetails }),
-    );
+    await this.userRep.save({ ...loginUser, ...userDetails });
+    return { msg: 'success' };
   }
 
   async getUserInfo(token: string) {
     const loginUserInfo = verifyToken(token);
-    const loginUser = await this.userRep.findOne({
+    return this.userRep.findOne({
       where: { id: loginUserInfo.id },
     });
-
-    return new currentUser(loginUser);
   }
 
   //ENDPOINT END HERE / UTILS START HERE

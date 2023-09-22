@@ -9,5 +9,5 @@ export class messageDto {
   owner: string;
 
   @IsNotEmpty()
-  room: Room;
+  roomID: number;
 }

@@ -40,12 +40,7 @@ export class AuthService {
     });
     return {
       token,
-      user: {
-        username: user.username,
-        avatar: 'https://source.unsplash.com/featured/300x202',
-        sessionID: user.sessionID,
-        status: user.status,
-      },
+      user,
     };
   }
 }

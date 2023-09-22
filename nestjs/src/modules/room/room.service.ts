@@ -29,9 +29,7 @@ export class RoomService {
       where: { id: loginUserInfo.id },
       relations: ['rooms', 'rooms.users', 'rooms.messages'],
     });
-    const rooms = await this.roomRep.find({
-      relations: ['users', 'messages'],
-    });
+    const rooms = await this.roomRep.find();
     const userRooms = loginUser.rooms;
 
     return { rooms, userRooms };
@@ -126,8 +124,10 @@ export class RoomService {
 
     const room = await this.roomRep.findOne({
       relations: ['messages'],
-      where: { id: details.room.id },
+      where: { id: details.roomID },
     });
+
+    if (!room) throw new HttpException('room not found', 400);
 
     const msg = this.messageRep.create({
       owner: loginUser.username,

@@ -60,11 +60,7 @@ export class AuthController {
         id: request.user.id,
         sessionID: request.user.sessionID,
       }),
-      user: {
-        username: request.user.username,
-        avatar: request.user.avatar,
-        sessionID: request.user.sessionID,
-      },
+      user: request.user,
     };
   }
 
