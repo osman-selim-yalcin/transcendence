@@ -1,15 +1,19 @@
 import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
-import { roomDto } from 'src/types/room.dto';
+import { roomCommands, roomDto } from 'src/types/room.dto';
 import { RoomService } from './room.service';
 import { messageDto } from 'src/types/message.dto';
+import { CommandsService } from './commands.service';
 
 @Controller('room')
 export class RoomController {
-  constructor(private roomService: RoomService) {}
+  constructor(
+    private roomService: RoomService,
+    private commandService: CommandsService,
+  ) {}
 
   @Get()
   getRooms(@Req() req: any) {
-    return this.roomService.getRooms(req.token);
+    return this.roomService.getRooms(req.token, req.query);
   }
 
   @Post()
@@ -32,8 +36,34 @@ export class RoomController {
     return this.roomService.joinRoom(req.token, body);
   }
 
+  @Post('leave')
+  leaveRoom(@Req() req: any, @Body() body: roomDto) {
+    return this.roomService.leaveRoom(req.token, body);
+  }
+
   @Post('message')
   createMsg(@Req() req: any, @Body() body: messageDto) {
     return this.roomService.createMsg(req.token, body);
+  }
+
+  //Command Service
+  @Post('invite')
+  inviteUser(@Req() req: any, @Body() body: roomCommands) {
+    return this.commandService.inviteUser(req.token, body);
+  }
+
+  @Post('kick')
+  kickUser(@Req() req: any, @Body() body: roomCommands) {
+    return this.commandService.kickUser(req.token, body);
+  }
+
+  @Post('ban')
+  banUser(@Req() req: any, @Body() body: roomCommands) {
+    return this.commandService.banUser(req.token, body);
+  }
+
+  @Post('mod')
+  modUser(@Req() req: any, @Body() body: roomCommands) {
+    return this.commandService.modUser(req.token, body);
   }
 }

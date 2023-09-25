@@ -1,4 +1,4 @@
-import { IsEmpty, IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsEmpty, IsNotEmpty } from 'class-validator';
 import { Message } from 'src/typeorm/Message';
 import { User } from 'src/typeorm/User';
 
@@ -7,31 +7,38 @@ export class roomDto {
   id: number;
 
   @IsNotEmpty()
-  @ValidateNested({ each: true })
   users: User[];
 
   @IsEmpty()
-  @ValidateNested({ each: true })
   messages: Message[];
 
   @IsEmpty()
   createdAt: string;
 
   password: string;
-
   @IsNotEmpty()
   name: string;
-
   avatar: string;
+  isInviteOnly: boolean;
 
   @IsEmpty()
   creator: string;
 
+  @IsEmpty()
   mods: string[];
+  @IsEmpty()
   banList: string[];
-  isInviteOnly: boolean;
+  @IsEmpty()
   inviteList: string[];
 
   @IsNotEmpty()
   isGroup: boolean;
+}
+
+export class roomCommands {
+  @IsNotEmpty()
+  id: number;
+
+  @IsNotEmpty()
+  user: User;
 }
