@@ -1,12 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { WebSocketContext } from "../context/WebSocketContext"
-import { createMsg, deleteRoom } from "../api/room"
+import { SocketContext } from "../context/SocketContext"
+import { createMsg } from "../api/room"
 import { UserContext } from "../context/UserContext"
-import { typeMsg } from "../types"
 import { getTime } from "../functions"
 
 export default function Room(props: any) {
-  const socket = useContext(WebSocketContext)
+  const socket = useContext(SocketContext)
   const { user } = useContext(UserContext)
   const [send, setSend] = useState("")
   const [minimize, setMinimize] = useState(false)
@@ -64,10 +63,6 @@ useEffect(() => {
     }
   }
 
-  const handleCloseRoom = () => {
-    deleteRoom(props.roomID)
-  }
-
   return (
     <div className="chat_rooms_room" ref={roomRef}>
       <div className="chat_rooms_room_header">
@@ -95,7 +90,7 @@ useEffect(() => {
         </div>
       </div>
       <div className="chat_rooms_room_messages" ref={roomMessageRef}>
-        {props.messages?.map((message: typeMsg, index: any) => {
+        {props.messages?.map((message: any, index: any) => {
           return (
             <div key={index} className="chat_rooms_room_messages_msg">
               {message.owner} {getTime(message.createdAt)}

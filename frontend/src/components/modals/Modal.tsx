@@ -1,13 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import { getAllUsers } from "../../api"
+import { getUsers } from "../../api/user"
 import {
   addFriend,
   getAllFriends,
   removeFriend
 } from "../../api/friend"
-import { typeAllRooms, typeUser } from "../../types"
 import List, { GroupList } from "../List"
-import { deleteRoom, getGroups, getUsersRooms, joinGroup, startRoom } from "../../api/room"
+import { getGroups, joinGroup, startRoom } from "../../api/room"
 import GroupCreation from "../forms/GroupCreation"
 import { UserContext } from "../../context/UserContext"
 
@@ -19,25 +18,25 @@ export default function Modal({
   setTmp,
 }: {
   dialogRef: any
-  allRooms: typeAllRooms[]
+  allRooms: any
   setAllRooms: Function
   handleStartRoom: Function
   setTmp: Function
 }) {
-  const [allUsers, setAllUsers] = useState<typeUser[]>([])
-  const [friends, setFriends] = useState<typeUser[]>([])
+  const [allUsers, setAllUsers] = useState([])
+  const [friends, setFriends] = useState([])
   const [data, setData] = useState<any>([])
   const [buttons, setButtons] = useState([])
-  const [groups, setGroups] = useState<typeAllRooms[]>([])
+  const [groups, setGroups] = useState([])
   const [isGroup, setIsGroup] = useState(false)
   const groupFormRef = useRef<HTMLDialogElement>(null)
   const { user } = useContext(UserContext)
 
 
   useEffect(() => {
-    getAllUsers(setAllUsers)
-    getAllFriends(setFriends)
-    getGroups(setGroups)
+    // getUsers(setAllUsers)
+    // getAllFriends(setFriends)
+    // getGroups(setGroups)
     // console.log("user in modal", user)
   }, [])
 
@@ -54,7 +53,7 @@ export default function Modal({
   //   console.log("allRooms", allRooms)
   // }, [allRooms])
 
-  const handleCreateRoom = async (friend: typeUser) => {
+  const handleCreateRoom = async (friend: any) => {
     const allRoom: typeAllRooms = await startRoom(friend.username)
 
     handleStartRoom(allRoom.room, allRoom.users)

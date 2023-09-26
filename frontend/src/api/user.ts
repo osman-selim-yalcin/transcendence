@@ -1,6 +1,7 @@
 import axios from "axios"
 
-export const getUser = async (setUser: any) => {
+export const getUser = async () => {
+  console.log("getUser called")
   if (localStorage.getItem("loginWith") === "username") {
     axios
       .get("http://localhost:3000/api/auth/tmp/getUser", {
@@ -11,19 +12,22 @@ export const getUser = async (setUser: any) => {
         }
       })
       .then(res => {
-        setUser(res.data.user)
+        return res.data
       })
       .catch(err => {
         console.log(err)
       })
   } else {
-    axios
+    return axios
       .get("http://localhost:3000/api/auth/user", {
         withCredentials: true
       })
       .then(res => {
-        localStorage.setItem("token", res.data.token)
-        setUser(res.data.user)
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token)
+        }
+        console.log("user from 42", res.data)
+        return res.data.user
       })
       .catch(err => {
         console.log(err)
@@ -31,9 +35,9 @@ export const getUser = async (setUser: any) => {
   }
 }
 
-export const getAllUsers = (setUsers: any) => {
-  axios
-    .get("http://localhost:3000/api/user/allUsers", {
+export const getUsers = () => {
+  return axios
+    .get("http://localhost:3000/api/user", {
       headers: {
         authorization:
           "Bearer " +
@@ -41,7 +45,7 @@ export const getAllUsers = (setUsers: any) => {
       }
     })
     .then(response => {
-      setUsers(response.data)
+      return response.data
     })
     .catch(err => {
       console.log(err)

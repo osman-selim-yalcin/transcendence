@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react"
-import { WebSocketContext } from "../context/WebSocketContext"
+import { SocketContext } from "../context/SocketContext"
 import "../game/index.css"
 // import { game_start } from "../game/index.js"
 
@@ -11,7 +11,7 @@ export const appendScript = (scriptToAppend: string) => {
 }
 
 export default function Game() {
-  const socket = useContext(WebSocketContext)
+  const socket = useContext(SocketContext)
 
   // useEffect(() => {
   //   const script1 = appendScript("/src/game/listener.js")

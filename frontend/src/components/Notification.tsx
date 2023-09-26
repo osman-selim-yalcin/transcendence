@@ -1,42 +1,39 @@
 import React, { useContext, useEffect } from "react"
 import image from "../public/notification.png"
-import { socket } from "../context/WebSocketContext"
 import { UserContext } from "../context/UserContext"
 import {
   createNotification,
   deleteNotification,
   getNotifications
 } from "../api/notification"
-import { typeNotification } from "../types"
 import { getTime } from "../functions"
 import { addFriend } from "../api/friend"
 
 export default function Notification() {
   const dialogRef = React.useRef<HTMLDialogElement>(null)
-  const [notifications, setNotifications] = React.useState<typeNotification[]>(
+  const [notifications, setNotifications] = React.useState(
     []
   )
   const { user } = useContext(UserContext)
 
   useEffect(() => {
-    getNotifications(setNotifications)
 
-    socket.on("notification", (data: typeNotification) => {
-      console.log("notification socket")
-      console.log(data)
-      console.log(notifications)
-      notifications.push({
-        ...data
-      })
-      setNotifications([...notifications])
-    })
+    // socket.on("notification", (data: any) => {
+    //   console.log("notification socket")
+    //   console.log(data)
+    //   console.log(notifications)
+    //   notifications.push({
+    //     ...data
+    //   })
+    //   setNotifications([...notifications])
+    // })
 
-    return () => {
-      socket.off("notification")
-    }
+    // return () => {
+    //   socket.off("notification")
+    // }
   }, [])
 
-  const handleConfirm = (event: React.MouseEvent, item: typeNotification) => {
+  const handleConfirm = (event: React.MouseEvent, item: any) => {
     event.stopPropagation()
     if (item.type === "addFriend") {
       addFriend(item.owner)
