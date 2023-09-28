@@ -1,5 +1,60 @@
 import axios from "axios"
-import { typeUser } from "../types"
+import { roomPayload } from "../types"
+
+// <---------------- REFACTOR ----------------->
+
+export const getRooms = async () => {
+  return axios
+    .get("http://localhost:3000/api/room", {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const createRoom = async (body: any) => {
+  return axios.post(
+    "http://localhost:3000/api/room",
+    body,
+    {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    }
+  )
+  .then((response) => {
+    console.log("api response", response)
+    return response.data
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+}
+
+export const deleteRoom = async (body: roomPayload) => {
+  return axios.delete("http://localhost:3000/api/room",
+  {
+    headers: {
+      Authorization:
+      "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+    },
+    data: body
+  }
+  )
+}
+
+// <---------------- REFACTOR ----------------->
 
 export const startRoom = async (username: string) => {
   const response = axios.post(
@@ -63,74 +118,6 @@ export const createMsg = async (msg: string, owner: string, roomID: number) => {
     })
 }
 
-// export const getUsersRooms = async (setAllRooms: Function, user: typeUser) => {
-//   return await axios
-//     .get("http://localhost:3000/api/user/getUsersRooms", {
-//       headers: {
-//         authorization:
-//           "Bearer " +
-//           (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-//       }
-//     })
-//     .then(response => {
-//       setAllRooms(response.data)
-//       return response.data
-//     })
-//     .catch(err => {
-//       console.log(err)
-//     })
-// }
-
-// export const deleteRoom = async (roomID: number) => {
-//   return await axios
-//     .delete("http://localhost:3000/api/user/deleteRoom/" + roomID, {
-//       headers: {
-//         authorization:
-//           "Bearer " +
-//           (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-//       }
-//     })
-//     .then(response => {
-//       return response
-//     })
-//     .catch(err => {
-//       console.log(err)
-//     })
-// }
-
-export const getGroups = async (setGroups: Function) => {
-  return await axios
-    .get("http://localhost:3000/api/user/getGroups", {
-      headers: {
-        authorization:
-          "Bearer " +
-          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-      }
-    })
-    .then(response => {
-      setGroups(response.data)
-      return response.data
-    })
-    .catch(err => {
-      console.log(err)
-    })
-}
-
-export const createGroup = async (body: any) => {
-  const response = axios.post(
-    "http://localhost:3000/api/user/createGroup",
-    body,
-    {
-      headers: {
-        authorization:
-          "Bearer " +
-          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-      }
-    }
-  )
-  return (await response).data
-}
-
 export const joinGroup = async (body: any) => {
   const response = axios.post(
     "http://localhost:3000/api/user/joinGroup",
@@ -146,21 +133,3 @@ export const joinGroup = async (body: any) => {
   return (await response).data
 }
 
-// <---------------- REFACTOR ----------------->
-
-export const getRooms = async () => {
-  return axios
-    .get("http://localhost:3000/api/room", {
-      headers: {
-        authorization:
-          "Bearer " +
-          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-      }
-    })
-    .then(response => {
-      return response.data
-    })
-    .catch(err => {
-      console.log(err)
-    })
-}

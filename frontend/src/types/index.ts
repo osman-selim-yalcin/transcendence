@@ -1,4 +1,3 @@
-
 export type user = {
   id: number
   username: string
@@ -8,10 +7,31 @@ export type user = {
   lastSeen: string
 }
 
-export type socketPayload = {
-  
+export type socketPayload = {}
+
+export type room = {
+  id: number
+  createdAt: string
+  password: boolean
+  name: string
+  avatar: string
+  creator: string
+  mods: string[]
+  banList: string[]
+  inviteList: string[]
+  isGroup: boolean
+  isInviteOnly: boolean
+  users: user[]
+  messages: any[]
 }
 
+export interface roomPayload {
+  id: number
+  name: string
+  users: string[]
+  isGroup: boolean
+  password?: string
+}
 
 // export type typeMsg = {
 //   content: string

@@ -1,10 +1,10 @@
 import { createBrowserRouter } from "react-router-dom"
 import Home from "../views/Home"
-import Login from "../views/Login"
 import Profile from "../views/Profile"
 import RootLayout from "../layouts/RootLayout"
 import Game from "../views/Game"
-import UserList from "../views/UserList"
+import FriendList from "../views/FriendList"
+import RoomList from "../components/RoomList"
 
 export const router = createBrowserRouter([
   {
@@ -15,10 +15,6 @@ export const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: "/login",
-        element: <Login />
-      },
-      {
         path: "/profile",
         element: <Profile />
       },
@@ -27,8 +23,12 @@ export const router = createBrowserRouter([
         element: <Game />
       },
       {
-        path: "/users",
-        element: <UserList />
+        path: "/friends",
+        element: <FriendList />
+      },
+      {
+        path: "/rooms",
+        element: <RoomList />
       }
     ]
   }

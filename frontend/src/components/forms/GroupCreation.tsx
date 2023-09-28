@@ -1,29 +1,13 @@
 import { useContext, useEffect, useState } from "react"
-import { typeUser } from "../../types"
-import { createGroup, getGroups, getUsersRooms } from "../../api/room";
+import { roomPayload, user } from "../../types"
+import { createRoom } from "../../api/room";
 import { UserContext } from "../../context/UserContext";
 
-export default function GroupCreation(
-  {
-    friends,
-    parentRef,
-    setGroups,
-    handleListData,
-    groupsButtons,
-    setAllRooms
-  }: {
-    friends: typeUser[]
-    parentRef: any
-    setGroups: Function
-    handleListData: Function
-    groupsButtons: any
-    setAllRooms: Function
-  }
-) {
+export default function GroupCreation({ setModal }: any) {
   const [checkboxes, setCheckboxes] = useState([])
   const [groupName, setGroupName] = useState("")
   const [password, setPassword] = useState("")
-  const { user } = useContext(UserContext)
+  const { friends, reloadRooms } = useContext(UserContext)
 
   const handleCheckboxChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -34,7 +18,7 @@ export default function GroupCreation(
   };
 
   // useEffect(() => {
-  //   console.log("friends", friends)
+  //   console.log("users", friends)
   // }, [friends])
   // useEffect(() => {
   //   console.log("current checkbox", checkboxes)
@@ -54,31 +38,37 @@ export default function GroupCreation(
   return (
     <form onSubmit={async (e) => {
       e.preventDefault()
-      let payload = password === "" ? {
-        name: groupName,
-        users: checkboxes
-      } : {
+      const payload: roomPayload = {
+        id: 0,
         name: groupName,
         users: checkboxes,
-        password: password
+        isGroup: true
       }
-      await createGroup(payload)
-      parentRef.current.close()
+      if (password !== "") {
+        payload["password"] = password
+      }
+
+      await createRoom(payload)
+      .then((res) => {
+        console.log("new room created:", res)
+      })
+      reloadRooms()
+
+      setModal(false)
       document.querySelectorAll(".group_creation_input").forEach((item: any) => {
         item.checked = false
       })
       setGroupName("")
       setCheckboxes([])
       setPassword("")
-      handleListData(await getGroups(setGroups), groupsButtons)
-      await getUsersRooms(setAllRooms, user)
       document.querySelector("#password").setAttribute("type", "password")
     }}>
+      <h3>Group Creation</h3>
       <div>
-        <label htmlFor="name">Group Name:</label>
+        <label htmlFor="groupName">Group Name:</label>
         <input
           type="text"
-          id="name"
+          id="groupName"
           value={groupName}
           onChange={(e) => { setGroupName(e.target.value) }}
         />
@@ -106,7 +96,7 @@ export default function GroupCreation(
       </div>
       <div>
         Group Members:
-        {friends.map((friend: typeUser) => (
+        {friends && friends.map((friend: user) => (
           <div key={friend.id}>
             <input
               className="group_creation_input"
@@ -125,6 +115,5 @@ export default function GroupCreation(
       </div>
       <button disabled={groupName === "" ? true : false}>Create</button>
     </form>
-
   )
 }

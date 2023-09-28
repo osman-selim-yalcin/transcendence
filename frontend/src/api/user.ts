@@ -26,7 +26,7 @@ export const getUser = async () => {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token)
         }
-        console.log("user from 42", res.data)
+        // console.log("user from 42", res.data)
         return res.data.user
       })
       .catch(err => {

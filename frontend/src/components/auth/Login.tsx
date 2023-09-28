@@ -1,6 +1,6 @@
 import { useContext, useState } from "react"
-import { UserContext } from "../context/UserContext.tsx"
-import { login } from "../api/tmp.ts"
+import { UserContext } from "../../context/UserContext.tsx"
+import { login } from "../../api/tmp.ts"
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -8,7 +8,7 @@ export default function Login() {
   const [loginWith, setLoginWith] = useState("")
   const [username, setUsername] = useState("")
 
-	const navigate = useNavigate()
+  const navigate = useNavigate()
 
   if (!loginWith) {
     return (
@@ -42,6 +42,10 @@ export default function Login() {
         >
           forty
         </button>
+        <button onClick={() => {
+          localStorage.clear()
+          setLoginWith("")
+        }}>Back</button>
       </div>
     )
   } else if (loginWith === "username") {
@@ -55,6 +59,10 @@ export default function Login() {
         >
           username login
         </button>
+        <button onClick={() => {
+          localStorage.clear()
+          setLoginWith("")
+        }}>Back</button>
       </div>
     )
   }
