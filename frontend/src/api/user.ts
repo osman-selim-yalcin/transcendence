@@ -3,8 +3,8 @@ import axios from "axios"
 export const getUser = async () => {
   console.log("getUser called")
   if (localStorage.getItem("loginWith") === "username") {
-    axios
-      .get("http://localhost:3000/api/auth/tmp/getUser", {
+    return axios
+      .get("http://localhost:3000/api/user/info", {
         headers: {
           authorization:
             "Bearer " +

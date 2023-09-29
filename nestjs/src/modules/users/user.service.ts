@@ -101,6 +101,7 @@ export class UsersService {
     const loginUserInfo = verifyToken(token);
     return this.userRep.findOne({
       where: { id: loginUserInfo.id },
+      relations: ['friends', 'rooms'],
     });
   }
 
