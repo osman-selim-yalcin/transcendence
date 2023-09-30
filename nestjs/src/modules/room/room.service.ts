@@ -26,11 +26,11 @@ export class RoomService {
     @InjectRepository(Message) private messageRep: Repository<Message>,
   ) {}
 
-  async getRooms(query: any, body: any) {
-    if (body.take > 50) throw new HttpException('too many rooms', 400);
+  async getRooms(query: any, params: any) {
+    if (params.take > 50) throw new HttpException('too many rooms', 400);
     const rooms = await this.roomRep.find({
-      skip: body.skip ? body.skip : 0,
-      take: body.take ? body.take : 10,
+      skip: params.skip ? params.skip : 0,
+      take: params.take ? params.take : 10,
       where: { name: Like((query.q ? query.q : '') + '%') },
     });
 

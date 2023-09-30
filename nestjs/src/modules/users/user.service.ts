@@ -9,12 +9,13 @@ import { userDto } from 'src/types/user.dto';
 export class UsersService {
   constructor(@InjectRepository(User) private userRep: Repository<User>) {}
 
-  async allUsers(query: any, body: any) {
-    if (body.take > 50) throw new HttpException('too many users', 400);
+  async allUsers(query: any, params: any) {
+    if (params.take > 50) throw new HttpException('too many users', 400);
     const users = await this.userRep.find({
-      skip: body.skip ? body.skip : 0,
-      take: body.take ? body.take : 10,
+      skip: params.skip ? params.skip : 0,
+      take: params.take ? params.take : '',
       where: { username: Like((query.q ? query.q : '') + '%') },
+      relations: ['friends', 'notifications'],
     });
     return { users };
   }

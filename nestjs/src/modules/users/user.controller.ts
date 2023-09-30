@@ -8,7 +8,7 @@ export class UsersController {
 
   @Get()
   allUsers(@Req() req: any) {
-    return this.usersService.allUsers(req.query, req.body);
+    return this.usersService.allUsers(req.query, req.params);
   }
 
   @Post()
