@@ -1,5 +1,23 @@
 import axios from "axios"
-import { typeUser } from "../types"
+
+export async function getFriends() {
+  return axios
+    .get("http://localhost:3000/api/user/friends", {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+// -----------------------------------------------
 
 export const addFriend = (
   username: string

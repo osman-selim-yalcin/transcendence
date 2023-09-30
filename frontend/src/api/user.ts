@@ -35,13 +35,17 @@ export const getUser = async () => {
   }
 }
 
-export const getUsers = () => {
+export const getUsers = (queryString: string) => {
   return axios
     .get("http://localhost:3000/api/user", {
       headers: {
         authorization:
           "Bearer " +
           (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      },
+      params: {
+        take: 10,
+        q: queryString
       }
     })
     .then(response => {

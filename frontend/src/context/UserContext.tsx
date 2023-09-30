@@ -3,22 +3,23 @@ import useInitial from "../hooks/useInitial"
 import { getUsers } from "../api/user"
 import { room, user } from "../types"
 import { getRooms } from "../api/room"
+import { getFriends } from "../api/friend"
 
 export const UserContext = createContext(null)
 
 export default function UserProvider({ children }: PropsWithChildren) {
-  const { user, setUser, friends, setFriends, users, setUsers, rooms, setRooms } = useInitial()
+  const { user, setUser, friends, setFriends, rooms, setRooms } = useInitial()
 
-  async function reloadUsers() {
-    getUsers()
-      .then((response: { users: user[], friends: user[] }) => {
-        setUsers(response.users)
-      })
-  }
+  // async function reloadUsers() {
+  //   getUsers()
+  //     .then((response: { users: user[], friends: user[] }) => {
+  //       setUsers(response.users)
+  //     })
+  // }
   async function reloadFriends() {
-    getUsers()
-      .then((response: { users: user[], friends: user[] }) => {
-        setUsers(response.friends)
+    getFriends()
+      .then((response: user[]) => {
+        setFriends(response)
       })
   }
   async function reloadRooms() {
@@ -28,7 +29,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
       })
   }
   return (
-    <UserContext.Provider value={{ user, setUser, friends, users, rooms, reloadUsers, reloadRooms }}>
+    <UserContext.Provider value={{ user, setUser, friends, rooms, reloadRooms }}>
       {children}
     </UserContext.Provider>
   )

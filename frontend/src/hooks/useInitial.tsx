@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { getUser, getUsers } from "../api/user"
 import { user } from "../types"
 import { getRooms } from "../api/room"
+import { getFriends } from "../api/friend"
 
 type userPayload = {
   username: string
@@ -10,7 +11,7 @@ type userPayload = {
 const useInitial = () => {
   const [user, setUser] = useState<userPayload>(null)
   const [friends, setFriends] = useState(null)
-  const [users, setUsers] = useState(null)
+  // const [users, setUsers] = useState(null)
   const [rooms, setRooms] = useState(null)
 
   useEffect(() => {
@@ -25,10 +26,9 @@ const useInitial = () => {
           setUser(response)
 
           if (response !== undefined) {
-            getUsers()
-              .then((response: { users: user[]; friends: user[] }) => {
-                setUsers(response.users)
-                setFriends(response.friends)
+            getFriends()
+              .then((response: user[]) => {
+                setFriends(response)
               })
               .catch((err: any) => {
                 console.log(err)
@@ -56,8 +56,8 @@ const useInitial = () => {
     setUser,
     friends,
     setFriends,
-    users,
-    setUsers,
+    // users,
+    // setUsers,
     rooms,
     setRooms
   }
