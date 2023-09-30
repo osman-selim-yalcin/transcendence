@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react'
 import { UserContext } from '../context/UserContext'
 import { room, roomPayload, user } from '../types'
-import { Modal } from './Modal'
-import GroupCreation from './forms/GroupCreation'
+import { Modal } from '../components/Modal'
+import GroupCreation from '../components/forms/GroupCreation'
 import { deleteRoom } from '../api/room'
 
 export default function RoomList() {

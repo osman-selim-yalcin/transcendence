@@ -12,6 +12,12 @@ export default function UserProvider({ children }: PropsWithChildren) {
   async function reloadUsers() {
     getUsers()
       .then((response: { users: user[], friends: user[] }) => {
+        setUsers(response.users)
+      })
+  }
+  async function reloadFriends() {
+    getUsers()
+      .then((response: { users: user[], friends: user[] }) => {
         setUsers(response.friends)
       })
   }

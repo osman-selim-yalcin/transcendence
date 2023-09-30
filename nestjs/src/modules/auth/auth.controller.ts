@@ -43,7 +43,7 @@ export class AuthController {
   }
 
   @Get('logout')
-  @Redirect('http://localhost:5173/login')
+  @Redirect('http://localhost:5173/')
   handleLogout(@Req() req: reqWithModifiy) {
     req.logout((err) => {
       console.log(err);
