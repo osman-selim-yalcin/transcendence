@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from 'src/typeorm/User';
 import { verifyToken } from 'src/functions/user';
 import { userDto } from 'src/types/user.dto';
@@ -9,31 +9,24 @@ import { userDto } from 'src/types/user.dto';
 export class UsersService {
   constructor(@InjectRepository(User) private userRep: Repository<User>) {}
 
-  async allUsers(token: string) {
-    const loginUserInfo = verifyToken(token);
-    const loginUser = await this.userRep.findOne({
-      where: { id: loginUserInfo.id },
-      relations: ['friends'],
+  async allUsers(query: any, body: any) {
+    if (body.take > 50) throw new HttpException('too many users', 400);
+    const users = await this.userRep.find({
+      skip: body.skip ? body.skip : 0,
+      take: body.take ? body.take : 10,
+      where: { username: Like((query.q ? query.q : '') + '%') },
     });
+    return { users };
+  }
 
-    const users = await this.userRep.find();
-    const friends = loginUser.friends;
-
-    return { users, friends };
+  async getFriends(token: string) {
+    const loginUser = await this.tokenToUser(token, ['friends']);
+    return loginUser.friends;
   }
 
   async addFriend(token: string, friendUserDetails: userDto) {
-    const loginUserInfo = verifyToken(token);
-    const loginUser = await this.userRep.findOne({
-      where: { id: loginUserInfo.id },
-      relations: ['friends'],
-    });
-    const friendUser = await this.userRep.findOne({
-      where: { id: friendUserDetails.id },
-      relations: ['friends'],
-    });
-
-    if (!friendUser) throw new HttpException('user not found', 404);
+    const loginUser = await this.tokenToUser(token, ['friends']);
+    const friendUser = await this.idToUser(friendUserDetails.id, ['friends']);
 
     if (loginUser.id === friendUser.id)
       throw new HttpException('same user', 400);
@@ -59,23 +52,14 @@ export class UsersService {
   }
 
   async deleteFriend(token: string, friendUserDetails: userDto) {
-    const loginUserInfo = verifyToken(token);
-    const loginUser = await this.userRep.findOne({
-      where: { id: loginUserInfo.id },
-      relations: ['friends'],
-    });
-    const friendUser = await this.userRep.findOne({
-      where: { id: friendUserDetails.id },
-      relations: ['friends'],
-    });
-
-    if (!friendUser) throw new HttpException('user not found', 404);
+    const loginUser = await this.tokenToUser(token, ['friends']);
+    const friendUser = await this.idToUser(friendUserDetails.id, ['friends']);
 
     loginUser.friends = loginUser.friends?.filter(
       (friend) => friend.id !== friendUserDetails.id,
     );
     friendUser.friends = friendUser.friends?.filter(
-      (friend) => friend.id !== loginUserInfo.id,
+      (friend) => friend.id !== loginUser.id,
     );
 
     await this.userRep.save(loginUser);
@@ -84,12 +68,7 @@ export class UsersService {
   }
 
   async updateUser(token: string, userDetails: userDto) {
-    const loginUserInfo = verifyToken(token);
-    const loginUser = await this.userRep.findOne({
-      where: { id: loginUserInfo.id },
-    });
-
-    if (!loginUser) throw new HttpException('user not found', 404);
+    const loginUser = await this.tokenToUser(token);
     if (userDetails.id !== loginUser.id)
       throw new HttpException('id cannot be changed', 401);
 
@@ -98,11 +77,7 @@ export class UsersService {
   }
 
   async getUserInfo(token: string) {
-    const loginUserInfo = verifyToken(token);
-    return this.userRep.findOne({
-      where: { id: loginUserInfo.id },
-      relations: ['friends', 'rooms'],
-    });
+    return this.tokenToUser(token);
   }
 
   //ENDPOINT END HERE / UTILS START HERE
@@ -114,5 +89,22 @@ export class UsersService {
 
   async findUserBySessionID(sessionID: string) {
     return this.userRep.findOne({ where: { sessionID: sessionID } });
+  }
+
+  async tokenToUser(token: string, relations?: string[]) {
+    const loginUserInfo = verifyToken(token);
+    return this.userRep.findOne({
+      where: { id: loginUserInfo.id },
+      relations: relations || [],
+    });
+  }
+
+  async idToUser(id: number, relations?: string[]) {
+    const user = await this.userRep.findOne({
+      where: { id: id },
+      relations: relations || [],
+    });
+    if (!user) throw new HttpException('user not found', 404);
+    return user;
   }
 }
