@@ -21,7 +21,7 @@ export class NotificationService {
     const loginUserInfo = verifyToken(token);
     const creator = loginUserInfo.username;
     const user = await this.userRep.findOne({
-      where: { username: notificationDetails.user.username },
+      where: { id: notificationDetails.user.id },
       relations: ['notifications'],
     });
 

@@ -24,6 +24,8 @@ export class CommandsService {
 
   async inviteUser(token: string, roomDetails: roomCommands) {
     const { room, user } = await this.commandStart(token, roomDetails);
+    if (isUserInRoom(room, user))
+      throw new HttpException('user already in room', 400);
     if (isInvited(room, user))
       room.inviteList = room.inviteList.filter((u) => u !== user.username);
     else room.inviteList.push(user.username);
@@ -71,6 +73,8 @@ export class CommandsService {
       user.username === room.creator
     )
       throw new HttpException('not authorized', 400);
+    if (!isUserInRoom(room, user))
+      throw new HttpException('user not in room', 400);
     leaveheadler(room, user);
     if (isBanned(room, user))
       room.banList = room.banList.filter((u) => u !== user.username);

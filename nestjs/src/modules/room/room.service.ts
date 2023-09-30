@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/User';
 import { Room } from 'src/typeorm/Room';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import {
   checksForJoin,
   hashPassword,
@@ -26,19 +26,28 @@ export class RoomService {
     @InjectRepository(Message) private messageRep: Repository<Message>,
   ) {}
 
-  async getRooms(token: string, query: any) {
-    if (query?.id) return this.idToRoom(query.id);
+  async getRooms(query: any, params: any) {
+    if (params.take > 50) throw new HttpException('too many rooms', 400);
+    const rooms = await this.roomRep.find({
+      skip: params.skip ? params.skip : 0,
+      take: params.take ? params.take : 10,
+      where: { name: Like((query.q ? query.q : '') + '%') },
+    });
+
+    const newAllRooms = [];
+    for (const room of rooms) newAllRooms.push(roomModify(room));
+    return { newAllRooms };
+  }
+
+  async getUserRooms(token: string) {
     const loginUser = await this.tokenToUser(token, [
       'rooms',
       'rooms.users',
       'rooms.messages',
     ]);
-    const allRooms = await this.roomRep.find();
     const userRooms = [];
     for (const room of loginUser.rooms) userRooms.push(roomModify(room));
-    const newAllRooms = [];
-    for (const room of allRooms) newAllRooms.push(roomModify(room));
-    return { newAllRooms, userRooms };
+    return { userRooms };
   }
 
   async createRoom(token: string, roomDetails: roomDto) {

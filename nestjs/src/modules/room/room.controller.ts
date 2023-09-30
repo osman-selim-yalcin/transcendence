@@ -13,7 +13,12 @@ export class RoomController {
 
   @Get()
   getRooms(@Req() req: any) {
-    return this.roomService.getRooms(req.token, req.query);
+    return this.roomService.getRooms(req.query, req.params);
+  }
+
+  @Get('user-rooms')
+  getUserRooms(@Req() req: any) {
+    return this.roomService.getUserRooms(req.token);
   }
 
   @Post()
