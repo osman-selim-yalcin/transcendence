@@ -28,7 +28,7 @@ export type room = {
 export interface roomPayload {
   id: number
   name: string
-  users: string[]
+  users: { id: string }[]
   isGroup: boolean
   password?: string
 }

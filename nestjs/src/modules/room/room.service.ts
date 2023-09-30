@@ -36,7 +36,7 @@ export class RoomService {
 
     const newAllRooms = [];
     for (const room of rooms) newAllRooms.push(roomModify(room));
-    return { newAllRooms };
+    return newAllRooms;
   }
 
   async getUserRooms(token: string) {
@@ -47,7 +47,7 @@ export class RoomService {
     ]);
     const userRooms = [];
     for (const room of loginUser.rooms) userRooms.push(roomModify(room));
-    return { userRooms };
+    return userRooms;
   }
 
   async createRoom(token: string, roomDetails: roomDto) {

@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../context/UserContext'
 import { room, roomPayload, user } from '../types'
 import { Modal } from '../components/Modal'
 import GroupCreation from '../components/forms/GroupCreation'
 import { deleteRoom } from '../api/room'
 
-export default function RoomList() {
-  const { user, rooms } = useContext(UserContext)
+export default function UserRoomList() {
+  const { user, userRooms }: { user: user, userRooms: room[] } = useContext(UserContext)
   const [modal, setModal] = useState(false)
 
 
@@ -18,21 +18,31 @@ export default function RoomList() {
           <button onClick={() => {
             setModal(true)
           }}>Create Room</button>
-          <ul>
-
-            {rooms && rooms.userRooms.map((room: room) => {
-              return (
-                <li key={room.id}>
-                  <RoomIndex room={room} user={user} />
-                </li>
-              )
-            })}
-          </ul>
+          {userRooms ?
+            <>
+              {userRooms.length ?
+                <ul>
+                  {userRooms.map((room: room) => {
+                    return (
+                      <li key={room.id}>
+                        <UserRoomIndex room={room} user={user} />
+                      </li>
+                    )
+                  })}
+                </ul>
+                :
+                <p>You do not have any membership in any of the rooms</p>
+              }
+            </>
+            :
+            <p>Loading</p>
+          }
           <Modal isActive={[modal, setModal]}>
             <GroupCreation setModal={setModal} />
           </Modal>
-        </> :
-        <p>Please sign in to see the rooms</p>
+        </>
+        :
+        <p>Sign in to see the rooms</p>
       }
     </>
   )
@@ -40,8 +50,8 @@ export default function RoomList() {
 
 
 
-function RoomIndex({ room, user }: { room: room, user: user }) {
-  const { reloadRooms } = useContext(UserContext)
+function UserRoomIndex({ room, user }: { room: room, user: user }) {
+  const { reloadUserRooms } = useContext(UserContext)
 
   async function handleDelete(room: room) {
     const payload: roomPayload = {
@@ -54,13 +64,13 @@ function RoomIndex({ room, user }: { room: room, user: user }) {
       .then((response) => {
         console.log("delete response:", response)
       })
-    reloadRooms()
+    reloadUserRooms()
   }
 
   return (
     <>
       {/* <img src={room.avatar} alt="" /> */}
-      <p><b>{room.name}</b> creator: <i>{room.creator}</i></p>
+      <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i> | <b>Members:</b> {room.users.map((user: user) => (user.username)).join(", ")}</p>
       {room.creator === user.username ?
         <button onClick={() => {
           handleDelete(room)

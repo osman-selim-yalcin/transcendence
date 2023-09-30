@@ -17,7 +17,7 @@ export default function Navbar() {
         <Link to="/profile">Profile</Link>
         <Link to={"/friends"}>Friends</Link>
         <Link to={"/users"}>Users</Link>
-        <Link to={"/rooms"}>Rooms</Link>
+        <Link to={"/user-rooms"}>User Rooms</Link>
       </div>
       <div className="navbar_right">
         {!user ? (

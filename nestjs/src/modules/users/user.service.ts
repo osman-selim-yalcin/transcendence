@@ -17,7 +17,7 @@ export class UsersService {
       where: { username: Like((query.q ? query.q : '') + '%') },
       relations: ['friends', 'notifications'],
     });
-    return { users };
+    return users;
   }
 
   async getFriends(token: string) {

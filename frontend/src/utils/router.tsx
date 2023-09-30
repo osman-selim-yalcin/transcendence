@@ -4,7 +4,7 @@ import Profile from "../views/Profile"
 import RootLayout from "../layouts/RootLayout"
 import Game from "../views/Game"
 import FriendList from "../views/FriendList"
-import RoomList from "../views/RoomList"
+import UserRoomList from "../views/RoomList"
 import UserList from "../views/UserList"
 
 export const router = createBrowserRouter([
@@ -28,8 +28,8 @@ export const router = createBrowserRouter([
         element: <FriendList />
       },
       {
-        path: "/rooms",
-        element: <RoomList />
+        path: "/user-rooms",
+        element: <UserRoomList />
       },
       {
         path: "/users",

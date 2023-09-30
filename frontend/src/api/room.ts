@@ -3,6 +3,22 @@ import { roomPayload } from "../types"
 
 // <---------------- REFACTOR ----------------->
 
+export const getUserRooms = async () => {
+  return axios
+    .get("http://localhost:3000/api/room/user-rooms", {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
 export const getRooms = async () => {
   return axios
     .get("http://localhost:3000/api/room", {

@@ -7,7 +7,7 @@ export default function GroupCreation({ setModal }: any) {
   const [checkboxes, setCheckboxes] = useState([])
   const [groupName, setGroupName] = useState("")
   const [password, setPassword] = useState("")
-  const { friends, reloadRooms } = useContext(UserContext)
+  const { friends, reloadUserRooms } = useContext(UserContext)
 
   const handleCheckboxChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -35,24 +35,33 @@ export default function GroupCreation({ setModal }: any) {
     node.setAttribute("type", "text")
     document.querySelector("#password_icon").setAttribute("src", "https://cdn-icons-png.flaticon.com/512/159/159604.png")
   }
+
+  function generatePayload() {
+    const users = checkboxes.map((id: string) => {
+      return { id: id }
+    })
+
+    const payload: roomPayload = {
+      id: 0,
+      name: groupName,
+      users: users,
+      isGroup: true
+    }
+    if (password !== "") {
+      payload["password"] = password
+    }
+    return payload
+  }
+
   return (
     <form onSubmit={async (e) => {
       e.preventDefault()
-      const payload: roomPayload = {
-        id: 0,
-        name: groupName,
-        users: checkboxes,
-        isGroup: true
-      }
-      if (password !== "") {
-        payload["password"] = password
-      }
 
-      await createRoom(payload)
+      await createRoom(generatePayload())
       .then((res) => {
         console.log("new room created:", res)
       })
-      reloadRooms()
+      reloadUserRooms()
 
       setModal(false)
       document.querySelectorAll(".group_creation_input").forEach((item: any) => {
@@ -103,7 +112,7 @@ export default function GroupCreation({ setModal }: any) {
               type="checkbox"
               name={friend.username}
               id={friend.username}
-              value={friend.username}
+              value={friend.id}
               onChange={
                 (e) => handleCheckboxChange(e.target.value, e.target.checked)
               }

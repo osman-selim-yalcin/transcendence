@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { getUser, getUsers } from "../api/user"
+import { getUser } from "../api/user"
 import { user } from "../types"
-import { getRooms } from "../api/room"
+import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
 
 type userPayload = {
@@ -11,8 +11,7 @@ type userPayload = {
 const useInitial = () => {
   const [user, setUser] = useState<userPayload>(null)
   const [friends, setFriends] = useState(null)
-  // const [users, setUsers] = useState(null)
-  const [rooms, setRooms] = useState(null)
+  const [userRooms, setUserRooms] = useState(null)
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -34,9 +33,10 @@ const useInitial = () => {
                 console.log(err)
               })
 
-            getRooms()
+            getUserRooms()
               .then(response => {
-                setRooms(response)
+                setUserRooms(response)
+                console.log("user room response", response)
               })
               .catch((err: any) => {
                 console.log(err)
@@ -56,10 +56,8 @@ const useInitial = () => {
     setUser,
     friends,
     setFriends,
-    // users,
-    // setUsers,
-    rooms,
-    setRooms
+    userRooms,
+    setUserRooms
   }
 }
 

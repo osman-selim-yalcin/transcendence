@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { getUsers } from "../api/user"
 import { user } from "../types"
+import { UserContext } from "../context/UserContext"
 
 export default function UserList() {
   const [search, setSearch] = useState("")
   const [searchParams, setSearchParams] = useSearchParams()
   const [users, setUsers] = useState(null)
+  const { user } = useContext(UserContext)
 
   useEffect(() => {
     const queryParam = searchParams.get("q")
@@ -23,11 +25,11 @@ export default function UserList() {
     if (search !== "") {
       setSearchParams(params)
       getUsers(search)
-        .then((response) => {
-          if (response !== undefined) {
-            setUsers(response)
-          }
+        .then((response: user[]) => {
+          setUsers(response)
         })
+    } else {
+      setUsers(null)
     }
     console.log("deneme")
   }, [search])
@@ -35,16 +37,34 @@ export default function UserList() {
   return (
     <>
       <h1>Users</h1>
-      <input onChange={(e) => {
-        setSearch(e.target.value)
-        setSearchParams()
-      }} type="text" value={search}/>
-      <h2>User List</h2>
-      <ul>
-        {users ? users.map((user: user) => (
-          <UserIndex user={user} />
-        )) : "Search for users"}
-      </ul>
+      {user ?
+        <>
+          <input onChange={(e) => {
+            setSearch(e.target.value)
+            setSearchParams()
+          }} type="text" value={search} />
+          <h2>User List</h2>
+          {users ?
+            <>
+              {users.length ?
+                <ul>
+                  {users.map((user: user) => (
+                    <li key={user.id}>
+                      <UserIndex user={user} />
+                    </li>
+                  ))}
+                </ul>
+                :
+                <p>No user found with the given input</p>
+              }
+            </>
+            :
+            <p>Type something to search</p>
+          }
+        </>
+        :
+        <p>Sign in to see other users</p>
+      }
     </>
   )
 }

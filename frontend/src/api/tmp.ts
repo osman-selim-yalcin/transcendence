@@ -8,7 +8,7 @@ export const login = (username: string, setUser: any, navigate: Function) => {
     .then(res => {
       localStorage.setItem("token", res.data.token)
       setUser(res.data.user)
-      navigate("/")
+      window.location.reload()
     })
     .catch(err => {
       console.log(err)
