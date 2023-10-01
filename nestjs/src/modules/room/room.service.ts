@@ -13,7 +13,7 @@ import {
   isUserInRoom,
   isCreator,
 } from 'src/functions/room';
-import { verifyToken } from '../../functions/user';
+import { verifyToken } from 'src/functions/token';
 import { roomDto } from 'src/types/room.dto';
 import { Message } from 'src/typeorm/Message';
 import { messageDto } from 'src/types/message.dto';
@@ -92,8 +92,6 @@ export class RoomService {
   async joinRoom(token: string, roomDetails: roomDto) {
     const loginUser = await this.tokenToUser(token);
     const room = await this.idToRoom(roomDetails.id);
-    console.log(isUserInRoom(room, loginUser));
-    console.log(room.users);
     if (isUserInRoom(room, loginUser))
       throw new HttpException('user already in room', 400);
     checksForJoin(room, loginUser, roomDetails.password);
@@ -125,11 +123,6 @@ export class RoomService {
       }),
       room,
     });
-
-    if (!room.messages) room.messages = [msg];
-    else room.messages.push(msg);
-
-    await this.roomRep.save(room);
     return this.messageRep.save(msg);
   }
 

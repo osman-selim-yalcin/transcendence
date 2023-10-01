@@ -1,22 +1,39 @@
 import { HttpException, Injectable, NestMiddleware } from '@nestjs/common';
-import { verifyToken } from 'src/functions/user';
+import { InjectRepository } from '@nestjs/typeorm';
+import { verifyToken } from 'src/functions/token';
+import { User } from 'src/typeorm/User';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class tokenMiddleware implements NestMiddleware {
-  use(req: any, res: any, next: () => void) {
-    const token = req.headers?.authorization?.split(' ')[1];
-    if (!token) throw new HttpException('Token not found', 401);
-    if (!verifyToken(token)) throw new HttpException('Token not valid', 401);
-    req.token = token;
+export class tokenToUser implements NestMiddleware {
+  constructor(@InjectRepository(User) private userRep: Repository<User>) {}
+
+  async use(req: any, res: any, next: (error?: any) => void) {
+    const user = await this.tokenToUser(req.token);
+    if (req.body.id) {
+      const friendUser = await this.idToUser(req.body.id, ['friends']);
+      req.friendUser = friendUser;
+    }
+    req.user = user;
     next();
   }
-}
 
-@Injectable()
-export class userIdMiddleware implements NestMiddleware {
-  use(req: any, res: any, next: () => void) {
-    const user = verifyToken(req.token);
-    req.body.id = user.id;
-    next();
+  async tokenToUser(token: string) {
+    const loginUserInfo = verifyToken(token);
+    const user = await this.userRep.findOne({
+      where: { id: loginUserInfo.id },
+      relations: ['friends', 'notifications', 'rooms', 'notifications.creator'],
+    });
+    if (!user) throw new HttpException('user not found', 400);
+    return user;
+  }
+
+  async idToUser(id: number, relations?: string[]) {
+    const user = await this.userRep.findOne({
+      where: { id: id },
+      relations: relations || [],
+    });
+    if (!user) throw new HttpException('user not found', 404);
+    return user;
   }
 }

@@ -12,7 +12,7 @@ import {
   isBanned,
   isInvited,
 } from 'src/functions/room';
-import { verifyToken } from '../../functions/user';
+import { verifyToken } from 'src/functions/token';
 import { roomCommands } from 'src/types/room.dto';
 
 @Injectable()

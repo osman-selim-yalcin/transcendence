@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -18,6 +18,7 @@ interface CustomSocket extends Socket {
     origin: ['http://localhost:5173'],
   },
 })
+@Injectable()
 export class socketGateway implements OnModuleInit {
   constructor(private userService: UsersService) {}
 
@@ -35,6 +36,8 @@ export class socketGateway implements OnModuleInit {
     });
 
     this.server.on('connection', async (socket: CustomSocket) => {
+      console.log('connection', socket.sessionID);
+
       socket.join(socket.sessionID);
       const socketUser = await this.userService.findUserBySessionID(
         socket.sessionID,
@@ -47,6 +50,17 @@ export class socketGateway implements OnModuleInit {
         this.server.emit('user disconnected', socket.sessionID);
         console.log("user", socketUser.username, "disconnected")
       });
+    });
+  }
+
+  async sendNotification(sessionID: string, content: any) {
+    console.log('sendNotification');
+    console.log(sessionID);
+    this.server.in(sessionID).emit('notification', {
+      content: content.content,
+      type: content.type,
+      createdAt: content.createdAt,
+      owner: content.owner,
     });
   }
 
