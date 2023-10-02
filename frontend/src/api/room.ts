@@ -70,6 +70,27 @@ export const deleteRoom = async (body: roomPayload) => {
   )
 }
 
+export const sendMessage = async (body: {content: string, roomID: number}) => {
+  axios
+    .post(
+      "http://localhost:3000/api/room/message",
+      body,
+      {
+        headers: {
+          authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+        }
+      }
+    )
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+
+
+
 // <---------------- REFACTOR ----------------->
 
 export const startRoom = async (username: string) => {

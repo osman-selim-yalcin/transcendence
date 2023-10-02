@@ -10,9 +10,10 @@ export function SocketProvider({ children }: PropsWithChildren) {
   const socket = io("http://localhost:3000", { autoConnect: false });
 
   useEffect(() => {
+    console.log("called", user)
     if (user) {
       socket.auth = { sessionID: user.sessionID }
-      socket.connect()
+      console.log("socket", socket.connect())
     }
     return (() => {
       socket.disconnect()

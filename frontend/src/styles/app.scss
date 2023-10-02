@@ -21,6 +21,7 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
+  // align-self: flex-end;
 }
 button:hover {
   border-color: #646cff;
@@ -30,125 +31,144 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  // height: 100vh
+  height: 100vh;
+}
 
 body {
-	margin: 0;
-	padding: 0;
+  min-height: 100vh;
+  // height: inherit;
+  // position: relative;
+  display: flex;
 }
 
-.navbar {
-	display: flex;
-	width: 100vw;
-	align-items: center;
-	justify-content: space-evenly;
-	&_left{
-		display: flex;
-		gap: 10px;
-	}
-
-	&_right{
-		display: flex;
-	}
+#root {
+  flex-grow: 1;
 }
 
-.chat {
-	position: absolute;
-	bottom: 0;
-	right: 0;
-	width: 100vw;
-	height: 600px;
+.root-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-	display: flex;
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: flex-end;
-	gap: 10px;
+main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  // max-height: 80vh;
+}
 
-	&_div{
-		width: 500px;
-		height: 600px;
+footer {
+  flex-shrink: 0;
+  // flex-grow: 1;
+  min-height: 50px;
+  background-color: #646cff;
+}
+
+// .chat {
+// 	position: absolute;
+// 	bottom: 0;
+// 	right: 0;
+// 	width: 100vw;
+// 	height: 600px;
+
+// 	display: flex;
+// 	flex-direction: row;
+// 	justify-content: flex-end;
+// 	align-items: flex-end;
+// 	gap: 10px;
+
+// 	&_div{
+// 		width: 500px;
+// 		height: 600px;
 		
-		&_search{
-			background-color: blueviolet;
-			height: 100px;
-		}
+// 		&_search{
+// 			background-color: blueviolet;
+// 			height: 100px;
+// 		}
 		
-	}
+// 	}
 
-	&_rooms{
-		display: flex;
-		flex-direction: row;
-		gap: 10px;
-		align-items: end;
-		&_room {
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
+// 	&_rooms{
+// 		display: flex;
+// 		flex-direction: row;
+// 		gap: 10px;
+// 		align-items: end;
+// 		&_room {
+// 			display: flex;
+// 			flex-direction: column;
+// 			justify-content: space-between;
 			
-			background-color: rosybrown;
-			width: 200px;
-			height: 300px;
+// 			background-color: rosybrown;
+// 			width: 200px;
+// 			height: 300px;
 
-			transition: 500ms;
+// 			transition: 500ms;
 
-			&_header {
-				position: relative;
-				display: flex;
-				justify-content: space-between;
-				border-bottom: 2px solid black;
-				&_avatar{
-					height: 100%;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					img{
-						height: 50px;
-					}
-				}
-				&_buttons{
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					&_button  {
-						width: 20px;
-						height: 20px;
-						background-color:azure;
-						text-align: center;
-					}
-					&_button:active {
-						background-color: grey;
-					}
-				}
+// 			&_header {
+// 				position: relative;
+// 				display: flex;
+// 				justify-content: space-between;
+// 				border-bottom: 2px solid black;
+// 				&_avatar{
+// 					height: 100%;
+// 					display: flex;
+// 					justify-content: center;
+// 					align-items: center;
+// 					img{
+// 						height: 50px;
+// 					}
+// 				}
+// 				&_buttons{
+// 					display: flex;
+// 					justify-content: center;
+// 					align-items: center;
+// 					&_button  {
+// 						width: 20px;
+// 						height: 20px;
+// 						background-color:azure;
+// 						text-align: center;
+// 					}
+// 					&_button:active {
+// 						background-color: grey;
+// 					}
+// 				}
 
-			}
+// 			}
 			
-			&_messages {
-				background-color: darkred;
-				height: 90%;
-				overflow-y: scroll;
+// 			&_messages {
+// 				background-color: darkred;
+// 				height: 90%;
+// 				overflow-y: scroll;
 
-				&_msg{
-					background-color: darkorange;
-					height: 15%;
-					border: 1px solid black;
-					&_content{
-						background-color: darkorchid;
-					}
-				}
-			}
+// 				&_msg{
+// 					background-color: darkorange;
+// 					height: 15%;
+// 					border: 1px solid black;
+// 					&_content{
+// 						background-color: darkorchid;
+// 					}
+// 				}
+// 			}
 			
-			&_input {
-				display: flex;
-				height: 10%;
-				background-color: darkgreen;
+// 			&_input {
+// 				display: flex;
+// 				height: 10%;
+// 				background-color: darkgreen;
 				
-				input{
-					width: 100%;
-				}
-			}
-		}
-	}
-}
+// 				input{
+// 					width: 100%;
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
 
 .hidden {

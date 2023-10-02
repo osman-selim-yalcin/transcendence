@@ -1,14 +1,19 @@
-import Navbar from '../components/Navbar'
+import Navbar from '../components/Navbar/Navbar'
 import { Outlet } from 'react-router-dom'
+import "../styles/app.scss"
 
 export default function RootLayout() {
 
 
   return (
-    <div>
+    <div className='root-layout'>
       <Navbar />
-      <Outlet />
-      {/* {user && <Chat />} */}
+      <main>
+        <Outlet />
+      </main>
+      <footer>
+        Transcedence &copy;
+      </footer>
     </div>
   )
 }

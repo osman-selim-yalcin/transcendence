@@ -39,11 +39,13 @@ export class socketGateway implements OnModuleInit {
       const socketUser = await this.userService.findUserBySessionID(
         socket.sessionID,
       );
+      console.log("user", socketUser.username, "connected")
       this.userService.handleStatusChange(socketUser, 'online');
-
+      
       socket.on('disconnect', async () => {
         this.userService.handleStatusChange(socketUser, 'offline');
         this.server.emit('user disconnected', socket.sessionID);
+        console.log("user", socketUser.username, "disconnected")
       });
     });
   }

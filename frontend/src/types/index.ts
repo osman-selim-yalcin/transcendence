@@ -22,7 +22,7 @@ export type room = {
   isGroup: boolean
   isInviteOnly: boolean
   users: user[]
-  messages: any[]
+  messages: message[]
 }
 
 export interface roomPayload {
@@ -31,6 +31,13 @@ export interface roomPayload {
   users: { id: string }[]
   isGroup: boolean
   password?: string
+}
+
+export interface message {
+  id: number
+  content: string
+  createdAt: string
+  owner: string
 }
 
 // export type typeMsg = {

@@ -6,6 +6,7 @@ import Game from "../views/Game"
 import FriendList from "../views/FriendList"
 import UserRoomList from "../views/RoomList"
 import UserList from "../views/UserList"
+import { Chat } from "../components/Chat/Chat"
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
       {
         path: "/users",
         element: <UserList />
+      },
+      {
+        path: "/chat",
+        element: <Chat />
       }
     ]
   }

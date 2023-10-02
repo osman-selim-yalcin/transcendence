@@ -13,9 +13,9 @@ export function privateHandler(users: User[], loginUser: User) {
     throw new HttpException('private room can only have 2 users', 400);
 
   const user = users.find((u) => u.id !== loginUser.id);
-  const rooms = loginUser.rooms.filter((r) => r.isGroup === false);
+  const rooms = loginUser.rooms?.filter((r) => r.isGroup === false);
   for (const r of rooms) {
-    if (r.users.find((u) => u.id === user.id)) {
+    if (r.users?.find((u) => u.id === user.id)) {
       throw new HttpException('room already exists', 400);
     }
   }

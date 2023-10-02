@@ -4,12 +4,9 @@ import { user } from "../types"
 import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
 
-type userPayload = {
-  username: string
-}
 
 const useInitial = () => {
-  const [user, setUser] = useState<userPayload>(null)
+  const [user, setUser] = useState<user>(null)
   const [friends, setFriends] = useState(null)
   const [userRooms, setUserRooms] = useState(null)
 

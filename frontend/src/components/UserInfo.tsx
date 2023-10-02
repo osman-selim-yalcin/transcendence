@@ -6,7 +6,10 @@ export default function Profile() {
 
   return (
     <div>
-      {user ? user?.username : <div>User not found</div>}
+      {user ?
+      user.username
+      :
+      <div>User not found</div>}
     </div>
   )
 }

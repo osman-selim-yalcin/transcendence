@@ -72,7 +72,7 @@ export default function UserList() {
 function UserIndex({ user }: { user: user }) {
   return (
     <>
-      {user.username}
+      {user.username} - {user.id}
     </>
   )
 }
