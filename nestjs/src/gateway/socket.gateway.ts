@@ -64,6 +64,12 @@ export class socketGateway implements OnModuleInit {
     });
   }
 
+  async sendPrivateMessage(roomID: string, msg: any) {
+    this.server.to(roomID).emit('private message', {
+      ...msg,
+    });
+  }
+
   @SubscribeMessage('join room')
   onJoinRoom(client: CustomSocket, payload: any) {
     payload.clients.forEach(async (client) => {

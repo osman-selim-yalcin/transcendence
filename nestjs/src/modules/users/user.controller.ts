@@ -8,7 +8,12 @@ export class UsersController {
 
   @Get()
   allUsers(@Req() req: any) {
-    return this.usersService.allUsers(req.query, req.params);
+    return this.usersService.allUsers(req.query);
+  }
+
+  @Get('friends')
+  getFriends(@Req() req: any) {
+    return this.usersService.getFriends(req.user);
   }
 
   @Post()
@@ -29,10 +34,5 @@ export class UsersController {
   @Get('info')
   getUserInfo(@Req() req: any) {
     return this.usersService.getUserInfo(req.user);
-  }
-
-  @Get('friends')
-  getFriends(@Req() req: any) {
-    return this.usersService.getFriends(req.user);
   }
 }

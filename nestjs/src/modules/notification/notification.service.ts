@@ -30,6 +30,14 @@ export class NotificationService {
     });
     if (user.id === creator.id) throw new HttpException('same user', 400);
 
+    if (details.type === notificationTypes.FRIEND) {
+      user.friends?.map((f) => {
+        if (f.id === creator.id) throw new HttpException('already friend', 400);
+      });
+    } else {
+      throw new HttpException('only add friend notification (tmp)', 400);
+    }
+
     const notification = await this.notificationRep.create({
       content: details.content,
       creator: creator,

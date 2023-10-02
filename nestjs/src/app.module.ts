@@ -30,6 +30,7 @@ import { tokenMiddleware } from './middleware/token.middleware';
       entities: [User, Room, Message, Notification],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([User]),
     PassportModule.register({ session: true }),
     ConfigModule.forRoot({ isGlobal: true }),
   ],
