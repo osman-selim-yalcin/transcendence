@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { OnModuleInit } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -18,7 +18,6 @@ interface CustomSocket extends Socket {
     origin: ['http://localhost:5173'],
   },
 })
-@Injectable()
 export class socketGateway implements OnModuleInit {
   constructor(private userService: UsersService) {}
 
@@ -36,15 +35,15 @@ export class socketGateway implements OnModuleInit {
     });
 
     this.server.on('connection', async (socket: CustomSocket) => {
-      console.log('connection', socket.sessionID);
-
-      socket.join(socket.sessionID);
       const socketUser = await this.userService.findUserBySessionID(
         socket.sessionID,
       );
+      if (!socketUser) return;
+      for (const room of socketUser.rooms) socket.join(room.id.toString());
+      socket.join(socket.sessionID);
+
       console.log('user', socketUser.username, 'connected');
       this.userService.handleStatusChange(socketUser, 'online');
-
       socket.on('disconnect', async () => {
         this.userService.handleStatusChange(socketUser, 'offline');
         this.server.emit('user disconnected', socket.sessionID);
@@ -64,25 +63,12 @@ export class socketGateway implements OnModuleInit {
     });
   }
 
-  async sendPrivateMessage(roomID: string, msg: any) {
-    this.server.to(roomID).emit('private message', {
-      ...msg,
-    });
-  }
-
-  @SubscribeMessage('join room')
-  onJoinRoom(client: CustomSocket, payload: any) {
-    payload.clients.forEach(async (client) => {
-      this.server.in(client).socketsJoin(payload.room);
-    });
-  }
-
   @SubscribeMessage('private message')
-  onPrivateMessage(client: CustomSocket, payload: any) {
+  async onPrivateMessage(client: CustomSocket, payload: any) {
+    console.log('sendPrivateMessage', payload.to);
+    console.log(await this.server.in(payload.to).fetchSockets());
     this.server.to(payload.to).emit('private message', {
-      content: payload.content,
-      from: payload.from,
-      to: payload.to,
+      ...payload.msg,
     });
   }
 

@@ -14,11 +14,13 @@ import { RoomController } from './modules/room/room.controller';
 import { NotificationController } from './modules/notification/notification.controller';
 import { NotificationModule } from './modules/notification/notification.module';
 import { tokenMiddleware } from './middleware/token.middleware';
+import { SocketClientModule } from './gateway/socket.module';
 @Module({
   imports: [
     UserModule,
     AuthModule,
     RoomModule,
+    SocketClientModule,
     NotificationModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

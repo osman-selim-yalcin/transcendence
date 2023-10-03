@@ -57,6 +57,9 @@ export class UsersService {
   }
 
   async findUserBySessionID(sessionID: string) {
-    return this.userRep.findOne({ where: { sessionID: sessionID } });
+    return this.userRep.findOne({
+      where: { sessionID: sessionID },
+      relations: ['rooms'],
+    });
   }
 }

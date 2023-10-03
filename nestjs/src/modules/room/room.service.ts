@@ -21,10 +21,10 @@ import { socketGateway } from 'src/gateway/socket.gateway';
 @Injectable()
 export class RoomService {
   constructor(
+    private server: socketGateway,
     @InjectRepository(User) private userRep: Repository<User>,
     @InjectRepository(Room) private roomRep: Repository<Room>,
     @InjectRepository(Message) private messageRep: Repository<Message>,
-    private socketService: socketGateway,
   ) {}
 
   async getRooms(query: any) {
@@ -42,7 +42,10 @@ export class RoomService {
 
   async getUserRooms(user: User) {
     const userRooms = [];
-    for (const room of user.rooms) userRooms.push(roomModify(room));
+    for (const room of user.rooms) {
+      userRooms.push(roomModify(room));
+    }
+
     return userRooms;
   }
 
@@ -112,7 +115,11 @@ export class RoomService {
       }),
       room,
     });
-    this.socketService.sendPrivateMessage(room.id.toString(), msg);
+    console.log('msg', details.roomID);
+    this.server.onPrivateMessage(null, {
+      to: details.roomID.toString(),
+      msg,
+    });
     return this.messageRep.save(msg);
   }
 
@@ -141,4 +148,13 @@ export class RoomService {
     if (!room) throw new HttpException('room not found', 400);
     return room;
   }
+
+  // async joinRooms(user: User) {
+  //   for (const room of user.rooms) {
+  //     this.server.onJoinRoom(null, {
+  //       clients: [user.sessionID],
+  //       room: room.id.toString(),
+  //     });
+  //   }
+  // }
 }
