@@ -1,14 +1,16 @@
 import { useContext, useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import { getUsers } from "../api/user"
-import { user } from "../types"
-import { UserContext } from "../context/UserContext"
+import { getUsers } from "../../api/user"
+import { user } from "../../types"
+import { UserContext } from "../../context/UserContext"
+import "./UserList.scss"
+import { addFriend } from "../../api/friend"
 
 export default function UserList() {
   const [search, setSearch] = useState("")
   const [searchParams, setSearchParams] = useSearchParams()
   const [users, setUsers] = useState(null)
-  const { user } = useContext(UserContext)
+  const { user, friends } = useContext(UserContext)
 
   useEffect(() => {
     const queryParam = searchParams.get("q")
@@ -26,7 +28,7 @@ export default function UserList() {
       setSearchParams(params)
       getUsers(search)
         .then((response: user[]) => {
-          setUsers(response)
+          setUsers(response.filter((singleUser) => user.id !== singleUser.id))
         })
     } else {
       setUsers(null)
@@ -34,9 +36,14 @@ export default function UserList() {
     console.log("deneme")
   }, [search])
 
+ function isFriendId(id: number) {
+  const found = friends.find((friend) => friend.id === id)
+  return found === undefined ? false : true;
+ }
+
   return (
     <>
-      <h1>Users</h1>
+      <h3>Users</h3>
       {user ?
         <>
           <input onChange={(e) => {
@@ -48,9 +55,10 @@ export default function UserList() {
             <>
               {users.length ?
                 <ul>
-                  {users.map((user: user) => (
-                    <li key={user.id}>
-                      <UserIndex user={user} />
+                  {users.map((singleUser: user) => (
+                    singleUser.id !== user.id &&
+                    <li key={singleUser.id}>
+                      <UserIndex user={singleUser} isFriend={isFriendId(singleUser.id)} />
                     </li>
                   ))}
                 </ul>
@@ -69,10 +77,19 @@ export default function UserList() {
   )
 }
 
-function UserIndex({ user }: { user: user }) {
+function UserIndex({ user, isFriend }: { user: user, isFriend: boolean }) {
+  const { reloadFriends } = useContext(UserContext)
   return (
     <>
-      {user.username} - {user.id}
+      <p>
+        {user.username} - {user.id}
+      </p>
+      {!isFriend && 
+      <button onClick={async () => {
+        await addFriend({ id: user.id })// to be changed
+        reloadFriends()
+      }}>Add friend</button>
+      }
     </>
   )
 }

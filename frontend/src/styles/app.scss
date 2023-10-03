@@ -35,40 +35,41 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  // height: 100vh
   height: 100vh;
+  scroll-behavior: smooth;
 }
 
 body {
-  min-height: 100vh;
+  height: 100vh;
   // height: inherit;
   // position: relative;
   display: flex;
 }
 
 #root {
-  flex-grow: 1;
+  height: 100vh;
+  width: 100vw;
 }
 
 .root-layout {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  // overflow: hidden;
 }
 
 main {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  // max-height: 80vh;
+  min-height: 0;
 }
 
 footer {
-  flex-shrink: 0;
-  // flex-grow: 1;
+  display: flex;
+  align-items: center;
   min-height: 50px;
-  background-color: #646cff;
+  background-color: #56b6c9;
 }
 
 // .chat {
@@ -267,7 +268,7 @@ footer {
 
 .notification{
 	position: relative;
-	z-index: 10;
+	z-index: 1;
 	&_img{
 		border-radius: 50%;
 		height: 20px;

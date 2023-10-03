@@ -17,9 +17,50 @@ export async function getFriends() {
     })
 }
 
-// -----------------------------------------------
+export async function addFriend(data: { id: number }) {
+  return axios
+    .post("http://localhost:3000/api/user", 
+    data,
+    {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
 
-export const addFriend = (
+export async function deleteFriend(data: { id: number }) {
+  return axios
+    .delete("http://localhost:3000/api/user",
+    {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      },
+      data
+    })
+    .then(response => {
+      return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+
+
+
+// --------------------- REFACTOR --------------------------
+
+export const deprecatedAddFriend = (
   username: string
   // setFriends: Function,
   // friends: typeUser[]

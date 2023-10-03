@@ -3,9 +3,9 @@ import Home from "../views/Home"
 import Profile from "../views/Profile"
 import RootLayout from "../layouts/RootLayout"
 import Game from "../views/Game"
-import FriendList from "../views/FriendList"
-import UserRoomList from "../views/RoomList"
-import UserList from "../views/UserList"
+import FriendList from "../components/FriendList/FriendList"
+import UserRoomList from "../components/RoomList/RoomList"
+import UserList from "../components/UserList/UserList"
 import { Chat } from "../components/Chat/Chat"
 
 export const router = createBrowserRouter([

@@ -1,13 +1,14 @@
 import { useContext } from 'react'
-import { UserContext } from '../context/UserContext'
-import { user } from '../types'
+import { UserContext } from '../../context/UserContext'
+import { user } from '../../types'
+import "./FriendList.scss"
+import { deleteFriend } from '../../api/friend'
 
 export default function FriendList() {
-  const { user, friends }: { user: user, friends: user[] } = useContext(UserContext)
-
+  const { user, friends }= useContext(UserContext)
   return (
     <>
-      <h1>Friends</h1>
+      <h3>Friends</h3>
       {user ?
         (friends ?
           <>
@@ -34,9 +35,16 @@ export default function FriendList() {
 }
 
 function FriendIndex({ user }: { user: user }) {
+  const { reloadFriends } = useContext(UserContext)
   return (
     <>
-      {user.username} - <small>{user.status}</small>
+      <p>
+        {user.username} - <small>{user.status}</small>
+      </p>
+      <button onClick={async () => {
+        await deleteFriend({ id: user.id })
+        reloadFriends()
+      }}>Remove Friend</button>
     </>
   )
 }

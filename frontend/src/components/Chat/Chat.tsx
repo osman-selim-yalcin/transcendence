@@ -16,23 +16,23 @@ export function Chat() {
     <>
       <h1>Chat</h1>
       <div className="chat">
-        <Sidebar setCurrentRoomID={setCurrentRoomID}/>
+        <Chatbar setCurrentRoomID={setCurrentRoomID}/>
         <ChatContent currentRoomID={currentRoomID}/>
       </div>
     </>
   )
 }
 
-// SIDEBAR MESSAGES
+// CHATBAR MESSAGES
 
-function Sidebar({ setCurrentRoomID }: { setCurrentRoomID: Function }) {
+function Chatbar({ setCurrentRoomID }: { setCurrentRoomID: Function }) {
   const { userRooms }: { userRooms: room[] | null } = useContext(UserContext)
 
 
 
   return (
-    <div className="sidebar">
-      <h2>Sidebar</h2>
+    <div className="chatbar">
+      <h2>Chatbar</h2>
       <ul className="noselect">
       {userRooms && userRooms.map((room: room) => {
         // if (room.messages.length)
@@ -68,7 +68,7 @@ function MessageIndex({ room }: { room: room }) {
 }
 }
 
-// SIDEBAR MESSAGES
+// CHATBAR MESSAGES
 
 function ChatContent({ currentRoomID }: {currentRoomID: number}) {
 

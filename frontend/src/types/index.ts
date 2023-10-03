@@ -7,6 +7,15 @@ export type user = {
   lastSeen: string
 }
 
+export interface userContext {
+  user: user
+  setUser: Function
+  friends: user[]
+  reloadFriends: Function
+  userRooms: room[]
+  reloadUserRooms: Function
+}
+
 export type socketPayload = {}
 
 export type room = {

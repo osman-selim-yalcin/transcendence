@@ -1,10 +1,10 @@
 import { PropsWithChildren, createContext } from "react"
 import useInitial from "../hooks/useInitial"
-import { room, user } from "../types"
+import { room, user, userContext } from "../types"
 import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
 
-export const UserContext = createContext(null)
+export const UserContext = createContext<userContext>(null)
 
 export default function UserProvider({ children }: PropsWithChildren) {
   const { user, setUser, friends, setFriends, userRooms, setUserRooms } = useInitial()
@@ -23,7 +23,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
       })
   }
   return (
-    <UserContext.Provider value={{ user, setUser, friends, userRooms, reloadUserRooms }}>
+    <UserContext.Provider value={{ user, setUser, friends, reloadFriends, userRooms, reloadUserRooms }}>
       {children}
     </UserContext.Provider>
   )

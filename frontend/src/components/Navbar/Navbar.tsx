@@ -16,9 +16,9 @@ export default function Navbar() {
       <div className="navbar_left">
         <Link to="/">Home</Link>
         <Link to="/profile">Profile</Link>
-        <Link to={"/friends"}>Friends</Link>
+        {/* <Link to={"/friends"}>Friends</Link>
         <Link to={"/users"}>Users</Link>
-        <Link to={"/user-rooms"}>User Rooms</Link>
+        <Link to={"/user-rooms"}>User Rooms</Link> */}
         <Link to={"/chat"}>Chat</Link>
       </div>
       <div className="navbar_right">

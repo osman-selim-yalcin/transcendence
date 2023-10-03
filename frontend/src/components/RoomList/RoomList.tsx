@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react'
-import { UserContext } from '../context/UserContext'
-import { room, roomPayload, user } from '../types'
-import { Modal } from '../components/Modal'
-import GroupCreation from '../components/forms/GroupCreation'
-import { deleteRoom } from '../api/room'
+import { UserContext } from '../../context/UserContext'
+import { room, roomPayload, user } from '../../types'
+import { Modal } from '../Modal'
+import GroupCreation from '../forms/GroupCreation'
+import { deleteRoom } from '../../api/room'
+import "./RoomList.scss"
 
 export default function UserRoomList() {
   const { user, userRooms }: { user: user, userRooms: room[] } = useContext(UserContext)
@@ -12,7 +13,7 @@ export default function UserRoomList() {
 
   return (
     <>
-      <h1>Rooms</h1>
+      <h3>Rooms</h3>
       {user ?
         <>
           <button onClick={() => {
