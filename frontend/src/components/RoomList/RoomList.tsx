@@ -22,7 +22,7 @@ export default function UserRoomList() {
           {userRooms ?
             <>
               {userRooms.length ?
-                <ul>
+                <ul className={"room-list"}>
                   {userRooms.map((room: room) => {
                     return (
                       <li key={room.id}>

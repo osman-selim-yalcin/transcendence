@@ -5,7 +5,7 @@ import "./FriendList.scss"
 import { deleteFriend } from '../../api/friend'
 
 export default function FriendList() {
-  const { user, friends }= useContext(UserContext)
+  const { user, friends } = useContext(UserContext)
   return (
     <>
       <h3>Friends</h3>
@@ -15,7 +15,7 @@ export default function FriendList() {
             {friends.length ?
               <ul>
                 {friends.map((item: user, index: number) => (
-                  <li key={index}>
+                  <li className={"friend-index"} key={index}>
                     <FriendIndex user={item} />
                   </li>
                 ))}

@@ -6,15 +6,10 @@
   margin: auto;
   flex-grow: 1;
   min-height: 0;
-  // overflow-y: scroll;
-  // flex-basis: 0;
-  // height: 80vh;
 }
 
 .chatbar {
-  // height: 80vh;
   background-color: rgb(131, 131, 131);
-  // gap: 1rem;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -41,7 +36,6 @@
 }
 
 .chat-content {
-  // height: 80vh;
   background-color:cadetblue;
   display: flex;
   flex-direction: column;
@@ -50,18 +44,28 @@
     padding: 1rem;
     border-bottom: 1px solid #c8d5b9;
   }
-  ul {
-    // max-height: 100%;
+  .message-list {
     flex-grow: 1;
-    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+    list-style: none;
+    padding-right: 8rem;
+    padding-left: 3rem;
+    box-sizing: border-box;
+
+    li.main-user {
+      text-align: right;
+      align-self: flex-end;
+    }
   }
+
   form {
     display: flex;
     gap: 2rem;
     margin: 1rem;
     align-items: end;
     input {
-      // margin: 2rem 0;
       flex-grow: 1;
       flex-shrink: 0;
       height: 100%;

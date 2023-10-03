@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
 import { getUser } from "../api/user"
-import { user } from "../types"
+import { room, user } from "../types"
 import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
 
 
 const useInitial = () => {
   const [user, setUser] = useState<user>(null)
-  const [friends, setFriends] = useState(null)
-  const [userRooms, setUserRooms] = useState(null)
+  const [friends, setFriends] = useState<user[]>(null)
+  const [userRooms, setUserRooms] = useState<room[]>(null)
 
   useEffect(() => {
     if (localStorage.getItem("token")) {

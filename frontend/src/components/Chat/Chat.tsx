@@ -1,4 +1,4 @@
-import { MutableRefObject, useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../context/UserContext"
 import Room from "../Room"
 import List from "../List"
@@ -73,7 +73,7 @@ function MessageIndex({ room }: { room: room }) {
 function ChatContent({ currentRoomID }: {currentRoomID: number}) {
 
   const [currentRoom, setCurrentRoom] = useState<room>(null)
-  const { userRooms }: {userRooms: room[]} = useContext(UserContext)
+  const { user, userRooms } = useContext(UserContext)
   const scrollRef = useRef(null)
 
   useEffect(() => {
@@ -91,10 +91,9 @@ function ChatContent({ currentRoomID }: {currentRoomID: number}) {
     {currentRoom ?
       <>
       <h2>Chat Content</h2>
-      <ul>
-
+      <ul className={"message-list"}>
       {currentRoom.messages.map((message: message, index: number) => (
-        <li key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
+        <li className={user.username === message.owner ? "main-user" : ""} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
           <b>{message.owner}</b>
           <p>{message.content}</p>
         </li>
