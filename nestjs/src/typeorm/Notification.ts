@@ -1,5 +1,13 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './User';
+import { notificationTypes } from 'src/types/notification.dto';
 
 @Entity({ name: 'notifications' })
 export class Notification {
@@ -12,12 +20,23 @@ export class Notification {
   @Column()
   createdAt: string;
 
-  @Column()
-  creator: string;
+  @OneToOne(() => User)
+  @JoinColumn()
+  creator: User;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: notificationTypes,
+    default: notificationTypes.FRIEND,
+  })
   type: string;
 
-  @ManyToOne((type) => User, (user) => user.notifications)
+  @OneToOne(() => Notification, (notification) => notification.sibling, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  sibling: Notification;
+
+  @ManyToOne(() => User, (user) => user.notifications)
   user: User;
 }

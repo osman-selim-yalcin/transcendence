@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/User';
-import { createToken, verifyToken } from 'src/functions/user';
+import { createToken } from 'src/functions/token';
 
 @Injectable()
 export class AuthService {

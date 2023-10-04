@@ -9,7 +9,7 @@ export function roomModify(room: Room) {
 }
 
 export function privateHandler(users: User[], loginUser: User) {
-  if (users.length > 2)
+  if (users.length !== 2)
     throw new HttpException('private room can only have 2 users', 400);
 
   const user = users.find((u) => u.id !== loginUser.id);

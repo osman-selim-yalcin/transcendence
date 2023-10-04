@@ -35,34 +35,40 @@ export class socketGateway implements OnModuleInit {
     });
 
     this.server.on('connection', async (socket: CustomSocket) => {
-      socket.join(socket.sessionID);
       const socketUser = await this.userService.findUserBySessionID(
         socket.sessionID,
       );
-      console.log("user", socketUser.username, "connected")
+      if (!socketUser) return;
+      for (const room of socketUser.rooms) socket.join(room.id.toString());
+      socket.join(socket.sessionID);
+
+      console.log('user', socketUser.username, 'connected');
       this.userService.handleStatusChange(socketUser, 'online');
-      
       socket.on('disconnect', async () => {
         this.userService.handleStatusChange(socketUser, 'offline');
         this.server.emit('user disconnected', socket.sessionID);
-        console.log("user", socketUser.username, "disconnected")
+        console.log('user', socketUser.username, 'disconnected');
       });
     });
   }
 
-  @SubscribeMessage('join room')
-  onJoinRoom(client: CustomSocket, payload: any) {
-    payload.clients.forEach(async (client) => {
-      this.server.in(client).socketsJoin(payload.room);
+  async sendNotification(sessionID: string, content: any) {
+    console.log('sendNotification');
+    console.log(sessionID);
+    this.server.in(sessionID).emit('notification', {
+      content: content.content,
+      type: content.type,
+      createdAt: content.createdAt,
+      owner: content.owner,
     });
   }
 
   @SubscribeMessage('private message')
-  onPrivateMessage(client: CustomSocket, payload: any) {
+  async onPrivateMessage(client: CustomSocket, payload: any) {
+    console.log('sendPrivateMessage', payload.to);
+    console.log(await this.server.in(payload.to).fetchSockets());
     this.server.to(payload.to).emit('private message', {
-      content: payload.content,
-      from: payload.from,
-      to: payload.to,
+      ...payload.msg,
     });
   }
 

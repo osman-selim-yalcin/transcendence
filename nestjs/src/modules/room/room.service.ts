@@ -13,24 +13,25 @@ import {
   isUserInRoom,
   isCreator,
 } from 'src/functions/room';
-import { verifyToken } from '../../functions/user';
 import { roomDto } from 'src/types/room.dto';
 import { Message } from 'src/typeorm/Message';
 import { messageDto } from 'src/types/message.dto';
+import { socketGateway } from 'src/gateway/socket.gateway';
 
 @Injectable()
 export class RoomService {
   constructor(
+    private server: socketGateway,
     @InjectRepository(User) private userRep: Repository<User>,
     @InjectRepository(Room) private roomRep: Repository<Room>,
     @InjectRepository(Message) private messageRep: Repository<Message>,
   ) {}
 
-  async getRooms(query: any, params: any) {
-    if (params.take > 50) throw new HttpException('too many rooms', 400);
+  async getRooms(query: any) {
+    if (query.take > 50) throw new HttpException('too many rooms', 400);
     const rooms = await this.roomRep.find({
-      skip: params.skip ? params.skip : 0,
-      take: params.take ? params.take : 10,
+      skip: query.skip ? query.skip : 0,
+      take: query.take ? query.take : 10,
       where: { name: Like((query.q ? query.q : '') + '%') },
     });
 
@@ -39,74 +40,64 @@ export class RoomService {
     return newAllRooms;
   }
 
-  async getUserRooms(token: string) {
-    const loginUser = await this.tokenToUser(token, [
-      'rooms',
-      'rooms.users',
-      'rooms.messages',
-    ]);
+  async getUserRooms(user: User) {
     const userRooms = [];
-    for (const room of loginUser.rooms) userRooms.push(roomModify(room));
+    for (const room of user.rooms) {
+      userRooms.push(roomModify(room));
+    }
+
     return userRooms;
   }
 
-  async createRoom(token: string, roomDetails: roomDto) {
-    const loginUser = await this.tokenToUser(token, ['rooms']);
+  async createRoom(user: User, roomDetails: roomDto) {
     const users: User[] = await this.idToUsers(
       roomDetails.users,
-      loginUser.username,
+      user.username,
     );
-    if (!roomDetails.isGroup) privateHandler(users, loginUser);
+    if (!roomDetails.isGroup) privateHandler(users, user);
     const room = this.roomRep.create({
       ...roomDetails,
       users: users,
-      creator: loginUser.username,
+      creator: user.username,
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
-      mods: [loginUser.username],
+      mods: [user.username],
     });
     hashPassword(room);
     return roomModify(await this.roomRep.save(room));
   }
 
-  async deleteRoom(token: string, roomDetails: roomDto) {
-    const loginUser = await this.tokenToUser(token);
+  async deleteRoom(user: User, roomDetails: roomDto) {
     const room = await this.idToRoom(roomDetails.id);
-    if (!isCreator(room, loginUser))
-      throw new HttpException('not authorized', 400);
+    if (!isCreator(room, user)) throw new HttpException('not authorized', 400);
     await this.roomRep.remove(room);
     return { msg: 'room deleted' };
   }
 
-  async updateRoom(token: string, roomDetails: roomDto) {
-    const loginUser = await this.tokenToUser(token);
+  async updateRoom(user: User, roomDetails: roomDto) {
     const room = await this.idToRoom(roomDetails.id);
-    checkAuth(room, loginUser);
+    checkAuth(room, user);
     hashPassword(roomDetails);
     roomDetails.users = room.users;
     roomDetails.isGroup = room.isGroup;
     return roomModify(await this.roomRep.save({ ...room, ...roomDetails }));
   }
 
-  async joinRoom(token: string, roomDetails: roomDto) {
-    const loginUser = await this.tokenToUser(token);
+  async joinRoom(user: User, roomDetails: roomDto) {
     const room = await this.idToRoom(roomDetails.id);
-    console.log(isUserInRoom(room, loginUser));
-    console.log(room.users);
-    if (isUserInRoom(room, loginUser))
+    if (isUserInRoom(room, user))
       throw new HttpException('user already in room', 400);
-    checksForJoin(room, loginUser, roomDetails.password);
-    room.users.push(loginUser);
+    checksForJoin(room, user, roomDetails.password);
+    room.users.push(user);
     return roomModify(await this.roomRep.save(room));
   }
 
-  async leaveRoom(token: string, roomDetails: roomDto) {
-    const loginUser = await this.tokenToUser(token);
+  async leaveRoom(user: User, roomDetails: roomDto) {
     const room = await this.idToRoom(roomDetails.id);
-    if (!isUserInRoom(room, loginUser))
+    if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
-    leaveheadler(room, loginUser);
+    leaveheadler(room, user);
     if (room.users.length === 0) {
       await this.roomRep.remove(room);
       return { msg: 'room deleted cause no one left' };
@@ -114,22 +105,21 @@ export class RoomService {
     return roomModify(await this.roomRep.save(room));
   }
 
-  async createMsg(token: string, details: messageDto) {
-    const loginUser = await this.tokenToUser(token);
+  async createMsg(user: User, details: messageDto) {
     const room = await this.idToRoom(details.roomID);
     const msg = this.messageRep.create({
-      owner: loginUser.username,
+      owner: user.username,
       content: details.content,
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
       room,
     });
-
-    if (!room.messages) room.messages = [msg];
-    else room.messages.push(msg);
-
-    await this.roomRep.save(room);
+    console.log('msg', details.roomID);
+    this.server.onPrivateMessage(null, {
+      to: details.roomID.toString(),
+      msg,
+    });
     return this.messageRep.save(msg);
   }
 
@@ -150,14 +140,6 @@ export class RoomService {
     return users;
   }
 
-  async tokenToUser(token: string, relations?: string[]) {
-    const loginUserInfo = verifyToken(token);
-    return this.userRep.findOne({
-      where: { id: loginUserInfo.id },
-      relations: relations || [],
-    });
-  }
-
   async idToRoom(id: number) {
     const room = await this.roomRep.findOne({
       where: { id },
@@ -166,4 +148,13 @@ export class RoomService {
     if (!room) throw new HttpException('room not found', 400);
     return room;
   }
+
+  // async joinRooms(user: User) {
+  //   for (const room of user.rooms) {
+  //     this.server.onJoinRoom(null, {
+  //       clients: [user.sessionID],
+  //       room: room.id.toString(),
+  //     });
+  //   }
+  // }
 }

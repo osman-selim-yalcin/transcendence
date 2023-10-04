@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { UserModule } from './modules/users/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -8,20 +8,20 @@ import { User } from './typeorm/User';
 import { Room } from './typeorm/Room';
 import { Message } from './typeorm/Message';
 import { Notification } from './typeorm/Notification';
-import {
-  tokenMiddleware,
-  userIdMiddleware,
-} from './middleware/user.middleware';
 import { RoomModule } from './modules/room/room.module';
 import { UsersController } from './modules/users/user.controller';
 import { RoomController } from './modules/room/room.controller';
 import { NotificationController } from './modules/notification/notification.controller';
-
+import { NotificationModule } from './modules/notification/notification.module';
+import { tokenMiddleware } from './middleware/token.middleware';
+import { SocketClientModule } from './gateway/socket.module';
 @Module({
   imports: [
     UserModule,
     AuthModule,
     RoomModule,
+    SocketClientModule,
+    NotificationModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -32,6 +32,7 @@ import { NotificationController } from './modules/notification/notification.cont
       entities: [User, Room, Message, Notification],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([User]),
     PassportModule.register({ session: true }),
     ConfigModule.forRoot({ isGlobal: true }),
   ],
@@ -43,10 +44,5 @@ export class AppModule {
     consumer
       .apply(tokenMiddleware)
       .forRoutes(UsersController, RoomController, NotificationController);
-
-    consumer.apply(userIdMiddleware).forRoutes({
-      path: 'user',
-      method: RequestMethod.PUT,
-    });
   }
 }

@@ -8,31 +8,31 @@ export class UsersController {
 
   @Get()
   allUsers(@Req() req: any) {
-    return this.usersService.allUsers(req.query, req.params);
-  }
-
-  @Post()
-  addFriend(@Req() req: any, @Body() body: userDto) {
-    return this.usersService.addFriend(req.token, body);
-  }
-
-  @Delete()
-  deleteFriend(@Req() req: any, @Body() body: userDto) {
-    return this.usersService.deleteFriend(req.token, body);
-  }
-
-  @Put()
-  updateUser(@Req() req: any, @Body() body: userDto) {
-    return this.usersService.updateUser(req.token, body);
-  }
-
-  @Get('info')
-  getUserInfo(@Req() req: any) {
-    return this.usersService.getUserInfo(req.token);
+    return this.usersService.allUsers(req.query);
   }
 
   @Get('friends')
   getFriends(@Req() req: any) {
-    return this.usersService.getFriends(req.token);
+    return this.usersService.getFriends(req.user);
+  }
+
+  @Post()
+  addFriend(@Req() req: any) {
+    return this.usersService.addFriend(req.user, req.friendUser);
+  }
+
+  @Delete()
+  deleteFriend(@Req() req: any) {
+    return this.usersService.deleteFriend(req.user, req.friendUser);
+  }
+
+  @Put()
+  updateUser(@Req() req: any, @Body() body: userDto) {
+    return this.usersService.updateUser(req.user, body);
+  }
+
+  @Get('info')
+  getUserInfo(@Req() req: any) {
+    return this.usersService.getUserInfo(req.user);
   }
 }

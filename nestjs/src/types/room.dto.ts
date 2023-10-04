@@ -9,30 +9,28 @@ export class roomDto {
   @IsNotEmpty()
   users: User[];
 
-  @IsEmpty()
-  messages: Message[];
+  @IsNotEmpty()
+  isGroup: boolean;
 
-  @IsEmpty()
-  createdAt: string;
-
-  password: string;
   @IsNotEmpty()
   name: string;
+
+  password: string;
   avatar: string;
   isInviteOnly: boolean;
 
   @IsEmpty()
+  messages: Message[];
+  @IsEmpty()
+  createdAt: string;
+  @IsEmpty()
   creator: string;
-
   @IsEmpty()
   mods: string[];
   @IsEmpty()
   banList: string[];
   @IsEmpty()
   inviteList: string[];
-
-  @IsNotEmpty()
-  isGroup: boolean;
 }
 
 export class roomCommands {

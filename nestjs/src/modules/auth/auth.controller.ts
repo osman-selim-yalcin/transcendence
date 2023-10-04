@@ -11,7 +11,7 @@ import {
 import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
-import { createToken } from 'src/functions/user';
+import { createToken } from 'src/functions/token';
 
 interface reqWithModifiy extends Request {
   user: {

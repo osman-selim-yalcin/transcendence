@@ -12,5 +12,6 @@ import { CommandsService } from './commands.service';
   imports: [TypeOrmModule.forFeature([Room, User, Message]), ConfigModule],
   controllers: [RoomController],
   providers: [RoomService, CommandsService],
+  exports: [RoomService, CommandsService],
 })
 export class RoomModule {}

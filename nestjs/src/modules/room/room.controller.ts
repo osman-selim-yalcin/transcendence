@@ -13,42 +13,42 @@ export class RoomController {
 
   @Get()
   getRooms(@Req() req: any) {
-    return this.roomService.getRooms(req.query, req.params);
+    return this.roomService.getRooms(req.query);
   }
 
   @Get('user-rooms')
   getUserRooms(@Req() req: any) {
-    return this.roomService.getUserRooms(req.token);
+    return this.roomService.getUserRooms(req.user);
   }
 
   @Post()
   createRoom(@Req() req: any, @Body() body: roomDto) {
-    return this.roomService.createRoom(req.token, body);
+    return this.roomService.createRoom(req.user, body);
   }
 
   @Delete()
   deleteRoom(@Req() req: any, @Body() body: roomDto) {
-    return this.roomService.deleteRoom(req.token, body);
+    return this.roomService.deleteRoom(req.user, body);
   }
 
   @Put()
   updateRoom(@Req() req: any, @Body() body: roomDto) {
-    return this.roomService.updateRoom(req.token, body);
+    return this.roomService.updateRoom(req.user, body);
   }
 
   @Post('join')
   joinRoom(@Req() req: any, @Body() body: roomDto) {
-    return this.roomService.joinRoom(req.token, body);
+    return this.roomService.joinRoom(req.user, body);
   }
 
   @Post('leave')
   leaveRoom(@Req() req: any, @Body() body: roomDto) {
-    return this.roomService.leaveRoom(req.token, body);
+    return this.roomService.leaveRoom(req.user, body);
   }
 
   @Post('message')
   createMsg(@Req() req: any, @Body() body: messageDto) {
-    return this.roomService.createMsg(req.token, body);
+    return this.roomService.createMsg(req.user, body);
   }
 
   //Command Service

@@ -7,7 +7,7 @@ import { Notification } from 'src/typeorm/Notification';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Notification])],
-  providers: [NotificationService],
   controllers: [NotificationController],
+  providers: [NotificationService],
 })
 export class NotificationModule {}
