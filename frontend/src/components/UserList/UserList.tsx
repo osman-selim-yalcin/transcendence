@@ -14,7 +14,6 @@ export default function UserList() {
 
   useEffect(() => {
     const queryParam = searchParams.get("q")
-    console.log("!", searchParams.get("q"), "!")
     if (queryParam !== null && queryParam !== "") {
       setSearch(queryParam)
     }
@@ -33,7 +32,6 @@ export default function UserList() {
     } else {
       setUsers(null)
     }
-    console.log("deneme")
   }, [search])
 
  function isFriendId(id: number) {

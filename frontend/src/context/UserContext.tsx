@@ -17,7 +17,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
   }
   async function reloadUserRooms() {
     getUserRooms()
-      .then((response: { userRooms: room[] }) => {
+      .then((response: room[]) => {
         console.log(response)
         setUserRooms(response)
       })

@@ -78,7 +78,6 @@ function ChatContent({ currentRoomID }: {currentRoomID: number}) {
 
   useEffect(() => {
     const room = userRooms?.find((room: room) => room.id === currentRoomID)
-    // console.log(room)
     setCurrentRoom(room)
   }, [currentRoomID, userRooms])
 

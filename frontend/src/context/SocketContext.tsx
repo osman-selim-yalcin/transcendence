@@ -3,17 +3,29 @@ import { Socket, io } from "socket.io-client"
 import { UserContext } from "./UserContext"
 
 export const SocketContext = createContext<Socket>(null)
+const socket = io("http://localhost:3000", { autoConnect: false });
 
 
 export function SocketProvider({ children }: PropsWithChildren) {
   const { user } = useContext(UserContext)
-  const socket = io("http://localhost:3000", { autoConnect: false });
 
   useEffect(() => {
-    console.log("called", user)
+    socket.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+    })
+    socket.on("private message", (message) => {
+      console.log("socket message:", message)
+    })
+    return (() => {
+      socket.off("connection_error")
+      socket.off("private message")
+    })
+  }, [])
+
+  useEffect(() => {
     if (user) {
       socket.auth = { sessionID: user.sessionID }
-      console.log("socket", socket.connect())
+      socket.connect()
     }
     return (() => {
       socket.disconnect()
@@ -23,9 +35,6 @@ export function SocketProvider({ children }: PropsWithChildren) {
   //   console.log(event, args)
   // })
 
-  socket.on("connect_error", (error) => {
-    console.error("Connection error:", error);
-  });
 
   return (
     <SocketContext.Provider value={socket}>
