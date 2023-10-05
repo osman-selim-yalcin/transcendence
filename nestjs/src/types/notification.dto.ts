@@ -3,8 +3,17 @@ import { User } from 'src/typeorm/User';
 
 export enum notificationTypes {
   FRIEND = 'addFriend',
-  INVITE = 'inviteRoom',
+  ROOM = 'inviteRoom',
+  GAME = 'inviteGame',
   PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  DECLINED = 'declined',
+}
+
+export enum notificationTypesBody {
+  FRIEND = 'addFriend',
+  ROOM = 'inviteRoom',
+  GAME = 'inviteGame',
 }
 
 export class notificationDto {
@@ -18,7 +27,7 @@ export class notificationDto {
   creator: User;
 
   @IsNotEmpty()
-  @IsEnum(notificationTypes)
+  @IsEnum(notificationTypesBody)
   type: notificationTypes;
 
   @IsNotEmpty()

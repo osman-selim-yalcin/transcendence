@@ -6,7 +6,6 @@ import { Like, Repository } from 'typeorm';
 import {
   checksForJoin,
   hashPassword,
-  checkAuth,
   leaveheadler,
   privateHandler,
   roomModify,
@@ -42,18 +41,12 @@ export class RoomService {
 
   async getUserRooms(user: User) {
     const userRooms = [];
-    for (const room of user.rooms) {
-      userRooms.push(roomModify(room));
-    }
-
+    for (const room of user.rooms) userRooms.push(roomModify(room));
     return userRooms;
   }
 
   async createRoom(user: User, roomDetails: roomDto) {
-    const users: User[] = await this.idToUsers(
-      roomDetails.users,
-      user.username,
-    );
+    const users: User[] = await this.idToUsers(roomDetails.users, user);
     if (!roomDetails.isGroup) privateHandler(users, user);
     const room = this.roomRep.create({
       ...roomDetails,
@@ -65,36 +58,49 @@ export class RoomService {
       mods: [user.username],
     });
     hashPassword(room);
+    for (const u of room.users)
+      this.server.joinRoom(u.sessionID, room.id.toString());
     return roomModify(await this.roomRep.save(room));
   }
 
-  async deleteRoom(user: User, roomDetails: roomDto) {
-    const room = await this.idToRoom(roomDetails.id);
-    if (!isCreator(room, user)) throw new HttpException('not authorized', 400);
+  async deleteRoom(user: User, room: Room) {
+    if (room.isGroup && !isCreator(room, user))
+      throw new HttpException('not authorized', 400);
     await this.roomRep.remove(room);
     return { msg: 'room deleted' };
   }
 
-  async updateRoom(user: User, roomDetails: roomDto) {
-    const room = await this.idToRoom(roomDetails.id);
-    checkAuth(room, user);
+  async updateRoom(user: User, room: Room, roomDetails: roomDto) {
+    if (!room.isGroup || !isCreator(room, user))
+      throw new HttpException('not authorized', 400);
     hashPassword(roomDetails);
+    roomDetails.id = room.id;
     roomDetails.users = room.users;
     roomDetails.isGroup = room.isGroup;
+    this.specialMsg({
+      owner: 'admin',
+      content: 'room updated',
+      id: room.id,
+      createdAt: '',
+    });
     return roomModify(await this.roomRep.save({ ...room, ...roomDetails }));
   }
 
-  async joinRoom(user: User, roomDetails: roomDto) {
-    const room = await this.idToRoom(roomDetails.id);
+  async joinRoom(user: User, room: Room, roomDetails: roomDto) {
     if (isUserInRoom(room, user))
       throw new HttpException('user already in room', 400);
     checksForJoin(room, user, roomDetails.password);
     room.users.push(user);
+    this.specialMsg({
+      owner: 'admin',
+      content: user.username + 'joined',
+      id: room.id,
+      createdAt: '',
+    });
     return roomModify(await this.roomRep.save(room));
   }
 
-  async leaveRoom(user: User, roomDetails: roomDto) {
-    const room = await this.idToRoom(roomDetails.id);
+  async leaveRoom(user: User, room: Room) {
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
     leaveheadler(room, user);
@@ -102,11 +108,17 @@ export class RoomService {
       await this.roomRep.remove(room);
       return { msg: 'room deleted cause no one left' };
     }
+    this.specialMsg({
+      owner: 'admin',
+      content: user.username + 'leaved',
+      id: room.id,
+      createdAt: '',
+    });
     return roomModify(await this.roomRep.save(room));
   }
 
   async createMsg(user: User, details: messageDto) {
-    const room = await this.idToRoom(details.roomID);
+    const room = await this.idToRoom(details.id);
     const msg = this.messageRep.create({
       owner: user.username,
       content: details.content,
@@ -115,23 +127,20 @@ export class RoomService {
       }),
       room,
     });
-    console.log('msg', details.roomID);
     this.server.onPrivateMessage(null, {
-      to: details.roomID.toString(),
+      to: details.id.toString(),
       msg,
     });
     return this.messageRep.save(msg);
   }
 
   // ENDPOINT END HERE / UTILS START HERE
-  async idToUsers(idUsers: User[], creator: string) {
-    const creatorUser = await this.userRep.findOne({
-      where: { username: creator },
-    });
-
-    const users: User[] = [creatorUser];
+  async idToUsers(idUsers: User[], creator: User) {
+    const users: User[] = [
+      await this.userRep.findOne({ where: { id: creator.id } }),
+    ];
     for (const u of idUsers) {
-      if (creatorUser.id === u.id || u.id === undefined) continue;
+      if (creator.id === u.id || u.id === undefined) continue;
       const user = await this.userRep.findOne({ where: { id: u.id } });
       if (!user)
         throw new HttpException('user not found / users is wrong', 400);
@@ -149,12 +158,20 @@ export class RoomService {
     return room;
   }
 
-  // async joinRooms(user: User) {
-  //   for (const room of user.rooms) {
-  //     this.server.onJoinRoom(null, {
-  //       clients: [user.sessionID],
-  //       room: room.id.toString(),
-  //     });
-  //   }
-  // }
+  async specialMsg(details: messageDto) {
+    const room = await this.idToRoom(details.id);
+    const msg = this.messageRep.create({
+      owner: details.owner,
+      content: details.content,
+      createdAt: new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+      }),
+      room,
+    });
+    this.server.onPrivateMessage(null, {
+      to: details.id.toString(),
+      msg,
+    });
+    return this.messageRep.save(msg);
+  }
 }
