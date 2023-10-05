@@ -127,10 +127,7 @@ export class RoomService {
       }),
       room,
     });
-    this.server.onPrivateMessage(null, {
-      to: details.id.toString(),
-      msg,
-    });
+    this.modifyMsg(room, msg);
     return this.messageRep.save(msg);
   }
 
@@ -161,17 +158,21 @@ export class RoomService {
   async specialMsg(details: messageDto) {
     const room = await this.idToRoom(details.id);
     const msg = this.messageRep.create({
-      owner: details.owner,
+      owner: 'admin',
       content: details.content,
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
       room,
     });
-    this.server.onPrivateMessage(null, {
-      to: details.id.toString(),
-      msg,
-    });
+    this.modifyMsg(room, msg);
     return this.messageRep.save(msg);
+  }
+
+  async modifyMsg(room: Room, msg: Message) {
+    this.server.onPrivateMessage(null, {
+      to: room.id.toString(),
+      msg: { ...msg, room: null },
+    });
   }
 }
