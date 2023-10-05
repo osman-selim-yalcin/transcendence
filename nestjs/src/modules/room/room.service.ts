@@ -127,8 +127,9 @@ export class RoomService {
       }),
       room,
     });
-    this.modifyMsg(room, msg);
-    return this.messageRep.save(msg);
+    const msgSaved = await this.messageRep.save(msg);
+    this.modifyMsg(room, msgSaved);
+    return msgSaved;
   }
 
   // ENDPOINT END HERE / UTILS START HERE
@@ -165,12 +166,13 @@ export class RoomService {
       }),
       room,
     });
-    this.modifyMsg(room, msg);
-    return this.messageRep.save(msg);
+    const msgSaved = await this.messageRep.save(msg);
+    this.modifyMsg(room, msgSaved);
+    return msgSaved;
   }
 
   async modifyMsg(room: Room, msg: Message) {
-    this.server.onPrivateMessage(null, {
+    this.server.onPrivateMessage({
       to: room.id.toString(),
       msg: { ...msg, room: room.id },
     });

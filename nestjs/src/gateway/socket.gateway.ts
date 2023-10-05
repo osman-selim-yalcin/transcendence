@@ -67,8 +67,7 @@ export class socketGateway implements OnModuleInit {
     });
   }
 
-  @SubscribeMessage('private message')
-  async onPrivateMessage(client: CustomSocket, payload: any) {
+  async onPrivateMessage(payload: any) {
     console.log('sendPrivateMessage', payload.to);
     console.log(await this.server.in(payload.to).fetchSockets());
     this.server.to(payload.to).emit('private message', {
