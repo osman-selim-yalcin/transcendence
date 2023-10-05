@@ -172,7 +172,7 @@ export class RoomService {
   async modifyMsg(room: Room, msg: Message) {
     this.server.onPrivateMessage(null, {
       to: room.id.toString(),
-      msg: { ...msg, room: null },
+      msg: { ...msg, room: room.id },
     });
   }
 }
