@@ -52,6 +52,10 @@ export class socketGateway implements OnModuleInit {
     });
   }
 
+  async joinRoom(sessionID: string, roomID: string) {
+    this.server.in(sessionID).socketsJoin(roomID);
+  }
+
   async sendNotification(sessionID: string, content: any) {
     console.log('sendNotification');
     console.log(sessionID);

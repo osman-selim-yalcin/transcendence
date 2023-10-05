@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { verifyToken } from 'src/functions/token';
+import { isUserInRoom } from 'src/functions/room';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
 import { notificationDto, notificationTypes } from 'src/types/notification.dto';
@@ -14,61 +14,63 @@ export class NotificationService {
     private notificationRep: Repository<Notification>,
   ) {}
 
-  async createNotification(token: string, details: notificationDto) {
-    const creator = await this.tokenToUser(token);
-    const user = await this.idToUser(details.user.id, [
+  async createNotification(user: User, details: notificationDto) {
+    const otherUser = await this.idToUser(details.user.id, [
       'notifications',
+      'notifications.user',
       'notifications.creator',
+      'rooms',
+      'rooms.users',
     ]);
 
-    user.notifications?.map((n) => {
-      if (n.type === details.type && n.creator.id === creator.id) {
+    otherUser.notifications?.map((n) => {
+      if (n.type === details.type && n.creator.id === user.id) {
         throw new HttpException('already exist', 400);
       }
     });
-    if (user.id === creator.id) throw new HttpException('same user', 400);
+    if (otherUser.id === user.id) throw new HttpException('same user', 400);
 
     if (details.type === notificationTypes.FRIEND) {
-      user.friends?.map((f) => {
-        if (f.id === creator.id) throw new HttpException('already friend', 400);
+      otherUser.friends?.map((f) => {
+        if (f.id === user.id) throw new HttpException('already friend', 400);
       });
+      // } else if (details.type === notificationTypes.ROOM) {
+      //   otherUser.rooms?.map((r) => {
+      //     if (isUserInRoom(r, user))
+      //       throw new HttpException('already in room', 400);
+      //   });
     } else {
-      throw new HttpException('only add friend notification (tmp)', 400);
+      throw new HttpException('friend only', 400);
     }
 
-    const notification = await this.notificationRep.create({
-      content: details.content,
-      creator: creator,
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
-      user,
-      type: details.type,
-    });
-    await this.notificationRep.save(notification);
-
-    const siblingNotificaiton = await this.notificationRep.create({
+    const notification = this.notificationRep.create({
       content: details.content,
       creator: user,
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
-      user: creator,
+      user: otherUser,
+      type: details.type,
+    });
+    await this.notificationRep.save(notification);
+    const siblingNotificaiton = this.notificationRep.create({
+      content: details.content,
+      creator: otherUser,
+      createdAt: new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+      }),
+      user: user,
       type: notificationTypes.PENDING,
       sibling: notification,
     });
-
     await this.notificationRep.save(siblingNotificaiton);
     notification.sibling = siblingNotificaiton;
     await this.notificationRep.save(notification);
+
     return { msg: 'success' };
   }
 
-  async getNotifications(token: string) {
-    const loginUser = await this.tokenToUser(token, [
-      'notifications',
-      'notifications.creator',
-    ]);
+  async getNotifications(user: User) {
     const allnot = await this.notificationRep.find({
       relations: ['creator', 'user', 'sibling'],
     });
@@ -85,13 +87,6 @@ export class NotificationService {
   }
 
   // This function is used to send notification to user
-  async tokenToUser(token: string, relations?: string[]) {
-    const loginUserInfo = verifyToken(token);
-    return this.userRep.findOne({
-      where: { id: loginUserInfo.id },
-      relations: relations || [],
-    });
-  }
 
   async idToUser(id: number, relations?: string[]) {
     const user = await this.userRep.findOne({
@@ -100,18 +95,5 @@ export class NotificationService {
     });
     if (!user) throw new HttpException('user not found', 404);
     return user;
-  }
-
-  async isNotificationExist(
-    user: User,
-    notificationDetails: notificationDto,
-    creator: User,
-  ) {
-    user.notifications?.map((n) => {
-      if (n.type === notificationDetails.type && n.creator.id === creator.id) {
-        throw new HttpException('already exist', 400);
-      }
-    });
-    if (user.id === creator.id) throw new HttpException('same user', 400);
   }
 }

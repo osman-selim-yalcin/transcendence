@@ -8,12 +8,12 @@ export class NotificationController {
 
   @Get()
   getNotifications(@Req() req: any) {
-    return this.notificationService.getNotifications(req.token);
+    return this.notificationService.getNotifications(req.user);
   }
 
   @Post()
   createNotification(@Req() req: any, @Body() body: notificationDto) {
-    return this.notificationService.createNotification(req.token, body);
+    return this.notificationService.createNotification(req.user, body);
   }
 
   @Delete()
