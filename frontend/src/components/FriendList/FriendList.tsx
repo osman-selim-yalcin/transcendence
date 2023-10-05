@@ -3,11 +3,12 @@ import { UserContext } from '../../context/UserContext'
 import { user } from '../../types'
 import "./FriendList.scss"
 import { deleteFriend } from '../../api/friend'
+import LoadIndicator from '../LoadIndicator/LoadIndicator'
 
 export default function FriendList() {
   const { user, friends } = useContext(UserContext)
   return (
-    <>
+    <div className={"friend-list"}>
       <h3>Friends</h3>
       {user ?
         (friends ?
@@ -25,12 +26,12 @@ export default function FriendList() {
             }
           </>
           :
-          <p>Loading</p>
+          <LoadIndicator />
         )
         :
         <p>Sign in to see your friends</p>
       }
-    </>
+    </div>
   )
 }
 

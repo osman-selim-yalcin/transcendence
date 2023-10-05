@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import image from "../public/notification.png"
 import { UserContext } from "../context/UserContext"
 import {
@@ -11,13 +11,19 @@ import { addFriend } from "../api/friend"
 
 export default function Notification() {
   const dialogRef = React.useRef<HTMLDialogElement>(null)
-  const [notifications, setNotifications] = React.useState(
-    []
-  )
+  const [notifications, setNotifications] = useState([])
   const { user } = useContext(UserContext)
 
   useEffect(() => {
 
+    async function getAndSetNotification() {
+      const notificationArray = await getNotifications()
+      setNotifications(notificationArray)
+    }
+
+    if (user) { 
+      getAndSetNotification()
+    }
     // socket.on("notification", (data: any) => {
     //   console.log("notification socket")
     //   console.log(data)
@@ -31,7 +37,7 @@ export default function Notification() {
     // return () => {
     //   socket.off("notification")
     // }
-  }, [])
+  }, [user])
 
   const handleConfirm = (event: React.MouseEvent, item: any) => {
     event.stopPropagation()

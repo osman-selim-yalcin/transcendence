@@ -40,7 +40,7 @@ export default function UserList() {
  }
 
   return (
-    <>
+    <div className={"user-list"}>
       <h3>Users</h3>
       {user ?
         <>
@@ -48,7 +48,7 @@ export default function UserList() {
             setSearch(e.target.value)
             setSearchParams()
           }} type="text" value={search} />
-          <h2>User List</h2>
+          <h4>User List</h4>
           {users ?
             <>
               {users.length ?
@@ -71,7 +71,7 @@ export default function UserList() {
         :
         <p>Sign in to see other users</p>
       }
-    </>
+    </div>
   )
 }
 

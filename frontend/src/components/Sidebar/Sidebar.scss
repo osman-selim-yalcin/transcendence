@@ -10,6 +10,7 @@
   transition: 300ms;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 
   h2 {
     padding-bottom: 2rem;
@@ -20,6 +21,12 @@
     justify-content: space-between;
     font-size: x-large;
     padding: 0 1rem;
+  }
+
+  .sidebar-content {
+    display: flex;
+    min-width: 0;
+    transition: 300ms;
   }
 }
 

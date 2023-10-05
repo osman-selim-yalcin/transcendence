@@ -49,6 +49,12 @@ export interface message {
   owner: string
 }
 
+export enum SocialView {
+  FRIENDS,
+  ROOMS,
+  USERS
+}
+
 // export type typeMsg = {
 //   content: string
 //   createdAt: string

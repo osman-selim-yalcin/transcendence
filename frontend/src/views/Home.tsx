@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import UserInfo from "../components/UserInfo.tsx"
 import { Modal } from "../components/Modal.tsx"
+import LoadIndicator from "../components/LoadIndicator/LoadIndicator.tsx"
 
 export default function Home() {
   const [modal, setModal] = useState(false)
@@ -10,6 +11,7 @@ export default function Home() {
       <UserInfo />
       <Modal isActive={[modal, setModal]}>
         Welcome to Home Page
+        <LoadIndicator />
       </Modal>
       <button onClick={() => {
         setModal(true)

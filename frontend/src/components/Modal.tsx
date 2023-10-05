@@ -7,6 +7,25 @@ import { user } from "../types"
 export function Modal({ children, isActive: [modal, setModal] }: any) {
 
   const modalRef = useRef<HTMLDialogElement>()
+  
+  useEffect(() => {
+    if (modal) {
+      openModal(modalRef)
+      document.addEventListener("keydown", handleEscapeKey)
+    } else {
+      modalRef.current.close()
+      document.removeEventListener("keydown", handleEscapeKey)
+    }
+    return (() => {
+      document.removeEventListener("keydown", handleEscapeKey)
+    })
+  }, [modal])
+
+  function handleEscapeKey(event: any) {
+    if (event.key === "Escape") {
+      setModal(false)
+    }
+  }
 
   function closeModal(e: any, ref: any) {
     const dialogDimensions = ref.current.getBoundingClientRect()
@@ -24,14 +43,6 @@ export function Modal({ children, isActive: [modal, setModal] }: any) {
   function openModal(ref: any) {
     ref.current.showModal()
   }
-
-  useEffect(() => {
-    if (modal) {
-      openModal(modalRef)
-    } else {
-      modalRef.current.close()
-    }
-  }, [modal])
 
   return (
     <dialog ref={modalRef} style={{

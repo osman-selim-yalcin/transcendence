@@ -16,8 +16,8 @@ export function Chat() {
     <>
       <h1>Chat</h1>
       <div className="chat">
-        <Chatbar setCurrentRoomID={setCurrentRoomID}/>
-        <ChatContent currentRoomID={currentRoomID}/>
+        <Chatbar currentRoomIDState={[currentRoomID, setCurrentRoomID]} />
+        <ChatContent currentRoomID={currentRoomID} />
       </div>
     </>
   )
@@ -25,52 +25,50 @@ export function Chat() {
 
 // CHATBAR MESSAGES
 
-function Chatbar({ setCurrentRoomID }: { setCurrentRoomID: Function }) {
+function Chatbar({ currentRoomIDState: [currentRoomID, setCurrentRoomID] }: { currentRoomIDState: [currentRoomID: number, setCurrentRoomID: Function] }) {
   const { userRooms }: { userRooms: room[] | null } = useContext(UserContext)
-
 
 
   return (
     <div className="chatbar">
       <h2>Chatbar</h2>
       <ul className="noselect">
-      {userRooms && userRooms.map((room: room) => {
-        // if (room.messages.length)
+        {userRooms && userRooms.map((room: room) => {
+          // if (room.messages.length)
           return (
-          <li key={room.id}
-            className="chat-index"
-            onClick={() => {setCurrentRoomID(room.id)}}>
-            <MessageIndex room={room}/>
-          </li>
+            <li key={room.id}
+              className={"chat-index" + (room.id === currentRoomID ? " active" : "")}
+              onClick={() => { setCurrentRoomID(room.id) }}>
+              <MessageIndex room={room} />
+            </li>
           )
-        // else
-        //   return null
-      })}
+          // else
+          //   return null
+        })}
       </ul>
     </div>
   )
 }
 
 function MessageIndex({ room }: { room: room }) {
-  if (!room.isGroup) {
-    return (
-      <div className="message-index">
-      {room.users[0].username} - {room.users[1]?.username}
-    </div>
-  )
-} else {
   return (
     <div className="message-index">
-      {room.name}: {room.users.map((user: user) => (user.username)
-      ).join(", ")}
+      {room.isGroup ?
+      <>
+        {room.name}: {room.users.map((user: user) => (user.username)).join(", ")}
+      </>
+      :
+      <>
+        {room.users[0].username} - {room.users[1]?.username}
+      </>
+      }
     </div>
   )
-}
 }
 
 // CHATBAR MESSAGES
 
-function ChatContent({ currentRoomID }: {currentRoomID: number}) {
+function ChatContent({ currentRoomID }: { currentRoomID: number }) {
 
   const [currentRoom, setCurrentRoom] = useState<room>(null)
   const { user, userRooms } = useContext(UserContext)
@@ -87,13 +85,12 @@ function ChatContent({ currentRoomID }: {currentRoomID: number}) {
 
   return (
     <div className="chat-content">
+    <h2>Chat Content</h2>
     {currentRoom ?
       <>
-      <h2>Chat Content</h2>
       <ul className={"message-list"}>
       {currentRoom.messages.map((message: message, index: number) => (
         <li className={user.username === message.owner ? "main-user" : ""} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
-          <b>{message.owner}</b>
           <p>{message.content}</p>
         </li>
       ))}
@@ -101,7 +98,9 @@ function ChatContent({ currentRoomID }: {currentRoomID: number}) {
       <ChatForm currentRoomID={currentRoomID}/>
       </>
       :
-      <p>Send and receive messages without keeping your phone online.</p>
+      <div id={"placeholder"}>
+        <p>Send and receive messages without keeping your phone online.</p>
+      </div>
     }
     </div>
   )

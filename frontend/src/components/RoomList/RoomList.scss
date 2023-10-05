@@ -1,9 +1,13 @@
-button {
-  align-self: flex-start;
-}
-
 .room-list {
-   overflow-y: scroll;
-   list-style: none;
-   padding: 1rem;
+
+  min-width: 100%;
+
+  button {
+    align-self: flex-start;
+  }
+  
+  .room-ul {
+    list-style: none;
+    padding: 1rem;
+  }
 }

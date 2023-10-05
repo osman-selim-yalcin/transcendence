@@ -5,6 +5,7 @@ import { Modal } from '../Modal'
 import GroupCreation from '../forms/GroupCreation'
 import { deleteRoom } from '../../api/room'
 import "./RoomList.scss"
+import LoadIndicator from '../LoadIndicator/LoadIndicator'
 
 export default function UserRoomList() {
   const { user, userRooms }: { user: user, userRooms: room[] } = useContext(UserContext)
@@ -12,7 +13,7 @@ export default function UserRoomList() {
 
 
   return (
-    <>
+    <div className={"room-list"}>
       <h3>Rooms</h3>
       {user ?
         <>
@@ -22,7 +23,7 @@ export default function UserRoomList() {
           {userRooms ?
             <>
               {userRooms.length ?
-                <ul className={"room-list"}>
+                <ul className={"room-ul"}>
                   {userRooms.map((room: room) => {
                     return (
                       <li key={room.id}>
@@ -36,7 +37,7 @@ export default function UserRoomList() {
               }
             </>
             :
-            <p>Loading</p>
+            <LoadIndicator />
           }
           <Modal isActive={[modal, setModal]}>
             <GroupCreation setModal={setModal} />
@@ -45,7 +46,7 @@ export default function UserRoomList() {
         :
         <p>Sign in to see the rooms</p>
       }
-    </>
+    </div>
   )
 }
 
