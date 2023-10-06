@@ -23,6 +23,8 @@ export class NotificationService {
       'rooms.users',
     ]);
 
+    throw new HttpException('kapalıyız', 400);
+
     otherUser.notifications?.map((n) => {
       if (n.type === details.type && n.creator.id === user.id) {
         throw new HttpException('already exist', 400);
