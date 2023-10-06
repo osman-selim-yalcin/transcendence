@@ -1,16 +1,17 @@
 import axios from "axios"
 
-export const getNotifications = async () => {
-  return axios
-    .get("http://localhost:3000/api/notification", {
+export const getNotifications = async (setNotifications: any) => {
+  axios
+    .get("http://localhost:3000/api/user/getNotifications", {
       headers: {
-        Authorization:
+        authorization:
           "Bearer " +
           (localStorage.getItem("token") ? localStorage.getItem("token") : "")
       }
     })
-    .then(response => {
-      return response.data
+    .then(res => {
+    //   console.log(res.data)
+      setNotifications(res.data)
     })
     .catch(err => {
       console.log(err)

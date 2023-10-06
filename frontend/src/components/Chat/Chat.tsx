@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { LegacyRef, useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../context/UserContext"
 import Room from "../Room"
 import List from "../List"
@@ -14,7 +14,6 @@ export function Chat() {
   }, [currentRoomID])
   return (
     <>
-      <h1>Chat</h1>
       <div className="chat">
         <Chatbar currentRoomIDState={[currentRoomID, setCurrentRoomID]} />
         <ChatContent currentRoomID={currentRoomID} />
@@ -51,18 +50,37 @@ function Chatbar({ currentRoomIDState: [currentRoomID, setCurrentRoomID] }: { cu
 }
 
 function MessageIndex({ room }: { room: room }) {
+  const [lastMessage, setLastMessage] = useState(null)
+
+  useEffect(() => {
+    if (room.messages.length) {
+      setLastMessage(room.messages[room.messages.length - 1].content)
+    }
+  }, [room])
   return (
-    <div className="message-index">
-      {room.isGroup ?
-      <>
-        {room.name}: {room.users.map((user: user) => (user.username)).join(", ")}
-      </>
-      :
-      <>
-        {room.users[0].username} - {room.users[1]?.username}
-      </>
-      }
-    </div>
+    <>
+      <div className="chat-avatar-frame">
+        <div className="chat-avatar">
+          <img src={room.avatar} alt="room avatar" />
+        </div>
+      </div>
+      <div className="chat-name">
+        <b>
+          {room.isGroup ?
+            <>
+              {room.name}: {room.users.map((user: user) => (user.username)).join(", ")}
+            </>
+            :
+            <>
+              {room.users[0].username} - {room.users[1]?.username}
+            </>
+          }
+        </b>
+        <p>
+          {lastMessage}
+        </p>
+      </div>
+    </>
   )
 }
 
@@ -73,6 +91,7 @@ function ChatContent({ currentRoomID }: { currentRoomID: number }) {
   const [currentRoom, setCurrentRoom] = useState<room>(null)
   const { user, userRooms } = useContext(UserContext)
   const scrollRef = useRef(null)
+  const inputRef = useRef(null)
 
   useEffect(() => {
     const room = userRooms?.find((room: room) => room.id === currentRoomID)
@@ -81,51 +100,47 @@ function ChatContent({ currentRoomID }: { currentRoomID: number }) {
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
+    inputRef.current?.focus()
   }, [currentRoom])
 
   return (
     <div className="chat-content">
-    <h2>Chat Content</h2>
-    {currentRoom ?
-      <>
-      <ul className={"message-list"}>
-      {currentRoom.messages.map((message: message, index: number) => (
-        <li className={user.username === message.owner ? "main-user" : ""} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
-          <p>{message.content}</p>
-        </li>
-      ))}
-      </ul>
-      <ChatForm currentRoomID={currentRoomID}/>
-      </>
-      :
-      <div id={"placeholder"}>
-        <p>Send and receive messages without keeping your phone online.</p>
-      </div>
-    }
+      <h2>Chat Content</h2>
+      {currentRoom ?
+        <>
+          <ul className={"message-list"}>
+            {currentRoom.messages.map((message: message, index: number) => (
+              <li className={user.username === message.owner ? "main-user" : ""} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
+                <p>{message.content}</p>
+              </li>
+            ))}
+          </ul>
+          <ChatForm currentRoomID={currentRoomID} inputRef={inputRef}/>
+        </>
+        :
+        <div id={"placeholder"}>
+          <p>Send and receive messages without keeping your phone online.</p>
+        </div>
+      }
     </div>
   )
 }
 
-function ChatForm({ currentRoomID }: { currentRoomID: number }) {
+function ChatForm({ currentRoomID, inputRef }: { currentRoomID: number, inputRef: any }) {
   const [input, setInput] = useState("")
-  const { reloadUserRooms } = useContext(UserContext)
 
   return (
     <form onSubmit={async (e) => {
       e.preventDefault()
       if (input !== "") {
-        await sendMessage({ content: input, roomID: currentRoomID })
-        setTimeout(() => {
-          reloadUserRooms()
-        }, 300);
+        await sendMessage({ content: input, id: currentRoomID })
         setInput("")
       }
     }}>
-
-    <input type="text" value={input} onChange={(e) => {
-      setInput(e.target.value)
-    }}/>
-    <button>Send</button>
+      <input type="text" value={input} ref={inputRef} onChange={(e) => {
+        setInput(e.target.value)
+      }} />
+      <button>Send</button>
     </form>
   )
 }

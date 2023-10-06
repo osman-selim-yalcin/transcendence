@@ -13,6 +13,7 @@ export interface userContext {
   friends: user[]
   reloadFriends: Function
   userRooms: room[]
+  setUserRooms: Function
   reloadUserRooms: Function
 }
 
@@ -47,6 +48,7 @@ export interface message {
   content: string
   createdAt: string
   owner: string
+  room?: number
 }
 
 export enum SocialView {

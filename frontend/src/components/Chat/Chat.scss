@@ -30,8 +30,37 @@
     .chat-index {
       cursor: pointer;
       min-height: 80px;
+      height: 80px;
       list-style: none;
       background-color: rgb(255, 255, 255);
+      display: flex;
+
+      .chat-avatar-frame {
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        font-size: x-small;
+        
+        .chat-avatar {
+          margin: .6rem;
+          aspect-ratio: 1 / 1;
+            
+            img {
+              background-color: grey;
+              height: 100%;
+              width: 100%;
+              border-radius: 50%;
+            }
+        }
+      }
+
+      .chat-name {
+        flex-grow: 1;
+        margin-right: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-bottom: 1px solid rgb(234, 237, 239)
+      }
     }
     .chat-index:hover {
       background-color: rgb(245, 246, 246);
@@ -72,6 +101,7 @@
       background-color: rgb(255, 255, 255);
       align-self: flex-start;
       padding: 0.8rem;
+      border-radius: .5rem;
     }
 
     li.main-user {
@@ -92,7 +122,10 @@
       flex-shrink: 0;
       height: 100%;
       box-sizing: border-box;
-
+      border: none;
+      border-radius: 1rem;
+      padding: 0.6rem 1rem;
+      font-size: medium;
       min-width: 300px;
     }
   }

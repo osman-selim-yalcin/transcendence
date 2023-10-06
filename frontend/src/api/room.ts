@@ -70,7 +70,7 @@ export const deleteRoom = async (body: roomPayload) => {
   )
 }
 
-export const sendMessage = async (body: {content: string, roomID: number}) => {
+export const sendMessage = async (body: {content: string, id: number}) => {
   axios
     .post(
       "http://localhost:3000/api/room/message",

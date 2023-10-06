@@ -23,7 +23,7 @@ export default function UserProvider({ children }: PropsWithChildren) {
       })
   }
   return (
-    <UserContext.Provider value={{ user, setUser, friends, reloadFriends, userRooms, reloadUserRooms }}>
+    <UserContext.Provider value={{ user, setUser, friends, reloadFriends, userRooms, setUserRooms, reloadUserRooms }}>
       {children}
     </UserContext.Provider>
   )
