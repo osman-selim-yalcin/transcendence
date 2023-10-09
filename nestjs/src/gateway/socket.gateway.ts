@@ -6,6 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'; // Import the 'Socket' type
 import { UsersService } from 'src/modules/users/user.service';
+import { userStatus } from 'src/types/user.dto';
 
 interface CustomSocket extends Socket {
   username: string;
@@ -43,9 +44,9 @@ export class socketGateway implements OnModuleInit {
       socket.join(socket.sessionID);
 
       console.log('user', socketUser.username, 'connected');
-      this.userService.handleStatusChange(socketUser, 'online');
+      this.userService.handleStatusChange(socketUser, userStatus.ONLINE);
       socket.on('disconnect', async () => {
-        this.userService.handleStatusChange(socketUser, 'offline');
+        this.userService.handleStatusChange(socketUser, userStatus.OFFLINE);
         this.server.emit('user disconnected', socket.sessionID);
         console.log('user', socketUser.username, 'disconnected');
       });

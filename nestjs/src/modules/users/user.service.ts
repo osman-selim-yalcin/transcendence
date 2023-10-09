@@ -51,7 +51,7 @@ export class UsersService {
 
   //ENDPOINT END HERE / UTILS START HERE
 
-  async handleStatusChange(user: User, status: string) {
+  async handleStatusChange(user: User, status: number) {
     user.status = status;
     return this.userRep.save(user);
   }

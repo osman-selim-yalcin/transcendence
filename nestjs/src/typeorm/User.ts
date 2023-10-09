@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Room } from './Room';
 import { Notification } from './Notification';
+import { userStatus } from 'src/types/user.dto';
 // import { Game } from './Game';
 
 @Entity({ name: 'users' })
@@ -25,8 +26,8 @@ export class User {
   @Column({ default: 'https://source.unsplash.com/featured/300x202' })
   avatar: string;
 
-  @Column({ enum: ['online', 'offline', 'ingame'] })
-  status: string;
+  @Column({ type: 'enum', enum: userStatus, default: userStatus.OFFLINE })
+  status: number;
 
   @Column({
     default: new Date().toLocaleString('tr-TR', {
