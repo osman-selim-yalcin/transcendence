@@ -7,29 +7,45 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
-import { notificationTypes } from 'src/types/notification.dto';
+import {
+  notificationStatus,
+  notificationTypes,
+} from 'src/types/notification.dto';
 
 @Entity({ name: 'notifications' })
 export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  content: string;
+  @Column({
+    nullable: true,
+  })
+  content: number;
+
+  @Column({
+    nullable: true,
+  })
+  roomID: number;
+
+  @Column({
+    default: 0,
+    type: 'enum',
+    enum: notificationStatus,
+  })
+  status: number;
 
   @Column()
   createdAt: string;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  creator: User;
-
   @Column({
     type: 'enum',
     enum: notificationTypes,
-    default: notificationTypes.FRIEND,
   })
-  type: string;
+  type: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn()
+  creator: User;
 
   @OneToOne(() => Notification, (notification) => notification.sibling, {
     onDelete: 'CASCADE',

@@ -6,16 +6,20 @@ import { Like, Repository } from 'typeorm';
 import {
   checksForJoin,
   hashPassword,
-  leaveheadler,
   privateHandler,
   roomModify,
   isUserInRoom,
   isCreator,
+  isRoomNotification,
+  isMod,
 } from 'src/functions/room';
 import { roomDto } from 'src/types/room.dto';
 import { Message } from 'src/typeorm/Message';
 import { messageDto } from 'src/types/message.dto';
 import { socketGateway } from 'src/gateway/socket.gateway';
+import { Notification } from 'src/typeorm/Notification';
+import { notificationStatus } from 'src/types/notification.dto';
+import { isFriend } from 'src/functions/user';
 
 @Injectable()
 export class RoomService {
@@ -24,6 +28,8 @@ export class RoomService {
     @InjectRepository(User) private userRep: Repository<User>,
     @InjectRepository(Room) private roomRep: Repository<Room>,
     @InjectRepository(Message) private messageRep: Repository<Message>,
+    @InjectRepository(Notification)
+    private notificationRep: Repository<Notification>,
   ) {}
 
   async getRooms(query: any) {
@@ -87,13 +93,22 @@ export class RoomService {
   }
 
   async joinRoom(user: User, room: Room, roomDetails: roomDto) {
-    if (isUserInRoom(room, user))
-      throw new HttpException('user already in room', 400);
-    checksForJoin(room, user, roomDetails.password);
+    if (!room.isGroup)
+      throw new HttpException('private room cannot be joinable', 400);
+    const notification = isRoomNotification(room, user);
+    if (notification) {
+      await this.notificationRep.save({
+        ...notification,
+        status: notificationStatus.ACCEPTED,
+        user: notification.creator,
+        creator: notification.user,
+      });
+      await this.notificationRep.remove(notification);
+    } else checksForJoin(room, user, roomDetails.password);
     room.users.push(user);
     this.specialMsg({
       owner: 'admin',
-      content: user.username + 'joined',
+      content: user.username + ' joined',
       id: room.id,
       createdAt: '',
     });
@@ -101,24 +116,15 @@ export class RoomService {
   }
 
   async leaveRoom(user: User, room: Room) {
+    if (!room.isGroup)
+      throw new HttpException('private room cannot be leaveable', 400);
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
-    leaveheadler(room, user);
-    if (room.users.length === 0) {
-      await this.roomRep.remove(room);
-      return { msg: 'room deleted cause no one left' };
-    }
-    this.specialMsg({
-      owner: 'admin',
-      content: user.username + 'leaved',
-      id: room.id,
-      createdAt: '',
-    });
+    this.leaveheadler(room, user);
     return roomModify(await this.roomRep.save(room));
   }
 
-  async createMsg(user: User, details: messageDto) {
-    const room = await this.idToRoom(details.id);
+  async createMsg(user: User, room: Room, details: messageDto) {
     const msg = this.messageRep.create({
       owner: user.username,
       content: details.content,
@@ -142,6 +148,7 @@ export class RoomService {
       const user = await this.userRep.findOne({ where: { id: u.id } });
       if (!user)
         throw new HttpException('user not found / users is wrong', 400);
+      if (!isFriend(creator, user)) throw new HttpException('not friend', 400);
       users.push(user);
     }
     return users;
@@ -174,7 +181,42 @@ export class RoomService {
   async modifyMsg(room: Room, msg: Message) {
     this.server.onPrivateMessage({
       to: room.id.toString(),
-      msg: { ...msg, room: room.id },
+      msg: {
+        ...msg,
+        room: room.id,
+        createdAt: new Date().toLocaleString('tr-TR', {
+          timeZone: 'Europe/Istanbul',
+        }),
+      },
+    });
+  }
+
+  async leaveheadler(room: Room, user: User) {
+    if (isCreator(room, user)) {
+      if (room.users.length > 0) {
+        if (room.mods.length > 0) room.creator = room.mods[1];
+        else room.creator = room.users.find((u) => u.id !== user.id).username;
+      } else {
+        room.creator = null;
+      }
+    }
+
+    if (isMod(room, user)) {
+      room.mods = room.mods.filter((u) => u !== user.username);
+    }
+
+    room.users = room.users.filter((u) => u.id !== user.id);
+
+    if (room.users.length === 0) {
+      await this.roomRep.remove(room);
+      return { msg: 'room deleted cause no one left' };
+    }
+
+    this.specialMsg({
+      owner: 'admin',
+      content: user.username + ' leaved',
+      id: room.id,
+      createdAt: '',
     });
   }
 }

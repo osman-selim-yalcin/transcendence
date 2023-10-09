@@ -6,7 +6,6 @@ import {
   JoinColumn,
   JoinTable,
   OneToMany,
-  ManyToOne,
 } from 'typeorm';
 import { Room } from './Room';
 import { Notification } from './Notification';

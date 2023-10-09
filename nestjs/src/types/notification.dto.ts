@@ -1,35 +1,38 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEmpty, IsEnum, IsNotEmpty } from 'class-validator';
 import { User } from 'src/typeorm/User';
 
 export enum notificationTypes {
-  FRIEND = 'addFriend',
-  ROOM = 'inviteRoom',
-  GAME = 'inviteGame',
-  PENDING = 'pending',
-  ACCEPTED = 'accepted',
-  DECLINED = 'declined',
+  FRIEND,
+  ROOM,
+  GAME,
+  KICK,
+  BAN,
+  MOD,
 }
 
-export enum notificationTypesBody {
-  FRIEND = 'addFriend',
-  ROOM = 'inviteRoom',
-  GAME = 'inviteGame',
+export enum notificationStatus {
+  PENDING,
+  ACCEPTED,
+  DECLINED,
+  QUESTION,
 }
 
 export class notificationDto {
   @IsNotEmpty()
   id: number;
 
-  @IsNotEmpty()
-  content: string;
+  @IsEmpty()
+  content: number;
 
+  @IsEmpty()
   createdAt: string;
+  @IsEmpty()
   creator: User;
 
-  @IsNotEmpty()
-  @IsEnum(notificationTypesBody)
+  @IsEmpty()
+  @IsEnum(notificationTypes)
   type: notificationTypes;
 
-  @IsNotEmpty()
+  @IsEmpty()
   user: User;
 }

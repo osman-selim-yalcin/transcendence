@@ -8,14 +8,19 @@ export class idToUser implements NestMiddleware {
   constructor(@InjectRepository(User) private userRep: Repository<User>) {}
 
   async use(req: any, res: any, next: (error?: any) => void) {
-    if (req.body.id) {
-      const friendUser = await this.idToUser(req.body.id, ['friends']);
-      req.friendUser = friendUser;
-    }
+    const friendUser = await this.idToUser(req.body.id, [
+      'friends',
+      'notifications',
+      'notifications.creator',
+    ]);
+    if (req.user.id === friendUser.id)
+      throw new HttpException('same user', 400);
+    req.friendUser = friendUser;
     next();
   }
 
   async idToUser(id: number, relations?: string[]) {
+    if (!id) throw new HttpException('id required', 404);
     const user = await this.userRep.findOne({
       where: { id: id },
       relations: relations || [],

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Req } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { notificationDto } from 'src/types/notification.dto';
 
@@ -9,11 +9,6 @@ export class NotificationController {
   @Get()
   getNotifications(@Req() req: any) {
     return this.notificationService.getNotifications(req.user);
-  }
-
-  @Post()
-  createNotification(@Req() req: any, @Body() body: notificationDto) {
-    return this.notificationService.createNotification(req.user, body);
   }
 
   @Delete()

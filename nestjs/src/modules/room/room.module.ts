@@ -9,9 +9,13 @@ import { Message } from 'src/typeorm/Message';
 import { CommandsService } from './commands.service';
 import { RoomMiddleware } from 'src/middleware/room.middleware';
 import { commandsMiddleware } from 'src/middleware/commands.middleware';
+import { Notification } from 'src/typeorm/Notification';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room, User, Message]), ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([Room, User, Message, Notification]),
+    ConfigModule,
+  ],
   controllers: [RoomController],
   providers: [RoomService, CommandsService],
   exports: [RoomService, CommandsService],
@@ -24,7 +28,6 @@ export class RoomModule {
         { path: 'room', method: RequestMethod.GET },
         { path: 'room/user-rooms', method: RequestMethod.GET },
         { path: 'room', method: RequestMethod.POST },
-        { path: 'room/message', method: RequestMethod.POST },
       )
       .forRoutes(RoomController);
 
