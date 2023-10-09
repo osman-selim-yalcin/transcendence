@@ -2,9 +2,26 @@ import { HttpException } from '@nestjs/common';
 import { Room } from 'src/typeorm/Room';
 import { User } from 'src/typeorm/User';
 import * as bcrypt from 'bcrypt';
+import { notificationTypes } from 'src/types/notification.dto';
+
+export function userModify(user: User) {
+  return {
+    id: user.id,
+    username: user.username,
+    sessionID: user.sessionID,
+    status: user.status,
+    avatar: user.avatar,
+    lastSeen: user.lastSeen,
+    friends: null,
+    rooms: null,
+    notifications: null,
+  };
+}
 
 export function roomModify(room: Room) {
   if (room.password) return { ...room, password: true };
+  room.users = room.users.map((u) => userModify(u));
+  console.log(room);
   return { ...room, password: false };
 }
 
@@ -30,23 +47,9 @@ export function hashPassword(room: Room) {
   }
 }
 
-export function leaveheadler(room: Room, user: User) {
-  if (isCreator(room, user)) {
-    if (room.users.length > 0) {
-      if (room.mods.length > 0) room.creator = room.mods[1];
-      else room.creator = room.users.find((u) => u.id !== user.id).username;
-    } else {
-      room.creator = null;
-    }
-  }
-
-  if (isMod(room, user)) {
-    room.mods = room.mods.filter((u) => u !== user.username);
-  }
-  room.users = room.users.filter((u) => u.id !== user.id);
-}
-
 export function checksForJoin(room: Room, loginUser: User, password: string) {
+  if (isUserInRoom(room, loginUser))
+    throw new HttpException('user already in room', 400);
   checkInvite(room, loginUser);
   checkBanned(room, loginUser);
   checkPassword(room, password);
@@ -61,7 +64,7 @@ export function checkPassword(room: Room, password: string) {
 }
 
 export function checkInvite(room: Room, loginUser: User) {
-  if (room.isInviteOnly && !room.inviteList.includes(loginUser.username)) {
+  if (room.isInviteOnly && !isRoomNotification(room, loginUser)) {
     throw new HttpException('not invited', 400);
   }
 }
@@ -87,8 +90,11 @@ export function isBanned(room: Room, user: User) {
   return room.banList.includes(user.username);
 }
 
-export function isInvited(room: Room, user: User) {
-  return room.inviteList.includes(user.username);
+export function isRoomNotification(room: Room, loginUser: User) {
+  const notification = loginUser.notifications?.find(
+    (n) => n.type === notificationTypes.ROOM && n.roomID === room.id,
+  );
+  return notification;
 }
 
 export function isCreator(room: Room, user: User) {

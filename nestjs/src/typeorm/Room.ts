@@ -43,9 +43,6 @@ export class Room {
   @Column('text', { array: true, nullable: true, default: [] })
   banList: string[];
 
-  @Column('text', { array: true, nullable: true, default: [] })
-  inviteList: string[];
-
   @Column({ default: false })
   isGroup: boolean;
 

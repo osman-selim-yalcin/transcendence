@@ -29,8 +29,6 @@ export class roomDto {
   mods: string[];
   @IsEmpty()
   banList: string[];
-  @IsEmpty()
-  inviteList: string[];
 }
 
 export class roomCommands {

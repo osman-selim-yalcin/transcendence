@@ -56,7 +56,7 @@ export class RoomController {
   //Command Service
   @Post('command/invite')
   inviteUser(@Req() req: any, @Body() body: roomCommands) {
-    return this.commandService.inviteUser(req.friendUser, req.room);
+    return this.commandService.inviteUser(req.user, req.room, req.friendUser);
   }
 
   @Post('command/kick')

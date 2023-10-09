@@ -5,9 +5,9 @@ export enum notificationTypes {
   FRIEND,
   ROOM,
   GAME,
-  PENDING,
-  ACCEPTED,
-  DECLINED,
+  KICK,
+  BAN,
+  MOD,
 }
 
 export enum notificationTypesBody {
@@ -16,10 +16,18 @@ export enum notificationTypesBody {
   GAME,
 }
 
+export enum notificationStatus {
+  PENDING,
+  ACCEPTED,
+  DECLINED,
+  QUESTION,
+}
+
 export class notificationDto {
   @IsNotEmpty()
   id: number;
 
+  @IsEmpty()
   content: number;
 
   @IsEmpty()

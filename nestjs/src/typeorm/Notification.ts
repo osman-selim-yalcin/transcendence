@@ -7,7 +7,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
-import { notificationTypes } from 'src/types/notification.dto';
+import {
+  notificationStatus,
+  notificationTypes,
+} from 'src/types/notification.dto';
 
 @Entity({ name: 'notifications' })
 export class Notification {
@@ -18,6 +21,18 @@ export class Notification {
     nullable: true,
   })
   content: number;
+
+  @Column({
+    nullable: true,
+  })
+  roomID: number;
+
+  @Column({
+    default: 0,
+    type: 'enum',
+    enum: notificationStatus,
+  })
+  status: number;
 
   @Column()
   createdAt: string;
