@@ -99,6 +99,7 @@ export class RoomService {
     if (notification) {
       await this.notificationRep.save({
         ...notification,
+        content: `${user.username} accepted your invite request`,
         status: notificationStatus.ACCEPTED,
         user: notification.creator,
         creator: notification.user,
