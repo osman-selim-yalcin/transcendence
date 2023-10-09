@@ -50,27 +50,27 @@ export class RoomController {
 
   @Post('message')
   createMsg(@Req() req: any, @Body() body: messageDto) {
-    return this.roomService.createMsg(req.user, body);
+    return this.roomService.createMsg(req.user, req.room, body);
   }
 
   //Command Service
   @Post('command/invite')
   inviteUser(@Req() req: any, @Body() body: roomCommands) {
-    return this.commandService.inviteUser(req.otherUser, req.room);
+    return this.commandService.inviteUser(req.friendUser, req.room);
   }
 
   @Post('command/kick')
   kickUser(@Req() req: any, @Body() body: roomCommands) {
-    return this.commandService.kickUser(req.user, req.room, req.otherUser);
+    return this.commandService.kickUser(req.user, req.room, req.friendUser);
   }
 
   @Post('command/ban')
   banUser(@Req() req: any, @Body() body: roomCommands) {
-    return this.commandService.banUser(req.user, req.room, req.otherUser);
+    return this.commandService.banUser(req.user, req.room, req.friendUser);
   }
 
   @Post('command/mod')
   modUser(@Req() req: any, @Body() body: roomCommands) {
-    return this.commandService.modUser(req.user, req.room, req.otherUser);
+    return this.commandService.modUser(req.user, req.room, req.friendUser);
   }
 }

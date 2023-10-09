@@ -14,22 +14,23 @@ export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  content: string;
+  @Column({
+    nullable: true,
+  })
+  content: number;
 
   @Column()
   createdAt: string;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  creator: User;
-
   @Column({
     type: 'enum',
     enum: notificationTypes,
-    default: notificationTypes.FRIEND,
   })
-  type: string;
+  type: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn()
+  creator: User;
 
   @OneToOne(() => Notification, (notification) => notification.sibling, {
     onDelete: 'CASCADE',

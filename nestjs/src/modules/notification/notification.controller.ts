@@ -11,10 +11,10 @@ export class NotificationController {
     return this.notificationService.getNotifications(req.user);
   }
 
-  @Post()
-  createNotification(@Req() req: any, @Body() body: notificationDto) {
-    return this.notificationService.createNotification(req.user, body);
-  }
+  // @Post()
+  // createNotification(@Req() req: any, @Body() body: notificationDto) {
+  //   return this.notificationService.createNotification(req.user, body);
+  // }
 
   @Delete()
   deleteNotification(@Req() req: any, @Body() body: notificationDto) {

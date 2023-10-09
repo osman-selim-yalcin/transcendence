@@ -117,8 +117,7 @@ export class RoomService {
     return roomModify(await this.roomRep.save(room));
   }
 
-  async createMsg(user: User, details: messageDto) {
-    const room = await this.idToRoom(details.id);
+  async createMsg(user: User, room: Room, details: messageDto) {
     const msg = this.messageRep.create({
       owner: user.username,
       content: details.content,
