@@ -1,0 +1,54 @@
+.game-frame {
+  flex-grow: 1;
+  margin: 1rem;
+  min-height: 0;
+  overflow: hidden;
+
+  .gamebar {
+    background-color: blueviolet;
+  }
+
+
+  .game-container {
+    background-color: rgb(224, 224, 221);
+    position: relative;
+    height: 100%;
+    width: 100%;
+
+
+    .game {
+      background-color: black;
+      position: absolute;
+      aspect-ratio: 16 / 9;
+      max-height: 100%;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      
+      
+      .paddle {
+        background-color: white;
+        height: 20%;
+        width: 2%;
+        position: absolute;
+        transform: translateY(-50%);
+      }
+      
+      .paddle.left {
+        --position: 50;
+        left: 3%;
+        top: calc(var(--position) * 1%);
+        // transition: 15ms;
+      }
+      
+      .paddle.right {
+        --position: 50;
+        right: 3%;
+        top: calc(var(--position) * 1%);
+        transition: 15ms;
+      }
+    }
+  }
+}

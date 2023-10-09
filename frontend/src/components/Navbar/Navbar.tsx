@@ -14,12 +14,10 @@ export default function Navbar() {
   return (
     <div className="navbar">
       <div className="navbar_left">
-        <Link to="/">Home</Link>
-        <Link to="/profile">Profile</Link>
-        {/* <Link to={"/friends"}>Friends</Link>
-        <Link to={"/users"}>Users</Link>
-        <Link to={"/user-rooms"}>User Rooms</Link> */}
+        <Link to={"/"}>Home</Link>
+        <Link to={"/profile"}>Profile</Link>
         <Link to={"/chat"}>Chat</Link>
+        <Link to={"/game"}>Game</Link>
       </div>
       <div className="navbar_right">
         {!user ? (
