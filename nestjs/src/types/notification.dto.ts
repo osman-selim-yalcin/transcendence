@@ -10,12 +10,6 @@ export enum notificationTypes {
   MOD,
 }
 
-export enum notificationTypesBody {
-  FRIEND,
-  ROOM,
-  GAME,
-}
-
 export enum notificationStatus {
   PENDING,
   ACCEPTED,
@@ -35,10 +29,10 @@ export class notificationDto {
   @IsEmpty()
   creator: User;
 
-  @IsNotEmpty()
-  @IsEnum(notificationTypesBody)
+  @IsEmpty()
+  @IsEnum(notificationTypes)
   type: notificationTypes;
 
-  @IsNotEmpty()
+  @IsEmpty()
   user: User;
 }

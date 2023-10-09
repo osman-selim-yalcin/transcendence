@@ -31,7 +31,7 @@ export class RoomController {
     return this.roomService.deleteRoom(req.user, req.room);
   }
 
-  //interceptor
+  //special msg / private end
   @Put()
   updateRoom(@Req() req: any, @Body() body: roomDto) {
     return this.roomService.updateRoom(req.user, req.room, body);

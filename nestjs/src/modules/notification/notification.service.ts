@@ -16,10 +16,7 @@ export class NotificationService {
   ) {}
 
   async getNotifications(user: User) {
-    const allnot = await this.notificationRep.find({
-      relations: ['creator', 'user', 'sibling'],
-    });
-    return allnot;
+    return user.notifications;
   }
 
   async deleteNotification(notificationDetails: notificationDto) {

@@ -93,6 +93,8 @@ export class RoomService {
   }
 
   async joinRoom(user: User, room: Room, roomDetails: roomDto) {
+    if (!room.isGroup)
+      throw new HttpException('private room cannot be joinable', 400);
     const notification = isRoomNotification(room, user);
     if (notification) {
       await this.notificationRep.save({
@@ -114,6 +116,8 @@ export class RoomService {
   }
 
   async leaveRoom(user: User, room: Room) {
+    if (!room.isGroup)
+      throw new HttpException('private room cannot be leaveable', 400);
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
     this.leaveheadler(room, user);

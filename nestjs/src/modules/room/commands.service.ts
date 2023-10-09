@@ -72,14 +72,14 @@ export class CommandsService {
       throw new HttpException('not authorized', 400);
     if (isBanned(room, otherUser)) {
       room.banList = room.banList.filter((u) => u !== otherUser.username);
-      this.banHandler(user, room, otherUser);
-    } else {
-      if (!isUserInRoom(room, otherUser))
-        throw new HttpException('user not in room', 400);
-      room.banList.push(otherUser.username);
       this.banHandler(user, room, otherUser, notificationStatus.ACCEPTED);
+    } else {
+      if (isUserInRoom(room, otherUser)) {
+        this.banHandler(user, room, otherUser);
+        this.roomService.leaveheadler(room, otherUser);
+      }
+      room.banList.push(otherUser.username);
     }
-    this.roomService.leaveheadler(room, otherUser);
     return roomModify(await this.roomRep.save(room));
   }
 
