@@ -18,10 +18,14 @@ export function userModify(user: User) {
   };
 }
 
+export function userRoomModify(room: Room) {
+  room.users = room.users.map((u) => userModify(u));
+  if (room.password) return { ...room, password: true };
+  return { ...room, password: false };
+}
+
 export function roomModify(room: Room) {
   if (room.password) return { ...room, password: true };
-  room.users = room.users.map((u) => userModify(u));
-  console.log(room);
   return { ...room, password: false };
 }
 

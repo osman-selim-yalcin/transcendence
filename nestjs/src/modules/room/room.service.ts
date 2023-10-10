@@ -122,7 +122,7 @@ export class RoomService {
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
     this.leaveheadler(room, user);
-    return roomModify(await this.roomRep.save(room));
+    return { msg: 'user leaved' };
   }
 
   async createMsg(user: User, room: Room, details: messageDto) {
