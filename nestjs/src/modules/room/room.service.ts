@@ -98,7 +98,10 @@ export class RoomService {
     const notification = isRoomNotification(room, user);
     if (notification) {
       await this.notificationRep.save({
-        ...notification,
+        type: notification.type,
+        createdAt: new Date().toLocaleString('tr-TR', {
+          timeZone: 'Europe/Istanbul',
+        }),
         content: `${user.username} accepted your invite request`,
         status: notificationStatus.ACCEPTED,
         user: notification.creator,
@@ -219,5 +222,6 @@ export class RoomService {
       id: room.id,
       createdAt: '',
     });
+    await this.roomRep.save(room);
   }
 }

@@ -19,25 +19,34 @@ export class NotificationService {
 
   async getNotifications(user: User) {
     return user.notifications.map((n) => notificationModify(n));
+    return this.notificationRep.find({
+      relations: ['user', 'creator'],
+    });
   }
 
   async deleteNotification(notificationDetails: notificationDto) {
     const notification = await this.notificationRep.findOne({
       where: { id: notificationDetails.id },
+      relations: ['user', 'creator'],
     });
     if (!notification) throw new HttpException('not found', 404);
     if (notification.status === notificationStatus.QUESTION) {
+      let content = '';
       if (notification.type === notificationTypes.FRIEND) {
-        notification.content = 'Friend request declined';
+        content = 'Friend request declined';
       } else if (notification.type === notificationTypes.ROOM) {
-        notification.content = 'Room invitation declined';
+        content = 'Room invitation declined';
       }
 
       await this.notificationRep.save({
-        ...notification,
+        type: notification.type,
+        content: content,
         status: notificationStatus.DECLINED,
         user: notification.creator,
         creator: notification.user,
+        createdAt: new Date().toLocaleString('tr-TR', {
+          timeZone: 'Europe/Istanbul',
+        }),
       });
     }
     await this.notificationRep.remove(notification);

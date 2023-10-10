@@ -37,10 +37,21 @@ export class UsersService {
   }
 
   async addFriend(user: User, otherUser: User) {
-    await this.notificationHandler(user, otherUser);
+    const notification = await this.notificationHandler(user, otherUser);
     addFriendHelper(user, otherUser);
     await this.userRep.save(user);
     await this.userRep.save(otherUser);
+    await this.notificationRep.save({
+      type: notification.type,
+      createdAt: new Date().toLocaleString('tr-TR', {
+        timeZone: 'Europe/Istanbul',
+      }),
+      content: `${user.username} accepted your friend request`,
+      status: notificationStatus.ACCEPTED,
+      user: notification.creator,
+      creator: notification.user,
+    });
+    await this.notificationRep.remove(notification);
     return { msg: 'success' };
   }
 
@@ -90,15 +101,7 @@ export class UsersService {
       notificationStatus.QUESTION,
     );
     if (notification) {
-      await this.notificationRep.save({
-        ...notification,
-        status: notificationStatus.ACCEPTED,
-        user: notification.creator,
-        content: `${user.username} accepted your friend request`,
-        creator: notification.user,
-      });
-      await this.notificationRep.remove(notification);
-      return;
+      return notification;
     }
     const newNotification = await this.isFriendNotificationExist(
       user,
