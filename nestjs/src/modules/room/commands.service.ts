@@ -4,7 +4,7 @@ import { User } from 'src/typeorm/User';
 import { Room } from 'src/typeorm/Room';
 import { Repository } from 'typeorm';
 import {
-  roomModify,
+  userRoomModify,
   isMod,
   isUserInRoom,
   isBanned,
@@ -33,7 +33,7 @@ export class CommandsService {
     if (isRoomNotification(room, otherUser))
       throw new HttpException('user already invited', 400);
     this.createInviteNotifcations(user, room, otherUser);
-    return roomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room));
   }
 
   async kickUser(user: User, room: Room, otherUser: User) {
@@ -46,7 +46,7 @@ export class CommandsService {
       throw new HttpException('not authorized', 400);
     this.kickHandler(user, room, otherUser);
     this.roomService.leaveheadler(room, otherUser);
-    return roomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room));
   }
 
   async modUser(user: User, room: Room, otherUser: User) {
@@ -61,7 +61,7 @@ export class CommandsService {
       room.mods.push(otherUser.username);
       this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
     }
-    return roomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room));
   }
 
   async banUser(user: User, room: Room, otherUser: User) {
@@ -80,7 +80,7 @@ export class CommandsService {
       }
       room.banList.push(otherUser.username);
     }
-    return roomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room));
   }
 
   //utils for notification
@@ -90,6 +90,7 @@ export class CommandsService {
         timeZone: 'Europe/Istanbul',
       }),
       roomID: room.id,
+      content: `${user.username} invited you to ${room.name}`,
       type: notificationTypes.ROOM,
       creator: user,
       user: friendUser,
@@ -100,6 +101,7 @@ export class CommandsService {
         timeZone: 'Europe/Istanbul',
       }),
       roomID: room.id,
+      content: `You invited ${friendUser.username} to ${room.name}`,
       creator: friendUser,
       user: user,
       type: notificationTypes.ROOM,
@@ -116,27 +118,30 @@ export class CommandsService {
     friendUser: User,
     type: notificationTypes,
     status: notificationStatus,
+    content: string,
   ) {
-    const notification = await this.notificationRep.save({
+    await this.notificationRep.save({
       createdAt: new Date().toLocaleString('tr-TR', {
         timeZone: 'Europe/Istanbul',
       }),
       roomID: room.id,
+      content,
       type: type,
       status: status,
       creator: user,
       user: friendUser,
     });
-    await this.notificationRep.save(notification);
   }
 
   async kickHandler(user: User, room: Room, friendUser: User) {
+    const content = `${user.username} kicked you from ${room.name}`;
     await this.createCommandNotifcation(
       user,
       room,
       friendUser,
       notificationTypes.KICK,
       notificationStatus.DECLINED,
+      content,
     );
   }
 
@@ -146,12 +151,17 @@ export class CommandsService {
     friendUser: User,
     status: notificationStatus = notificationStatus.DECLINED,
   ) {
+    let content = `${user.username} mod you from ${room.name}`;
+    if (status === notificationStatus.ACCEPTED) {
+      content = `${user.username} unmod you from ${room.name}`;
+    }
     await this.createCommandNotifcation(
       user,
       room,
       friendUser,
       notificationTypes.MOD,
       status,
+      content,
     );
   }
 
@@ -161,12 +171,17 @@ export class CommandsService {
     friendUser: User,
     status: notificationStatus = notificationStatus.DECLINED,
   ) {
+    let content = `${user.username} banned you from ${room.name}`;
+    if (status === notificationStatus.ACCEPTED) {
+      content = `${user.username} unbanned you from ${room.name}`;
+    }
     await this.createCommandNotifcation(
       user,
       room,
       friendUser,
       notificationTypes.BAN,
       status,
+      content,
     );
   }
 }

@@ -1,10 +1,12 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { notificationModify } from 'src/functions/Notification';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
 import {
   notificationDto,
   notificationStatus,
+  notificationTypes,
 } from 'src/types/notification.dto';
 import { Repository } from 'typeorm';
 
@@ -16,7 +18,7 @@ export class NotificationService {
   ) {}
 
   async getNotifications(user: User) {
-    return user.notifications;
+    return user.notifications.map((n) => notificationModify(n));
   }
 
   async deleteNotification(notificationDetails: notificationDto) {
@@ -25,6 +27,12 @@ export class NotificationService {
     });
     if (!notification) throw new HttpException('not found', 404);
     if (notification.status === notificationStatus.QUESTION) {
+      if (notification.type === notificationTypes.FRIEND) {
+        notification.content = 'Friend request declined';
+      } else if (notification.type === notificationTypes.ROOM) {
+        notification.content = 'Room invitation declined';
+      }
+
       await this.notificationRep.save({
         ...notification,
         status: notificationStatus.DECLINED,

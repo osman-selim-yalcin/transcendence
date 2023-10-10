@@ -20,7 +20,7 @@ export class Notification {
   @Column({
     nullable: true,
   })
-  content: number;
+  content: string;
 
   @Column({
     nullable: true,

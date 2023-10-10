@@ -2,6 +2,14 @@ import { IsEmpty, IsNotEmpty } from 'class-validator';
 import { Notification } from 'src/typeorm/Notification';
 import { Room } from 'src/typeorm/Room';
 
+export enum userStatus {
+  ONLINE,
+  OFFLINE,
+  INGAME,
+  AWAY,
+  BUSY,
+}
+
 export class userDto {
   @IsEmpty()
   username: string;
@@ -18,7 +26,7 @@ export class userDto {
   lastSeen: string;
 
   @IsEmpty()
-  status: string;
+  status: number;
 
   @IsEmpty()
   friends: userDto[];

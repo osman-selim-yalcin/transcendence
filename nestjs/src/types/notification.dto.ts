@@ -20,19 +20,4 @@ export enum notificationStatus {
 export class notificationDto {
   @IsNotEmpty()
   id: number;
-
-  @IsEmpty()
-  content: number;
-
-  @IsEmpty()
-  createdAt: string;
-  @IsEmpty()
-  creator: User;
-
-  @IsEmpty()
-  @IsEnum(notificationTypes)
-  type: notificationTypes;
-
-  @IsEmpty()
-  user: User;
 }

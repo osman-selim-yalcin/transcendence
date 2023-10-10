@@ -72,7 +72,6 @@ export class AuthController {
     if (!sessionID) return;
     const details = {
       ...body,
-      status: 'online',
       sessionID,
     };
     return this.authService.tmpCreate(details);

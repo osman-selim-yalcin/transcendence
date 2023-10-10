@@ -1,11 +1,8 @@
 import { OnModuleInit } from '@nestjs/common';
-import {
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-} from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'; // Import the 'Socket' type
 import { UsersService } from 'src/modules/users/user.service';
+import { userStatus } from 'src/types/user.dto';
 
 interface CustomSocket extends Socket {
   username: string;
@@ -43,9 +40,9 @@ export class socketGateway implements OnModuleInit {
       socket.join(socket.sessionID);
 
       console.log('user', socketUser.username, 'connected');
-      this.userService.handleStatusChange(socketUser, 'online');
+      this.userService.handleStatusChange(socketUser, userStatus.ONLINE);
       socket.on('disconnect', async () => {
-        this.userService.handleStatusChange(socketUser, 'offline');
+        this.userService.handleStatusChange(socketUser, userStatus.OFFLINE);
         this.server.emit('user disconnected', socket.sessionID);
         console.log('user', socketUser.username, 'disconnected');
       });
@@ -57,8 +54,6 @@ export class socketGateway implements OnModuleInit {
   }
 
   async sendNotification(sessionID: string, content: any) {
-    console.log('sendNotification');
-    console.log(sessionID);
     this.server.in(sessionID).emit('notification', {
       content: content.content,
       type: content.type,
@@ -68,20 +63,8 @@ export class socketGateway implements OnModuleInit {
   }
 
   async onPrivateMessage(payload: any) {
-    console.log('sendPrivateMessage', payload.to);
-    console.log(await this.server.in(payload.to).fetchSockets());
     this.server.to(payload.to).emit('private message', {
       ...payload.msg,
-    });
-  }
-
-  @SubscribeMessage('notification')
-  onNotification(client: CustomSocket, payload: any) {
-    this.server.to(payload.to).emit('notification', {
-      content: payload.content,
-      type: payload.type,
-      createdAt: payload.createdAt,
-      owner: payload.owner,
     });
   }
 }

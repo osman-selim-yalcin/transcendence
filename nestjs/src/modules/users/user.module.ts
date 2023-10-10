@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/User';
 import { Notification } from 'src/typeorm/Notification';
 import { idToUser } from 'src/middleware/user.middleware';
-import { NotificationMiddleware } from 'src/middleware/notification.middleware';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Notification])],
@@ -20,7 +19,7 @@ export class UserModule {
       method: RequestMethod.DELETE,
     });
     consumer
-      .apply(idToUser, NotificationMiddleware)
+      .apply(idToUser)
       .forRoutes({ path: 'user', method: RequestMethod.POST });
   }
 }
