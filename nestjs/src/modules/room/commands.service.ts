@@ -45,7 +45,7 @@ export class CommandsService {
     )
       throw new HttpException('not authorized', 400);
     this.kickHandler(user, room, otherUser);
-    this.roomService.leaveheadler(room, otherUser);
+    await this.roomService.leaveheadler(room, otherUser);
     return userRoomModify(await this.roomRep.save(room));
   }
 
@@ -76,7 +76,7 @@ export class CommandsService {
     } else {
       if (isUserInRoom(room, otherUser)) {
         this.banHandler(user, room, otherUser);
-        this.roomService.leaveheadler(room, otherUser);
+        await this.roomService.leaveheadler(room, otherUser);
       }
       room.banList.push(otherUser.username);
     }

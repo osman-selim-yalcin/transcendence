@@ -34,6 +34,8 @@ export class RoomService {
 
   async getRooms(query: any) {
     if (query.take > 50) throw new HttpException('too many rooms', 400);
+    if (query.id)
+      return await this.roomRep.findOne({ where: { id: query.id } });
     const rooms = await this.roomRep.find({
       skip: query.skip ? query.skip : 0,
       take: query.take ? query.take : 10,
@@ -124,7 +126,7 @@ export class RoomService {
       throw new HttpException('private room cannot be leaveable', 400);
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
-    this.leaveheadler(room, user);
+    await this.leaveheadler(room, user);
     return { msg: 'user leaved' };
   }
 
@@ -196,24 +198,21 @@ export class RoomService {
   }
 
   async leaveheadler(room: Room, user: User) {
-    if (isCreator(room, user)) {
-      if (room.users.length > 0) {
-        if (room.mods.length > 0) room.creator = room.mods[1];
-        else room.creator = room.users.find((u) => u.id !== user.id).username;
-      } else {
-        room.creator = null;
-      }
-    }
-
-    if (isMod(room, user)) {
-      room.mods = room.mods.filter((u) => u !== user.username);
-    }
-
     room.users = room.users.filter((u) => u.id !== user.id);
+    if (isMod(room, user))
+      room.mods = room.mods.filter((u) => u !== user.username);
 
     if (room.users.length === 0) {
       await this.roomRep.remove(room);
-      return { msg: 'room deleted cause no one left' };
+      throw new HttpException('room deleted cause no user', 200);
+    }
+
+    if (isCreator(room, user)) {
+      if (room.mods.length > 0) room.creator = room.mods[0];
+      else {
+        room.creator = room.users.find((u) => u.id !== user.id).username;
+        room.mods.push(room.creator);
+      }
     }
 
     this.specialMsg({
