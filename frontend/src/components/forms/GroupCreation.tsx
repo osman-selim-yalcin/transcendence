@@ -38,7 +38,7 @@ export default function GroupCreation({ setModal }: any) {
 
   function generatePayload() {
     const users = checkboxes.map((id: string) => {
-      return { id: id }
+      return { id: parseInt(id) }
     })
 
     const payload: roomPayload = {

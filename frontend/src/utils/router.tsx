@@ -7,6 +7,7 @@ import FriendList from "../components/FriendList/FriendList"
 import UserRoomList from "../components/RoomList/RoomList"
 import UserList from "../components/UserList/UserList"
 import { Chat } from "../components/Chat/Chat"
+import LoadIndicator from "../components/LoadIndicator/LoadIndicator"
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,14 @@ export const router = createBrowserRouter([
       {
         path: "/chat",
         element: <Chat />
+      },
+      {
+        path: "/chat/:id",
+        element: <Chat />
+      },
+      {
+        path: "*",
+        element: <LoadIndicator />
       }
     ]
   }

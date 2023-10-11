@@ -36,7 +36,7 @@ export const getRooms = async () => {
     })
 }
 
-export const createRoom = async (body: any) => {
+export const createRoom = async (body: roomPayload) => {
   return axios.post(
     "http://localhost:3000/api/room",
     body,
@@ -49,7 +49,6 @@ export const createRoom = async (body: any) => {
     }
   )
   .then((response) => {
-    console.log("api response", response)
     return response.data
   })
   .catch((err) => {
@@ -71,13 +70,31 @@ export const deleteRoom = async (body: roomPayload) => {
 }
 
 export const sendMessage = async (body: {content: string, id: number}) => {
-  axios
+  return axios
     .post(
       "http://localhost:3000/api/room/message",
       body,
       {
         headers: {
-          authorization:
+          Authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+        }
+      }
+    )
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const leaveRoom = async (body: roomPayload) => {
+  return axios
+    .post(
+      "http://localhost:3000/api/room/leave",
+      body,
+      {
+        headers: {
+          Authorization:
             "Bearer " +
             (localStorage.getItem("token") ? localStorage.getItem("token") : "")
         }

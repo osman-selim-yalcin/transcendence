@@ -11,4 +11,12 @@ export default class Paddle {
   set position(value) {
     this.paddleElem.style.setProperty("--position", value.toString())
   }
+
+  get hue() {
+    return parseFloat(getComputedStyle(this.paddleElem).getPropertyValue("--hue"))
+  }
+
+  set hue(value) {
+    this.paddleElem.style.setProperty("--hue", value.toString())
+  }
 }

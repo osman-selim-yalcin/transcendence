@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { getUsers } from "../../api/user"
-import { user } from "../../types"
+import { NotificationStatus, NotificationType, user } from "../../types"
 import { UserContext } from "../../context/UserContext"
 import "./UserList.scss"
 import { addFriend } from "../../api/friend"
@@ -10,7 +10,7 @@ export default function UserList() {
   const [search, setSearch] = useState("")
   const [searchParams, setSearchParams] = useSearchParams()
   const [users, setUsers] = useState(null)
-  const { user, friends } = useContext(UserContext)
+  const { user } = useContext(UserContext)
 
   useEffect(() => {
     const queryParam = searchParams.get("q")
@@ -23,7 +23,7 @@ export default function UserList() {
     const params = {
       "q": search
     }
-    if (search !== "") {
+    if (search !== "" && user) {
       setSearchParams(params)
       getUsers(search)
         .then((response: user[]) => {
@@ -32,12 +32,7 @@ export default function UserList() {
     } else {
       setUsers(null)
     }
-  }, [search])
-
- function isFriendId(id: number) {
-  const found = friends.find((friend) => friend.id === id)
-  return found === undefined ? false : true;
- }
+  }, [search, user])
 
   return (
     <div className={"user-list"}>
@@ -56,7 +51,7 @@ export default function UserList() {
                   {users.map((singleUser: user) => (
                     singleUser.id !== user.id &&
                     <li key={singleUser.id}>
-                      <UserIndex user={singleUser} isFriend={isFriendId(singleUser.id)} />
+                      <UserIndex user={singleUser} />
                     </li>
                   ))}
                 </ul>
@@ -75,21 +70,56 @@ export default function UserList() {
   )
 }
 
-function UserIndex({ user, isFriend }: { user: user, isFriend: boolean }) {
-  const { reloadFriends } = useContext(UserContext)
+function UserIndex({ user }: { user: user }) {
+
   return (
     <>
       <p>
-        {user.username} - {user.id}
+        <b>
+          {user.username} - {user.id}
+        </b>
       </p>
-      {!isFriend && 
-      <button onClick={async () => {
-        await addFriend({ id: user.id })// to be changed
-        reloadFriends()
-      }}>Add friend</button>
-      }
+      <IndexContent userId={user.id} />
     </>
   )
+}
+
+function IndexContent({ userId }: { userId: number }) {
+  const { friends, reloadNotifications, notifications, reloadFriends } = useContext(UserContext)
+
+  function isFriendId(id: number) {
+    const found = friends?.find((friend) => friend.id === id)
+    return found === undefined ? false : true;
+  }
+
+  function isFriendRequestPending(id: number) {
+    const found = notifications.find((notification) => (notification.creator.id === id &&
+      notification.type === NotificationType.FRIEND &&
+      notification.status === NotificationStatus.PENDING))
+    return found === undefined ? false : true
+  }
+
+  if (isFriendId(userId)) {
+    return (
+      <p>
+        You are friends
+      </p>
+    )
+  } else if (isFriendRequestPending(userId)) {
+    return (
+      <p>
+        Your request is pending...
+      </p>
+    )
+  } else {
+    return (
+      <button onClick={async () => {
+        await addFriend({ id: userId })
+        reloadFriends()
+        reloadNotifications()
+      }}>Add friend</button>
+    )
+  }
 }
 
 // event.preventDefault();

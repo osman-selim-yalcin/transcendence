@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import Logout from "../auth/Logout.tsx"
 import { useContext, useState } from "react"
 import { UserContext } from "../../context/UserContext.tsx"
-import Notification from "../Notification.tsx"
+import NotificationList from "../Notification/Notification.tsx"
 import { Modal } from "../Modal.tsx"
 import Login from "../auth/Login.tsx"
 import "./Navbar.scss"
@@ -26,8 +26,9 @@ export default function Navbar() {
           }}>Login</button>
         ) : (
           <>
+            <p style={{ alignSelf: "center" }}>{user.username}</p>
             <Logout />
-            <Notification />
+            <NotificationList />
           </>
         )}
       </div>

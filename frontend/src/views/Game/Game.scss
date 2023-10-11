@@ -38,9 +38,20 @@
       
       .paddle.left {
         --position: 50;
+        --hue: 160;
         left: 3%;
         top: calc(var(--position) * 1%);
-        // transition: 15ms;
+        background-color: hsl(var(--hue), 100%, 50%);
+        transition: 2000ms;
+        transition-property: /*top,*/ left, transform, scale;
+      }
+
+      .paddle.left.not-ready {
+        top: 50%;
+        left: 50%;
+        transform: translateY(-50%) translateX(-50%) rotateZ(-90deg) translateX(400%) scale(3);
+        transition: 2000ms;
+        transition-property: top, left, transform, scale;
       }
       
       .paddle.right {
@@ -49,6 +60,34 @@
         top: calc(var(--position) * 1%);
         transition: 15ms;
       }
+
+      .temp {
+        position: absolute;
+      }
+
+      .color-select-buttons {
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30vw;
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .center {
+        height: 10px;
+        width: 10px;
+        background-color: red;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .modal-menu {
+
     }
   }
 }

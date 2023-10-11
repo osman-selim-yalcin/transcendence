@@ -11,13 +11,17 @@ export default function Sidebar() {
   const sidebarRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside)
+    if (barActive) {
+      document.addEventListener('click', handleClickOutside)
+    } else {
+      document.removeEventListener('click', handleClickOutside);
+    }
     // document.addEventListener("keydown", handleEscapeKey)
     return () => {
       document.removeEventListener('click', handleClickOutside);
       // document.removeEventListener("keydown", handleEscapeKey)
     }
-  }, [])
+  }, [barActive])
 
   function handleClickOutside(event: any) {
     if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -47,7 +51,7 @@ export default function Sidebar() {
       <div className="sidebar-content" style={{
         "transform": `translate(-${view * 350}px)`
       }}>
-        <FriendList />
+        <FriendList setBarActive={setBarActive} />
         <UserRoomList />
         <UserList />
       </div>

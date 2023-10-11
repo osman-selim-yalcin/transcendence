@@ -1,6 +1,7 @@
 .room-list {
 
   min-width: 100%;
+  overflow-y: scroll;
 
   button {
     align-self: flex-start;
@@ -9,5 +10,11 @@
   .room-ul {
     list-style: none;
     padding: 1rem;
+
+    li {
+      border-bottom: 1px grey solid;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
   }
 }

@@ -8,7 +8,7 @@ import "./RoomList.scss"
 import LoadIndicator from '../LoadIndicator/LoadIndicator'
 
 export default function UserRoomList() {
-  const { user, userRooms }: { user: user, userRooms: room[] } = useContext(UserContext)
+  const { user, userRooms } = useContext(UserContext)
   const [modal, setModal] = useState(false)
 
 
@@ -72,7 +72,7 @@ function UserRoomIndex({ room, user }: { room: room, user: user }) {
   return (
     <>
       {/* <img src={room.avatar} alt="" /> */}
-      <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i> | <b>Members:</b> {room.users.map((user: user) => (user.username)).join(", ")}</p>
+      <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i> | <b>Members:</b> {room.users.map((user: user) => (user.username)).join(", ")} | <b>ID:</b> {room.id}</p>
       {room.creator === user.username ?
         <button onClick={() => {
           handleDelete(room)

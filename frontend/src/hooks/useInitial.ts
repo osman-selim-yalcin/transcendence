@@ -3,12 +3,14 @@ import { getUser } from "../api/user"
 import { room, user } from "../types"
 import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
+import { getNotifications } from "../api/notification"
 
 
 const useInitial = () => {
   const [user, setUser] = useState<user>(null)
   const [friends, setFriends] = useState<user[]>(null)
   const [userRooms, setUserRooms] = useState<room[]>(null)
+  const [notifications, setNotifications] = useState(null)
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -33,7 +35,14 @@ const useInitial = () => {
             getUserRooms()
               .then(response => {
                 setUserRooms(response)
-                console.log("user room response", response)
+              })
+              .catch((err: any) => {
+                console.log(err)
+              })
+
+            getNotifications()
+              .then(response => {
+                setNotifications(response)
               })
               .catch((err: any) => {
                 console.log(err)
@@ -54,7 +63,9 @@ const useInitial = () => {
     friends,
     setFriends,
     userRooms,
-    setUserRooms
+    setUserRooms,
+    notifications,
+    setNotifications
   }
 }
 

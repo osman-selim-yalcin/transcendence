@@ -26,7 +26,6 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
-  // align-self: flex-end;
 }
 button:hover {
   border-color: #646cff;
@@ -45,8 +44,6 @@ html {
 
 body {
   height: 100vh;
-  // height: inherit;
-  // position: relative;
   display: flex;
 }
 
@@ -59,7 +56,6 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  // overflow: hidden;
 }
 
 main {
@@ -77,118 +73,8 @@ footer {
   background-color: #56b6c9;
 }
 
-// .chat {
-// 	position: absolute;
-// 	bottom: 0;
-// 	right: 0;
-// 	width: 100vw;
-// 	height: 600px;
-
-// 	display: flex;
-// 	flex-direction: row;
-// 	justify-content: flex-end;
-// 	align-items: flex-end;
-// 	gap: 10px;
-
-// 	&_div{
-// 		width: 500px;
-// 		height: 600px;
-		
-// 		&_search{
-// 			background-color: blueviolet;
-// 			height: 100px;
-// 		}
-		
-// 	}
-
-// 	&_rooms{
-// 		display: flex;
-// 		flex-direction: row;
-// 		gap: 10px;
-// 		align-items: end;
-// 		&_room {
-// 			display: flex;
-// 			flex-direction: column;
-// 			justify-content: space-between;
-			
-// 			background-color: rosybrown;
-// 			width: 200px;
-// 			height: 300px;
-
-// 			transition: 500ms;
-
-// 			&_header {
-// 				position: relative;
-// 				display: flex;
-// 				justify-content: space-between;
-// 				border-bottom: 2px solid black;
-// 				&_avatar{
-// 					height: 100%;
-// 					display: flex;
-// 					justify-content: center;
-// 					align-items: center;
-// 					img{
-// 						height: 50px;
-// 					}
-// 				}
-// 				&_buttons{
-// 					display: flex;
-// 					justify-content: center;
-// 					align-items: center;
-// 					&_button  {
-// 						width: 20px;
-// 						height: 20px;
-// 						background-color:azure;
-// 						text-align: center;
-// 					}
-// 					&_button:active {
-// 						background-color: grey;
-// 					}
-// 				}
-
-// 			}
-			
-// 			&_messages {
-// 				background-color: darkred;
-// 				height: 90%;
-// 				overflow-y: scroll;
-
-// 				&_msg{
-// 					background-color: darkorange;
-// 					height: 15%;
-// 					border: 1px solid black;
-// 					&_content{
-// 						background-color: darkorchid;
-// 					}
-// 				}
-// 			}
-			
-// 			&_input {
-// 				display: flex;
-// 				height: 10%;
-// 				background-color: darkgreen;
-				
-// 				input{
-// 					width: 100%;
-// 				}
-// 			}
-// 		}
-// 	}
-// }
-
-
 .hidden {
-	display: none;
-}
-
-.new-messages {
-  color: white;
-  background-color: red;
-  width: 20px;
-  border-radius: 5px;
-  text-align: center;
-  float: right;
-  margin-top: 10px;
+	display: none !important;
 }
 
 .noselect {
@@ -199,100 +85,4 @@ footer {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
-}
-
-.modal {
-	height: 80vh;
-	width: 60vw;
-	&_swaps{
-		cursor: pointer;
-		display: flex;
-		justify-content: space-around;
-		height: 10%;
-		width: 100%;
-		border: 1px solid blue;
-
-		&_item{
-			display: flex;
-			justify-content: center;
-			align-items: center;
-
-			width: 33%;
-			height: 100%;
-			border: 1px solid black;
-		}
-	}
-	&_search{
-		width: 100%;
-		height: 5%;
-	}
-	&_list{
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 80%;
-		width: 100%;
-		border: 1px solid red;
-	}
-	&_buttons{
-		width: 100%;
-		&_item{
-			width: 100%;
-			border: 1px solid black;
-		}
-	}
-}
-
-.list{
-	background-color: darkblue;
-	height: 500px;
-	overflow-y: scroll;
-	&_item{
-		background-color: darkcyan;
-		height: 100px;
-		border: 1px solid black;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-			&_info{
-				display: flex;
-				flex-direction: row;
-				justify-content: center;
-				align-items: center;
-				gap: 10px;
-				&_img{
-					border-radius: 50%;
-					height: 50px;
-				}
-				&_msg{
-					
-				}
-			}
-	}
-}
-
-.notification{
-	position: relative;
-	z-index: 1;
-	&_img{
-		border-radius: 50%;
-		height: 20px;
-	}
-	&_dialog{
-		&_list{
-			&_item{
-				// border: 1px solid black;
-
-			}
-		}
-	}
-	&_new{
-		position: absolute;
-		top: 0;
-		right: 0;
-		background-color: red;
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-	}
 }

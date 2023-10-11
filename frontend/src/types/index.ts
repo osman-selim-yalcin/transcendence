@@ -15,6 +15,16 @@ export interface userContext {
   userRooms: room[]
   setUserRooms: Function
   reloadUserRooms: Function
+  notifications: notification[]
+  reloadNotifications: Function
+}
+
+export enum userStatus {
+  ONLINE,
+  OFFLINE,
+  INGAME,
+  AWAY,
+  BUSY,
 }
 
 export type socketPayload = {}
@@ -38,7 +48,7 @@ export type room = {
 export interface roomPayload {
   id: number
   name: string
-  users: { id: string }[]
+  users: { id: number }[] | []
   isGroup: boolean
   password?: string
 }
@@ -55,6 +65,46 @@ export enum SocialView {
   FRIENDS,
   ROOMS,
   USERS
+}
+
+export interface NonModalPosition {
+  top?: number
+  left?: number
+  bottom?: number
+  right?: number
+}
+
+export enum NotificationType {
+  FRIEND,
+  ROOM,
+  GAME,
+  KICK,// single button
+  BAN,// single button
+  MOD,// single button
+}
+
+export enum NotificationStatus {
+  PENDING,
+  ACCEPTED,
+  DECLINED,
+  QUESTION,
+}
+
+export type notification = {
+  id: number
+  content: any
+  roomID: number
+  status: NotificationStatus
+  createdAt: string
+  type: NotificationType
+  creator: user
+  sibling: notification
+}
+
+export enum RoomRank {
+  CREATOR,
+  MODERATOR,
+  MEMBER
 }
 
 // export type typeMsg = {
