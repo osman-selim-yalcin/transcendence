@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar/Navbar'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar/Sidebar'
 import "../styles/app.scss"
+import NonModal from '../components/NonModal/NonModal'
 
 export default function RootLayout() {
 
@@ -16,6 +17,7 @@ export default function RootLayout() {
       <footer>
         Transcedence &copy;
       </footer>
+      <NonModal />
     </div>
   )
 }

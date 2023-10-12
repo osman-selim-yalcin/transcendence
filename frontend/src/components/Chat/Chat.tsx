@@ -1,12 +1,13 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { PropsWithChildren, useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../context/UserContext"
 import Room from "../Room"
 import List from "../List"
 import "./Chat.scss"
-import { room, user, message, RoomRank } from "../../types"
+import { room, user, message, RoomRank, ContextMenuContentType } from "../../types"
 import { leaveRoom, sendMessage } from "../../api/room"
 import LoadIndicator from "../LoadIndicator/LoadIndicator"
 import { useNavigate, useParams } from "react-router-dom"
+import { ContextMenuContext } from "../../context/ContextMenuContext"
 
 export function Chat() {
   const [showDetail, setShowDetail] = useState(false)
@@ -41,15 +42,13 @@ function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrent
   return (
     <div className="chatbar">
       <h2>Chatbar</h2>
-      <ul className="noselect" onClick={() => { navigate("/chat")/*setCurrentRoom(null)*/ }}>
+      <ul className="noselect">
         {userRooms && userRooms.map((room: room) => {
           // if (room.messages.length)
           return (
             <li key={room.id}
               className={"chat-index" + (room.id === currentRoom?.id ? " active" : "")}
               onClick={(e) => {
-                e.stopPropagation()
-                // setCurrentRoom(room)
                 navigate(`/chat/${room.id}`)
               }}>
               <MessageIndex room={room} />
@@ -217,6 +216,7 @@ function DetailHeader({ currentRoom }: { currentRoom: room }) {
 
 function DetailContent({ currentRoom, userRank }: { currentRoom: room, userRank: RoomRank }) {
   const { user, reloadUserRooms } = useContext(UserContext)
+  const { openContextMenu } = useContext(ContextMenuContext)  
 
   function getRank(user: user) {
     if (user.username === currentRoom.creator) {
@@ -245,14 +245,15 @@ function DetailContent({ currentRoom, userRank }: { currentRoom: room, userRank:
       <div className="chat-detail-body">
         <ul className={"chat-detail-ul"}>
           {currentRoom.users.map((singleUser: user) => (
-            <li key={singleUser.id}>
+            <li onContextMenu={(e) => {
+              e.preventDefault()
+              openContextMenu(e.clientX, e.clientY, 
+                              ContextMenuContentType.ROOM_DETAIL_USER, 
+                              { clickedUser: singleUser, canBeControlled: getRank(singleUser) > getRank(user) })
+              // setMenuData({ position: { top: 0, left: 0 }, clickedUser: singleUser, canBeControlled: getRank(singleUser) > getRank(user) })
+            }} key={singleUser.id}>
               <img src={singleUser.avatar} alt={"user avatar"} />
               <p>{getRankBadge(getRank(singleUser))} {singleUser.username} {singleUser.id === user.id && "(You)"}</p>
-              <div className={"admin-buttons" + (getRank(singleUser) > getRank(user) ? "" : " hidden")}>
-                <button title="wow">Promote/Demote</button>
-                <button>Kick</button>
-                <button>Ban</button>
-              </div>
             </li>
           ))}
         </ul>
@@ -265,11 +266,24 @@ function DetailContent({ currentRoom, userRank }: { currentRoom: room, userRank:
             reloadUserRooms()
           }, 1000);
         }} >Exit Group</button>
+        {/* <NonModal isActive={[contextMenu, setContextMenu]} dialogPosition={menuData?.position}>
+          <ContextMenuButtons clickedUser={menuData?.clickedUser} canBeControlled={menuData?.canBeControlled} />
+        </NonModal> */}
       </div>
     )
   } else {
 
   }
+}
+
+export function ContextMenuButtons({ clickedUser, canBeControlled }: PropsWithChildren<{ clickedUser: user, canBeControlled: boolean }>) {
+return (
+  <div className={"admin-buttons" + (!canBeControlled && " hidden")}>
+    <button title="wow">Promote/Demote</button>
+    <button>Kick</button>
+    <button>Ban</button>
+  </div>
+) 
 }
 
 // CHAT DETAILS

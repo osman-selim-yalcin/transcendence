@@ -3,7 +3,6 @@ import { SocketContext } from "../../context/SocketContext"
 import "./Game.scss"
 import Paddle from "../../game/Paddle"
 import { Modal } from "../../components/Modal"
-import { redirect } from "react-router-dom"
 // import { game_start } from "../game/index.js"
 
 export default function Game() {

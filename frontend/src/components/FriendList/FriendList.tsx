@@ -5,7 +5,7 @@ import "./FriendList.scss"
 import { deleteFriend } from '../../api/friend'
 import LoadIndicator from '../LoadIndicator/LoadIndicator'
 import { createRoom } from '../../api/room'
-import { redirect, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export default function FriendList({ setBarActive }: { setBarActive: Function }) {
   const { user, friends } = useContext(UserContext)

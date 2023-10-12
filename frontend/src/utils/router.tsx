@@ -3,9 +3,6 @@ import Home from "../views/Home"
 import Profile from "../views/Profile"
 import RootLayout from "../layouts/RootLayout"
 import Game from "../views/Game/Game"
-import FriendList from "../components/FriendList/FriendList"
-import UserRoomList from "../components/RoomList/RoomList"
-import UserList from "../components/UserList/UserList"
 import { Chat } from "../components/Chat/Chat"
 import LoadIndicator from "../components/LoadIndicator/LoadIndicator"
 
@@ -24,18 +21,6 @@ export const router = createBrowserRouter([
       {
         path: "/game",
         element: <Game />
-      },
-      {
-        path: "/friends",
-        element: <FriendList />
-      },
-      {
-        path: "/user-rooms",
-        element: <UserRoomList />
-      },
-      {
-        path: "/users",
-        element: <UserList />
       },
       {
         path: "/chat",

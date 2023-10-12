@@ -1,11 +1,18 @@
-import { RefObject, useEffect, useRef } from "react"
+import { RefObject, useContext, useEffect, useRef } from "react"
 import './NonModal.scss'
+import { ContextMenuContentType } from "../../types"
+import { ContextMenuContext } from "../../context/ContextMenuContext"
+import NotificationList from "../NotificationList/NotificationList"
+import { ContextMenuButtons } from "../Chat/Chat"
 
-export default function NonModal({ children, isActive: [modal, setModal], dialogPosition }: any) {
+export default function NonModal() {
   const dialogRef = useRef<HTMLDialogElement>()
+  const { nonModalActive, 
+          setNonModalActive,
+          position, contentType, contextContent } = useContext(ContextMenuContext)
 
   useEffect(() => {
-    if (modal) {
+    if (nonModalActive) {
       openModal(dialogRef)
       document.addEventListener("click", closeModal)
     } else {
@@ -15,10 +22,10 @@ export default function NonModal({ children, isActive: [modal, setModal], dialog
     return (() => {
       document.removeEventListener("click", closeModal)
     })
-  }, [modal])
+  }, [nonModalActive, position])
   
 
-  function closeModal(e: any) {
+  function closeModal(e: MouseEvent) {
     const dialogDimensions = dialogRef.current.getBoundingClientRect()
     if (
       e.clientX < dialogDimensions.left ||
@@ -26,19 +33,20 @@ export default function NonModal({ children, isActive: [modal, setModal], dialog
       e.clientY < dialogDimensions.top ||
       e.clientY > dialogDimensions.bottom
     ) {
-      setModal(false)
+      setNonModalActive(false)
     }
   }
 
   function openModal(ref: RefObject<HTMLDialogElement>) {
-    ref.current.style.top = `${dialogPosition.current.top}px`
-    ref.current.style.left = `${dialogPosition.current.left}px`
+    ref.current.style.top = `${position.top}px`
+    ref.current.style.left = `${position.left}px`
     ref.current.show()
   }
 
   return (
     <dialog className={"nonmodal-dialog"} ref={dialogRef}>
-      {children}
+      {contentType === ContextMenuContentType.NOTIFICATION && <NotificationList />}
+      {contentType === ContextMenuContentType.ROOM_DETAIL_USER && <ContextMenuButtons clickedUser={contextContent.clickedUser} canBeControlled={contextContent.canBeControlled} />}
     </dialog>
   )
 }

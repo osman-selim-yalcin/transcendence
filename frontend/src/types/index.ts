@@ -1,3 +1,7 @@
+/**
+ ******************** USER *********************
+ */
+
 export type user = {
   id: number
   username: string
@@ -27,7 +31,9 @@ export enum userStatus {
   BUSY,
 }
 
-export type socketPayload = {}
+/**
+ ******************** ROOM *********************
+ */
 
 export type room = {
   id: number
@@ -61,18 +67,15 @@ export interface message {
   room?: number
 }
 
-export enum SocialView {
-  FRIENDS,
-  ROOMS,
-  USERS
+export enum RoomRank {
+  CREATOR,
+  MODERATOR,
+  MEMBER
 }
 
-export interface NonModalPosition {
-  top?: number
-  left?: number
-  bottom?: number
-  right?: number
-}
+/**
+ ******************** NOTIFICATION *********************
+ */
 
 export enum NotificationType {
   FRIEND,
@@ -101,26 +104,60 @@ export type notification = {
   sibling: notification
 }
 
-export enum RoomRank {
-  CREATOR,
-  MODERATOR,
-  MEMBER
+/**
+ ******************** UI UTILS *********************
+ */
+
+export enum SocialView {
+  FRIENDS,
+  ROOMS,
+  USERS
 }
 
+export type ContextContent = { clickedUser: user, canBeControlled: boolean } | null
+
+export interface NonModalContext {
+  nonModalActive: boolean
+  setNonModalActive: Function
+  position: NonModalPosition
+  setPosition: Function
+  contentType: ContextMenuContentType
+  setContentType: Function
+  contextContent: ContextContent
+  setContextContent: Function
+  openContextMenu:Function
+  closeContextMenu: Function
+}
+
+export enum ContextMenuContentType {
+  ROOM_DETAIL_USER,
+  NOTIFICATION
+}
+
+export interface NonModalPosition {
+  top?: number
+  left?: number
+  bottom?: number
+  right?: number
+}
+
+
+// export type socketPayload = {}
+
 // export type typeMsg = {
-//   content: string
-//   createdAt: string
-//   owner: string
-// }
-
-// export type typeAllMsg = {
-//   roomID: number
-//   messages: typeMsg[]
-// }
-
-// export type typeRoom = {
-//   roomID: number
-//   name: string
+  //   content: string
+  //   createdAt: string
+  //   owner: string
+  // }
+  
+  // export type typeAllMsg = {
+    //   roomID: number
+    //   messages: typeMsg[]
+    // }
+    
+    // export type typeRoom = {
+      //   roomID: number
+      //   name: string
 //   avatar: string
 // }
 
