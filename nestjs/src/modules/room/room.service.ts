@@ -10,7 +10,7 @@ import {
   roomModify,
   isUserInRoom,
   isCreator,
-  isRoomNotification,
+  isRoomNotificationExist,
   isMod,
 } from 'src/functions/room';
 import { roomDto } from 'src/types/room.dto';
@@ -69,7 +69,7 @@ export class RoomService {
     hashPassword(room);
     for (const u of room.users)
       this.server.joinRoom(u.sessionID, room.id.toString());
-    await this.roomRep.save(room);
+    return await this.roomRep.save(room);
     return { msg: 'room created' };
   }
 
@@ -98,7 +98,7 @@ export class RoomService {
   async joinRoom(user: User, room: Room, roomDetails: roomDto) {
     if (!room.isGroup)
       throw new HttpException('private room cannot be joinable', 400);
-    const notification = isRoomNotification(room, user);
+    const notification = isRoomNotificationExist(room, user);
     if (notification) {
       await this.notificationRep.save({
         type: notification.type,

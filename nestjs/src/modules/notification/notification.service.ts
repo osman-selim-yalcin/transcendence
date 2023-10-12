@@ -35,9 +35,9 @@ export class NotificationService {
     if (notification.status === notificationStatus.QUESTION) {
       let content = '';
       if (notification.type === notificationTypes.FRIEND) {
-        content = 'Friend request declined';
+        content = 'Friend request declined by ' + notification.user.username;
       } else if (notification.type === notificationTypes.ROOM) {
-        content = 'Room invitation declined';
+        content = 'Room invitation declined by ' + notification.user.username;
       }
 
       await this.notificationRep.save({

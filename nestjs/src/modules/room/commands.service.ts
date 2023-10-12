@@ -8,7 +8,7 @@ import {
   isMod,
   isUserInRoom,
   isBanned,
-  isRoomNotification,
+  isRoomNotificationExist,
 } from 'src/functions/room';
 import { Notification } from 'src/typeorm/Notification';
 import {
@@ -30,9 +30,11 @@ export class CommandsService {
   async inviteUser(user: User, room: Room, otherUser: User) {
     if (isUserInRoom(room, otherUser))
       throw new HttpException('user already in room', 400);
-    if (isRoomNotification(room, otherUser))
+    if (isRoomNotificationExist(room, otherUser))
       throw new HttpException('user already invited', 400);
     this.createInviteNotifcations(user, room, otherUser);
+    if (room.banList.includes(otherUser.username))
+      room.banList = room.banList.filter((u) => u !== otherUser.username);
     return userRoomModify(await this.roomRep.save(room));
   }
 
@@ -72,13 +74,15 @@ export class CommandsService {
       throw new HttpException('not authorized', 400);
     if (isBanned(room, otherUser)) {
       room.banList = room.banList.filter((u) => u !== otherUser.username);
-      this.banHandler(user, room, otherUser, notificationStatus.ACCEPTED);
+      // this.banHandler(user, room, otherUser, notificationStatus.ACCEPTED);
     } else {
       if (isUserInRoom(room, otherUser)) {
         this.banHandler(user, room, otherUser);
         await this.roomService.leaveheadler(room, otherUser);
       }
       room.banList.push(otherUser.username);
+      const notification = isRoomNotificationExist(room, otherUser);
+      if (notification) await this.notificationRep.remove(notification);
     }
     return userRoomModify(await this.roomRep.save(room));
   }

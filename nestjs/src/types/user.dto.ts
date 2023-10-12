@@ -1,10 +1,4 @@
-import {
-  IsEmpty,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Notification } from 'src/typeorm/Notification';
 import { Room } from 'src/typeorm/Room';
 
