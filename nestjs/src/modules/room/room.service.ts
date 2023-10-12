@@ -56,7 +56,7 @@ export class RoomService {
   async createRoom(user: User, roomDetails: roomDto) {
     const users: User[] = await this.idToUsers(roomDetails.users, user);
     if (!roomDetails.isGroup) privateHandler(users, user);
-    const room = this.roomRep.create({
+    const room = await this.roomRep.save({
       ...roomDetails,
       users: users,
       creator: user.username,
