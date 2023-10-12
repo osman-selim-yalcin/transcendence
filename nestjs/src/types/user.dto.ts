@@ -1,4 +1,10 @@
-import { IsEmpty, IsNotEmpty } from 'class-validator';
+import {
+  IsEmpty,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Notification } from 'src/typeorm/Notification';
 import { Room } from 'src/typeorm/Room';
 
@@ -11,16 +17,19 @@ export enum userStatus {
 }
 
 export class userDto {
-  @IsEmpty()
-  username: string;
-
+  @IsString()
+  @IsOptional()
   avatar: string;
 
-  @IsNotEmpty()
+  @IsOptional()
+  @IsNumber()
   id: number;
 
   @IsEmpty()
   sessionID: string;
+
+  @IsEmpty()
+  username: string;
 
   @IsEmpty()
   lastSeen: string;
@@ -36,4 +45,9 @@ export class userDto {
 
   @IsEmpty()
   notifications: Notification[];
+}
+
+export class userRoomDto {
+  @IsNumber()
+  id: number;
 }

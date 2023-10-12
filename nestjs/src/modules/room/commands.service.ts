@@ -86,9 +86,6 @@ export class CommandsService {
   //utils for notification
   async createInviteNotifcations(user: User, room: Room, friendUser: User) {
     const notification = await this.notificationRep.save({
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       roomID: room.id,
       content: `${user.username} invited you to ${room.name}`,
       type: notificationTypes.ROOM,
@@ -97,9 +94,6 @@ export class CommandsService {
       status: notificationStatus.QUESTION,
     });
     const siblingNotificaiton = await this.notificationRep.save({
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       roomID: room.id,
       content: `You invited ${friendUser.username} to ${room.name}`,
       creator: friendUser,
@@ -121,9 +115,6 @@ export class CommandsService {
     content: string,
   ) {
     await this.notificationRep.save({
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       roomID: room.id,
       content,
       type: type,

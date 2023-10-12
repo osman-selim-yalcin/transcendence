@@ -1,22 +1,45 @@
-import { IsEmpty, IsNotEmpty } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Message } from 'src/typeorm/Message';
-import { User } from 'src/typeorm/User';
+import { userDto, userRoomDto } from './user.dto';
+import { Type } from 'class-transformer';
 
 export class roomDto {
-  @IsNotEmpty()
+  @IsOptional()
+  @IsNumber()
   id: number;
 
-  @IsNotEmpty()
-  users: User[];
-
-  @IsNotEmpty()
-  isGroup: boolean;
-
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
   name: string;
 
+  @IsOptional()
+  @IsBoolean()
+  isGroup: boolean;
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => userRoomDto)
+  users: userDto[];
+
+  @IsString()
+  @IsOptional()
   password: string;
+
+  @IsString()
+  @IsOptional()
   avatar: string;
+
+  @IsBoolean()
+  @IsOptional()
   isInviteOnly: boolean;
 
   @IsEmpty()
@@ -31,10 +54,10 @@ export class roomDto {
   banList: string[];
 }
 
-export class roomCommands {
-  @IsNotEmpty()
-  id: number;
+// export class roomCommands {
+//   @IsNotEmpty()
+//   id: number;
 
-  @IsNotEmpty()
-  user: User;
-}
+//   @IsNotEmpty()
+//   user: User;
+// }

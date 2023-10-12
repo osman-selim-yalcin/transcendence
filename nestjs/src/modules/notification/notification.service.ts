@@ -24,12 +24,14 @@ export class NotificationService {
     });
   }
 
-  async deleteNotification(notificationDetails: notificationDto) {
+  async deleteNotification(user: User, notificationDetails: notificationDto) {
     const notification = await this.notificationRep.findOne({
       where: { id: notificationDetails.id },
       relations: ['user', 'creator'],
     });
     if (!notification) throw new HttpException('not found', 404);
+    if (notification.user.id !== user.id)
+      throw new HttpException('not authorized', 401);
     if (notification.status === notificationStatus.QUESTION) {
       let content = '';
       if (notification.type === notificationTypes.FRIEND) {
@@ -44,9 +46,6 @@ export class NotificationService {
         status: notificationStatus.DECLINED,
         user: notification.creator,
         creator: notification.user,
-        createdAt: new Date().toLocaleString('tr-TR', {
-          timeZone: 'Europe/Istanbul',
-        }),
       });
     }
     await this.notificationRep.remove(notification);

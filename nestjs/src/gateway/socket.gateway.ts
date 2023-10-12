@@ -53,15 +53,6 @@ export class socketGateway implements OnModuleInit {
     this.server.in(sessionID).socketsJoin(roomID);
   }
 
-  async sendNotification(sessionID: string, content: any) {
-    this.server.in(sessionID).emit('notification', {
-      content: content.content,
-      type: content.type,
-      createdAt: content.createdAt,
-      owner: content.owner,
-    });
-  }
-
   async onPrivateMessage(payload: any) {
     this.server.to(payload.to).emit('private message', {
       ...payload.msg,

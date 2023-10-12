@@ -1,13 +1,9 @@
-import { IsEmpty, IsNotEmpty } from 'class-validator';
-import { Room } from 'src/typeorm/Room';
+import { IsNumber, IsString } from 'class-validator';
 
 export class messageDto {
-  @IsNotEmpty()
+  @IsString()
   content: string;
 
-  createdAt: string;
-  owner: string;
-
-  @IsNotEmpty()
+  @IsNumber()
   id: number;
 }

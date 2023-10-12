@@ -13,6 +13,6 @@ export class NotificationController {
 
   @Delete()
   deleteNotification(@Req() req: any, @Body() body: notificationDto) {
-    return this.notificationService.deleteNotification(body);
+    return this.notificationService.deleteNotification(req.user, body);
   }
 }

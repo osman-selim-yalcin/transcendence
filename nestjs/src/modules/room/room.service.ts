@@ -56,23 +56,25 @@ export class RoomService {
   async createRoom(user: User, roomDetails: roomDto) {
     const users: User[] = await this.idToUsers(roomDetails.users, user);
     if (!roomDetails.isGroup) privateHandler(users, user);
+    if (!roomDetails.name)
+      roomDetails.isGroup
+        ? (roomDetails.name = 'default name')
+        : (roomDetails.name = users[0].username + ' & ' + users[1].username);
     const room = await this.roomRep.save({
       ...roomDetails,
       users: users,
       creator: user.username,
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       mods: [user.username],
     });
     hashPassword(room);
     for (const u of room.users)
       this.server.joinRoom(u.sessionID, room.id.toString());
-    return roomModify(await this.roomRep.save(room));
+    await this.roomRep.save(room);
+    return { msg: 'room created' };
   }
 
   async deleteRoom(user: User, room: Room) {
-    if (room.isGroup && !isCreator(room, user))
+    if (!room.isGroup || (room.isGroup && !isCreator(room, user)))
       throw new HttpException('not authorized', 400);
     await this.roomRep.remove(room);
     return { msg: 'room deleted' };
@@ -86,12 +88,11 @@ export class RoomService {
     roomDetails.users = room.users;
     roomDetails.isGroup = room.isGroup;
     this.specialMsg({
-      owner: 'admin',
       content: 'room updated',
       id: room.id,
-      createdAt: '',
     });
-    return roomModify(await this.roomRep.save({ ...room, ...roomDetails }));
+    await this.roomRep.save({ ...room, ...roomDetails });
+    return { msg: 'room updated' };
   }
 
   async joinRoom(user: User, room: Room, roomDetails: roomDto) {
@@ -101,9 +102,6 @@ export class RoomService {
     if (notification) {
       await this.notificationRep.save({
         type: notification.type,
-        createdAt: new Date().toLocaleString('tr-TR', {
-          timeZone: 'Europe/Istanbul',
-        }),
         content: `${user.username} accepted your invite request`,
         status: notificationStatus.ACCEPTED,
         user: notification.creator,
@@ -113,12 +111,11 @@ export class RoomService {
     } else checksForJoin(room, user, roomDetails.password);
     room.users.push(user);
     this.specialMsg({
-      owner: 'admin',
       content: user.username + ' joined',
       id: room.id,
-      createdAt: '',
     });
-    return roomModify(await this.roomRep.save(room));
+    await this.roomRep.save(room);
+    return { msg: 'user join the room' };
   }
 
   async leaveRoom(user: User, room: Room) {
@@ -134,14 +131,11 @@ export class RoomService {
     const msg = this.messageRep.create({
       owner: user.username,
       content: details.content,
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       room,
     });
     const msgSaved = await this.messageRep.save(msg);
     this.modifyMsg(room, msgSaved);
-    return msgSaved;
+    return { msg: 'message created' };
   }
 
   // ENDPOINT END HERE / UTILS START HERE
@@ -149,14 +143,16 @@ export class RoomService {
     const users: User[] = [
       await this.userRep.findOne({ where: { id: creator.id } }),
     ];
-    for (const u of idUsers) {
-      if (creator.id === u.id || u.id === undefined) continue;
-      const user = await this.userRep.findOne({ where: { id: u.id } });
-      if (!user)
-        throw new HttpException('user not found / users is wrong', 400);
-      if (!isFriend(creator, user)) throw new HttpException('not friend', 400);
-      users.push(user);
-    }
+    if (idUsers)
+      for (const u of idUsers) {
+        if (creator.id === u.id || u.id === undefined) continue;
+        const user = await this.userRep.findOne({ where: { id: u.id } });
+        if (!user)
+          throw new HttpException('user not found / users is wrong', 400);
+        if (!isFriend(creator, user))
+          throw new HttpException('not friend', 400);
+        users.push(user);
+      }
     return users;
   }
 
@@ -172,11 +168,8 @@ export class RoomService {
   async specialMsg(details: messageDto) {
     const room = await this.idToRoom(details.id);
     const msg = this.messageRep.create({
-      owner: 'admin',
+      owner: room.id.toString(),
       content: details.content,
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       room,
     });
     const msgSaved = await this.messageRep.save(msg);
@@ -190,9 +183,6 @@ export class RoomService {
       msg: {
         ...msg,
         room: room.id,
-        createdAt: new Date().toLocaleString('tr-TR', {
-          timeZone: 'Europe/Istanbul',
-        }),
       },
     });
   }
@@ -216,10 +206,8 @@ export class RoomService {
     }
 
     this.specialMsg({
-      owner: 'admin',
-      content: user.username + ' leaved',
+      content: user.username + ' leave',
       id: room.id,
-      createdAt: '',
     });
     await this.roomRep.save(room);
   }
