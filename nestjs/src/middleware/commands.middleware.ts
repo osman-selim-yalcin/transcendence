@@ -14,6 +14,7 @@ export class commandsMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
     checkAuth(req.room, req.user);
     if (!req.room.isGroup) throw new HttpException('not authorized', 400);
+    if (!req.body.user) throw new HttpException('user is required', 400);
     req.friendUser = await this.idToUser(req.body.user.id, [
       'friends',
       'notifications',
