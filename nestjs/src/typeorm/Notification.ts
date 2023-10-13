@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -34,7 +35,7 @@ export class Notification {
   })
   status: number;
 
-  @Column()
+  @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;
 
   @Column({

@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToMany,
@@ -22,7 +23,7 @@ export class Room {
   @JoinColumn()
   messages: Message[];
 
-  @Column()
+  @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;
 
   @Column({ nullable: true })

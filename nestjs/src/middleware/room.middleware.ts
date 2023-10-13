@@ -15,6 +15,8 @@ export class RoomMiddleware implements NestMiddleware {
 
   async idToRoom(id: number) {
     if (!id) throw new HttpException('id required', 400);
+    if (typeof id !== 'number')
+      throw new HttpException('id must be a number', 400);
     const room = await this.roomRep.findOne({
       where: { id },
       relations: ['users', 'messages'],

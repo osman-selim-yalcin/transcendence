@@ -1,5 +1,4 @@
-import { IsEmpty, IsEnum, IsNotEmpty } from 'class-validator';
-import { User } from 'src/typeorm/User';
+import { IsNumber } from 'class-validator';
 
 export enum notificationTypes {
   FRIEND,
@@ -18,6 +17,6 @@ export enum notificationStatus {
 }
 
 export class notificationDto {
-  @IsNotEmpty()
+  @IsNumber()
   id: number;
 }

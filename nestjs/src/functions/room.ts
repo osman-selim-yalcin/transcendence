@@ -2,7 +2,10 @@ import { HttpException } from '@nestjs/common';
 import { Room } from 'src/typeorm/Room';
 import { User } from 'src/typeorm/User';
 import * as bcrypt from 'bcrypt';
-import { notificationTypes } from 'src/types/notification.dto';
+import {
+  notificationStatus,
+  notificationTypes,
+} from 'src/types/notification.dto';
 
 export function userModify(user: User) {
   return {
@@ -68,7 +71,7 @@ export function checkPassword(room: Room, password: string) {
 }
 
 export function checkInvite(room: Room, loginUser: User) {
-  if (room.isInviteOnly && !isRoomNotification(room, loginUser)) {
+  if (room.isInviteOnly && !isRoomNotificationExist(room, loginUser)) {
     throw new HttpException('not invited', 400);
   }
 }
@@ -94,9 +97,13 @@ export function isBanned(room: Room, user: User) {
   return room.banList.includes(user.username);
 }
 
-export function isRoomNotification(room: Room, loginUser: User) {
+export function isRoomNotificationExist(room: Room, loginUser: User) {
   const notification = loginUser.notifications?.find(
-    (n) => n.type === notificationTypes.ROOM && n.roomID === room.id,
+    (n) =>
+      n.type === notificationTypes.ROOM &&
+      n.roomID === room.id &&
+      n.status === notificationStatus.QUESTION &&
+      n.user.id === loginUser.id,
   );
   return notification;
 }

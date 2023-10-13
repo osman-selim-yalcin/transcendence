@@ -43,9 +43,6 @@ export class UsersService {
     await this.userRep.save(otherUser);
     await this.notificationRep.save({
       type: notification.type,
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       content: `${user.username} accepted your friend request`,
       status: notificationStatus.ACCEPTED,
       user: notification.creator,
@@ -128,9 +125,6 @@ export class UsersService {
 
   async createNotifcations(user: User, friendUser: User) {
     const notification = await this.notificationRep.save({
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       content: `${user.username} wants to be your friend`,
       type: notificationTypes.FRIEND,
       status: notificationStatus.QUESTION,
@@ -138,9 +132,6 @@ export class UsersService {
       user: friendUser,
     });
     const siblingNotificaiton = await this.notificationRep.save({
-      createdAt: new Date().toLocaleString('tr-TR', {
-        timeZone: 'Europe/Istanbul',
-      }),
       content: `Waiting for ${friendUser.username} to accept your friend request`,
       creator: friendUser,
       user: user,

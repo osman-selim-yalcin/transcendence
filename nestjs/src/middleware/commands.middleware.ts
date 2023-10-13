@@ -17,6 +17,7 @@ export class commandsMiddleware implements NestMiddleware {
     req.friendUser = await this.idToUser(req.body.user.id, [
       'friends',
       'notifications',
+      'notifications.user',
       'notifications.creator',
     ]);
     if (req.friendUser.id === req.user.id)
@@ -26,6 +27,8 @@ export class commandsMiddleware implements NestMiddleware {
 
   async idToUser(id: number, relations?: string[]) {
     if (!id) throw new HttpException('user not found', 400);
+    if (typeof id !== 'number')
+      throw new HttpException('id must be a number', 400);
     const user = await this.userRep.findOne({
       where: { id },
       relations: relations || [],

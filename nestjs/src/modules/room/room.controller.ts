@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
-import { roomCommands, roomDto } from 'src/types/room.dto';
+import { roomDto } from 'src/types/room.dto';
 import { RoomService } from './room.service';
 import { messageDto } from 'src/types/message.dto';
 import { CommandsService } from './commands.service';
@@ -27,7 +27,7 @@ export class RoomController {
   }
 
   @Delete()
-  deleteRoom(@Req() req: any, @Body() body: roomDto) {
+  deleteRoom(@Req() req: any) {
     return this.roomService.deleteRoom(req.user, req.room);
   }
 
@@ -43,7 +43,7 @@ export class RoomController {
   }
 
   @Post('leave')
-  leaveRoom(@Req() req: any, @Body() body: roomDto) {
+  leaveRoom(@Req() req: any) {
     return this.roomService.leaveRoom(req.user, req.room);
   }
   //interceptor
@@ -55,22 +55,22 @@ export class RoomController {
 
   //Command Service
   @Post('command/invite')
-  inviteUser(@Req() req: any, @Body() body: roomCommands) {
+  inviteUser(@Req() req: any) {
     return this.commandService.inviteUser(req.user, req.room, req.friendUser);
   }
 
   @Post('command/kick')
-  kickUser(@Req() req: any, @Body() body: roomCommands) {
+  kickUser(@Req() req: any) {
     return this.commandService.kickUser(req.user, req.room, req.friendUser);
   }
 
   @Post('command/ban')
-  banUser(@Req() req: any, @Body() body: roomCommands) {
+  banUser(@Req() req: any) {
     return this.commandService.banUser(req.user, req.room, req.friendUser);
   }
 
   @Post('command/mod')
-  modUser(@Req() req: any, @Body() body: roomCommands) {
+  modUser(@Req() req: any) {
     return this.commandService.modUser(req.user, req.room, req.friendUser);
   }
 }

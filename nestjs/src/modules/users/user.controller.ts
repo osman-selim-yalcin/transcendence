@@ -17,12 +17,12 @@ export class UsersController {
   }
 
   @Post()
-  addFriend(@Req() req: any, @Body() body: userDto) {
+  addFriend(@Req() req: any) {
     return this.usersService.addFriend(req.user, req.friendUser);
   }
 
   @Delete()
-  deleteFriend(@Req() req: any, @Body() body: userDto) {
+  deleteFriend(@Req() req: any) {
     return this.usersService.deleteFriend(req.user, req.friendUser);
   }
 
