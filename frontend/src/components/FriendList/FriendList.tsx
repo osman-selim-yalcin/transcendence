@@ -51,8 +51,8 @@ function FriendIndex({ singleFriend, setBarActive }: { singleFriend: user, setBa
     const roomPayload = {
       id: 0,
       name: user.username + "-" + friend.username,
-      users: [{ id: user.id },
-              { id: friend.id}
+      users: [
+        { id: friend.id }
       ],
       isGroup: false
     }

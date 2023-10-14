@@ -59,6 +59,13 @@ export interface roomPayload {
   password?: string
 }
 
+export type roomKickBody = {
+  id: number,
+  user: {
+    id: number
+  }
+}
+
 export interface message {
   id: number
   content: string
@@ -68,9 +75,9 @@ export interface message {
 }
 
 export enum RoomRank {
-  CREATOR,
+  MEMBER,
   MODERATOR,
-  MEMBER
+  CREATOR
 }
 
 /**
@@ -101,7 +108,8 @@ export type notification = {
   createdAt: string
   type: NotificationType
   creator: user
-  sibling: notification
+  user: user
+  // sibling: notification
 }
 
 /**
@@ -114,7 +122,7 @@ export enum SocialView {
   USERS
 }
 
-export type ContextContent = { clickedUser: user, canBeControlled: boolean } | null
+export type ContextContent = { clickedUser: user, currentRoomId: number, canBeControlled: boolean } | null
 
 export interface NonModalContext {
   nonModalActive: boolean
@@ -141,6 +149,11 @@ export interface NonModalPosition {
   right?: number
 }
 
+export enum UserListType {
+  ADD_FRIEND,
+  INVITE_USER,
+  NEW_MESSAGE
+}
 
 // export type socketPayload = {}
 

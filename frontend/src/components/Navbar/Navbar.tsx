@@ -3,7 +3,7 @@ import Logout from "../auth/Logout.tsx"
 import { useContext, useState } from "react"
 import { UserContext } from "../../context/UserContext.tsx"
 import NotificationList from "../Notification/Notification.tsx"
-import { Modal } from "../Modal.tsx"
+import { Modal } from "../Modal/Modal.tsx"
 import Login from "../auth/Login.tsx"
 import "./Navbar.scss"
 

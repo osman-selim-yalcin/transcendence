@@ -1,5 +1,5 @@
 import axios from "axios"
-import { roomPayload } from "../types"
+import { roomKickBody, roomPayload } from "../types"
 
 // <---------------- REFACTOR ----------------->
 
@@ -91,6 +91,60 @@ export const leaveRoom = async (body: roomPayload) => {
   return axios
     .post(
       "http://localhost:3000/api/room/leave",
+      body,
+      {
+        headers: {
+          Authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+        }
+      }
+    )
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const kickUser = async (body: roomKickBody) => {
+  return axios
+    .post(
+      "http://localhost:3000/api/room/command/kick",
+      body,
+      {
+        headers: {
+          Authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+        }
+      }
+    )
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const joinRoom = async (body: { id: number }) => {
+  return axios
+    .post(
+      "http://localhost:3000/api/room/join",
+      body,
+      {
+        headers: {
+          Authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+        }
+      }
+    )
+    .catch(err => {
+      console.log(err)
+    })
+}
+
+export const sendInvite = async (body: roomKickBody) => {
+  return axios
+    .post(
+      "http://localhost:3000/api/room/command/invite",
       body,
       {
         headers: {

@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { SocketContext } from "../../context/SocketContext"
 import "./Game.scss"
 import Paddle from "../../game/Paddle"
-import { Modal } from "../../components/Modal"
+import { Modal } from "../../components/Modal/Modal"
 // import { game_start } from "../game/index.js"
 
 export default function Game() {

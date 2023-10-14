@@ -3,11 +3,13 @@ import { UserContext } from "../../context/UserContext"
 import Room from "../Room"
 import List from "../List"
 import "./Chat.scss"
-import { room, user, message, RoomRank, ContextMenuContentType } from "../../types"
-import { leaveRoom, sendMessage } from "../../api/room"
+import { room, user, message, RoomRank, ContextMenuContentType, ContextContent, UserListType } from "../../types"
+import { kickUser, leaveRoom, sendMessage } from "../../api/room"
 import LoadIndicator from "../LoadIndicator/LoadIndicator"
 import { useNavigate, useParams } from "react-router-dom"
 import { ContextMenuContext } from "../../context/ContextMenuContext"
+import { Modal } from "../Modal/Modal"
+import UserList from "../UserList/UserList"
 
 export function Chat() {
   const [showDetail, setShowDetail] = useState(false)
@@ -38,10 +40,16 @@ export function Chat() {
 function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrentRoom: [room, Function] }) {
   const { userRooms }: { userRooms: room[] | null } = useContext(UserContext)
   const navigate = useNavigate()
+  const [modal, setModal] = useState(false)
 
   return (
     <div className="chatbar">
-      <h2>Chatbar</h2>
+      <div className={"chatbar-header"}>
+        <h2>Chatbar</h2>
+        <button onClick={() => {
+          setModal(true)
+        }}>New</button>
+      </div>
       <ul className="noselect">
         {userRooms && userRooms.map((room: room) => {
           // if (room.messages.length)
@@ -58,6 +66,9 @@ function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrent
           //   return null
         })}
       </ul>
+      <Modal isActive={[modal, setModal]}>
+        <UserList userListType={UserListType.NEW_MESSAGE} setModal={setModal} />
+      </Modal>
     </div>
   )
 }
@@ -101,10 +112,10 @@ function MessageIndex({ room }: { room: room }) {
 // CHATBAR MESSAGES
 // CHAT CONTENT
 
-function ChatContent({ 
-  showDetailState: [showDetail, setShowDetail], 
-  currentRoom 
-  }: { showDetailState: [boolean, Function], currentRoom: room }) {
+function ChatContent({
+  showDetailState: [showDetail, setShowDetail],
+  currentRoom
+}: { showDetailState: [boolean, Function], currentRoom: room }) {
 
   const { user } = useContext(UserContext)
   const scrollRef = useRef(null)
@@ -119,9 +130,9 @@ function ChatContent({
     <div className={"chat-content" + (showDetail ? " shrink" : "")}>
       <div className="chat-content-header">
         <h2>Chat Content</h2>
-        <button 
-        disabled={currentRoom ? false : true}
-        onClick={() => { setShowDetail(!showDetail) }}
+        <button
+          disabled={currentRoom ? false : true}
+          onClick={() => { setShowDetail(!showDetail) }}
         >&#8942;</button>
       </div>
       {currentRoom ?
@@ -166,20 +177,6 @@ function ChatForm({ currentRoomID, inputRef }: { currentRoomID: number, inputRef
 // CHAT DETAILS
 
 function ChatDetails({ showDetailState: [showDetail, setShowDetail], currentRoom }: { showDetailState: [boolean, Function], currentRoom: room }) {
-  const [rank, setRank] = useState<RoomRank>(null)
-  const { user } = useContext(UserContext)
-
-  useEffect(() => {
-    if (currentRoom) {
-      if (currentRoom.creator === user.username) {
-        setRank(RoomRank.CREATOR)
-      } else if (currentRoom.mods.find((modName) => (modName === user.username)) !== undefined) {
-        setRank(RoomRank.MODERATOR)
-      } else {
-        setRank(RoomRank.MEMBER)
-      }
-    }
-  }, [currentRoom])
 
   return (
     <div className={"chat-details" + (showDetail ? " active" : "")}>
@@ -191,7 +188,7 @@ function ChatDetails({ showDetailState: [showDetail, setShowDetail], currentRoom
             {/*change detail avatar to friend avatar for isGroup false */}
           </div>
           <DetailHeader currentRoom={currentRoom} />
-          <DetailContent currentRoom={currentRoom} userRank={rank} />
+          <DetailContent currentRoom={currentRoom} setShowDetail={setShowDetail} />
         </>
         :
         <LoadIndicator />
@@ -201,22 +198,30 @@ function ChatDetails({ showDetailState: [showDetail, setShowDetail], currentRoom
 }
 
 function DetailHeader({ currentRoom }: { currentRoom: room }) {
+  const { user } = useContext(UserContext)
   if (!currentRoom) return null
   if (currentRoom.isGroup) {
     return (
-      <>
-        <h3>{currentRoom.name}</h3>
+      <div className={"room-header"}>
+        <h3 className={"room-name"}>{currentRoom.name}</h3>
         <p>Group &#8729; {currentRoom.users.length} participant{currentRoom.users.length > 1 && "s"}</p>
-      </>
+      </div>
     )
   } else {
-    // private chat detail
+    return (
+      <div className={"room-header"}>
+        <h3 className={"room-name"}>{currentRoom.users.find((singleUser) => (user.id !== singleUser.id)).username.toUpperCase()}</h3>
+        <p>Private Chat</p>
+      </div>
+    )
   }
 }
 
-function DetailContent({ currentRoom, userRank }: { currentRoom: room, userRank: RoomRank }) {
+function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setShowDetail: Function }) {
   const { user, reloadUserRooms } = useContext(UserContext)
-  const { openContextMenu } = useContext(ContextMenuContext)  
+  const { openContextMenu } = useContext(ContextMenuContext)
+  const navigate = useNavigate()
+  const [modal, setModal] = useState(false)
 
   function getRank(user: user) {
     if (user.username === currentRoom.creator) {
@@ -247,43 +252,67 @@ function DetailContent({ currentRoom, userRank }: { currentRoom: room, userRank:
           {currentRoom.users.map((singleUser: user) => (
             <li onContextMenu={(e) => {
               e.preventDefault()
-              openContextMenu(e.clientX, e.clientY, 
-                              ContextMenuContentType.ROOM_DETAIL_USER, 
-                              { clickedUser: singleUser, canBeControlled: getRank(singleUser) > getRank(user) })
-              // setMenuData({ position: { top: 0, left: 0 }, clickedUser: singleUser, canBeControlled: getRank(singleUser) > getRank(user) })
+              openContextMenu(e.clientX, e.clientY,
+                ContextMenuContentType.ROOM_DETAIL_USER,
+                { clickedUser: singleUser, currentRoomId: currentRoom.id, canBeControlled: getRank(singleUser) < getRank(user) })
             }} key={singleUser.id}>
               <img src={singleUser.avatar} alt={"user avatar"} />
               <p>{getRankBadge(getRank(singleUser))} {singleUser.username} {singleUser.id === user.id && "(You)"}</p>
             </li>
           ))}
         </ul>
+        {getRank(user) > RoomRank.MEMBER &&
+          <button onClick={() => {
+            setModal(true)
+          }}>
+            Invite friend
+          </button>}
         <button onClick={async () => {
-          await leaveRoom({ id: currentRoom.id, 
+          await leaveRoom({
+            id: currentRoom.id,
             name: currentRoom.name,
             users: [],
-            isGroup: true })
+            isGroup: true
+          })
+          navigate("/chat")
+          setShowDetail(false)
           setTimeout(() => { // to be changed
             reloadUserRooms()
           }, 1000);
         }} >Exit Group</button>
-        {/* <NonModal isActive={[contextMenu, setContextMenu]} dialogPosition={menuData?.position}>
-          <ContextMenuButtons clickedUser={menuData?.clickedUser} canBeControlled={menuData?.canBeControlled} />
-        </NonModal> */}
+        <Modal isActive={[modal, setModal]} >
+          <UserList userListType={UserListType.INVITE_USER} room={currentRoom} />
+        </Modal>
       </div>
     )
   } else {
-
+    return (
+      <button>Block</button>
+    )
   }
 }
 
-export function ContextMenuButtons({ clickedUser, canBeControlled }: PropsWithChildren<{ clickedUser: user, canBeControlled: boolean }>) {
-return (
-  <div className={"admin-buttons" + (!canBeControlled && " hidden")}>
-    <button title="wow">Promote/Demote</button>
-    <button>Kick</button>
-    <button>Ban</button>
-  </div>
-) 
+export function ContextMenuButtons({ clickedUser, currentRoomId, canBeControlled }: PropsWithChildren<ContextContent>) {
+  const { reloadUserRooms } = useContext(UserContext)
+  const { closeContextMenu } = useContext(ContextMenuContext)
+  return (
+    <div className={"admin-buttons" + (!canBeControlled ? " hidden" : "")}
+      onClick={(e) => {
+        e.stopPropagation()
+        closeContextMenu()
+      }}>
+      <button title="wow">Promote/Demote</button>
+      <button onClick={async () => {
+        console.log("room id:", currentRoomId, "clicked user id:", clickedUser.id)
+        await kickUser({ id: currentRoomId, user: { id: clickedUser.id } })
+        setTimeout(() => {
+          reloadUserRooms()
+        }, 1000);
+      }}
+      >Kick</button>
+      <button>Ban</button>
+    </div>
+  )
 }
 
 // CHAT DETAILS
@@ -292,147 +321,3 @@ return (
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-// -----------------------REFACTOR------------------------
-export function DeprecatedChat() {
-  const show = false
-  const [rooms, setRooms] = useState([])
-  const [allRooms, setAllRooms] = useState([])
-  const { user } = useContext(UserContext)
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const [tmp, setTmp] = useState([])
-
-
-  useEffect(() => {
-    // socket.on("user disconnected", id => {
-    //   console.log("user disconnected")
-    //   console.log(id)
-    // })
-
-    // socket.on("private message", ({ content, from, to }) => {
-    //   console.log("allroms --->", allRooms, "to -->", to)
-    //   const room = allRooms.find(item => item.room.roomID === to)
-    //   if (room) {
-    //     room.messages.push({
-    //       content,
-    //       owner: from,
-    //       createdAt: new Date().toLocaleString("tr-TR", {
-    //         timeZone: "Europe/Istanbul"
-    //       })
-    //     })
-    //   }
-    //   setAllRooms([...allRooms])
-    // })
-
-    return () => {
-      // socket.off("user connected")
-      // socket.off("private message")
-      // socket.off("user disconnected")
-    }
-  }, [tmp])
-
-  const handleStartRoom = async (item: any, users: any) => {
-    if (
-      rooms.find((room) => room.roomID === item.roomID) ||
-      !item.roomID
-    )
-      return
-
-    const sessionIDs = users.map((item: any) => item.sessionID)
-
-    // socket.emit("join room", {
-    //   room: item.roomID,
-    //   clients: [...sessionIDs]
-    // })
-
-    if (rooms.length >= 3) rooms.shift()
-
-    rooms.push({ roomID: item.roomID, avatar: item.avatar, name: item.name })
-    setRooms([...rooms])
-  }
-
-  const handleModal = () => {
-    dialogRef.current?.showModal()
-  }
-
-  const closeRoom = (roomID: number) => {
-    if (rooms.length === 1) {
-      setRooms([])
-      return
-    }
-    for (let i = 0; i < rooms.length; ++i) {
-      if (rooms[i].roomID === roomID) {
-        rooms.splice(i, 1)
-        setRooms([...rooms])
-        break
-      }
-    }
-  }
-
-  const buttons = [
-    {
-      name: "...",
-      action: (event: any) => {
-        alert("bi dur abi yapacaz")
-        event.stopPropagation()
-      }
-    }
-  ]
-
-  return (
-    <div className="chat ">
-      <div className="chat_rooms">
-        {rooms?.map((room: any, index: number) => {
-          return (
-            <Room
-              key={index}
-              roomID={room.roomID}
-              avatar={room.avatar}
-              name={room.name}
-              messages={
-                allRooms.find(item => item.room.roomID === room.roomID)
-                  ?.messages
-              }
-              closeRoom={closeRoom}
-            />
-          )
-        })}
-      </div>
-      <div className="chat_div" hidden={show}>
-        <div className="chat_div_search">
-          {user.username} - {user.sessionID}
-          <button onClick={handleModal}>Open Modal</button>
-        </div>
-        <div className="list">
-          {allRooms.map((item: any, index: number) => (
-            <List
-              key={index}
-              avatar={item.room.avatar}
-              name={item.room.name}
-              messages={item.messages}
-              mainButton={() => handleStartRoom(item.room, item.users)}
-              buttons={buttons}
-            />
-          ))}
-        </div>
-      </div>
-      {/* <Modal
-        dialogRef={dialogRef}
-        allRooms={allRooms}
-        setAllRooms={setAllRooms}
-        setTmp={setTmp}
-        handleStartRoom={handleStartRoom}
-      ></Modal> */}
-    </div>
-  )
-}

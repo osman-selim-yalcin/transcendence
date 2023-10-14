@@ -45,6 +45,8 @@ html {
 body {
   height: 100vh;
   display: flex;
+  min-width: 0;
+  overflow: hidden;
 }
 
 #root {

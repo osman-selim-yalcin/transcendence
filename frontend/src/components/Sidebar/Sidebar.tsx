@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import FriendList from '../FriendList/FriendList'
 import UserList from '../UserList/UserList'
 import UserRoomList from '../RoomList/RoomList'
-import { SocialView } from '../../types'
+import { SocialView, UserListType } from '../../types'
 import "./Sidebar.scss"
 
 export default function Sidebar() {
@@ -53,7 +53,7 @@ export default function Sidebar() {
       }}>
         <FriendList setBarActive={setBarActive} />
         <UserRoomList />
-        <UserList />
+        <UserList userListType={UserListType.ADD_FRIEND} />
       </div>
     </div>
     </>

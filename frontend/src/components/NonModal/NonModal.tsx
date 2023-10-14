@@ -43,10 +43,29 @@ export default function NonModal() {
     ref.current.show()
   }
 
+  function getClassName(): string {
+    if (contentType === ContextMenuContentType.NOTIFICATION) {
+      return "notification reverse-x"
+    }
+    let returnString
+    if (contentType === ContextMenuContentType.ROOM_DETAIL_USER) {
+      returnString = "room-detail"
+    } else {
+      returnString = ""
+    }
+    if (position?.top > (window.innerHeight / 2)) {
+      returnString += " reverse-y"
+    }
+    if (position?.left > (window.innerWidth / 2)) {
+      returnString += " reverse-x"
+    }
+    return returnString
+  }
+
   return (
-    <dialog className={"nonmodal-dialog"} ref={dialogRef}>
+    <dialog className={"nonmodal-dialog " + getClassName()} ref={dialogRef}>
       {contentType === ContextMenuContentType.NOTIFICATION && <NotificationList />}
-      {contentType === ContextMenuContentType.ROOM_DETAIL_USER && <ContextMenuButtons clickedUser={contextContent.clickedUser} canBeControlled={contextContent.canBeControlled} />}
+      {contentType === ContextMenuContentType.ROOM_DETAIL_USER && <ContextMenuButtons clickedUser={contextContent.clickedUser} currentRoomId={contextContent.currentRoomId} canBeControlled={contextContent.canBeControlled} />}
     </dialog>
   )
 }

@@ -104,7 +104,7 @@ export default function GroupCreation({ setModal }: any) {
         />
       </div>
       <div>
-        Group Members:
+        {!!friends?.length && "Group Members:"}
         {friends && friends.map((friend: user) => (
           <div key={friend.id}>
             <input

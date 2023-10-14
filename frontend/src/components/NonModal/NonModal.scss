@@ -1,7 +1,32 @@
 .nonmodal-dialog {// take this to notification
-    width: 25vw;
-    aspect-ratio: 1 / 1;
-    z-index: 1;
-    transform: translateX(-100%);
+  aspect-ratio: 1 / 1;
+  z-index: 1;
   // position: fixed;
+}
+
+.nonmodal-dialog.notification {
+  width: 25vw;
+  overflow-y: scroll;
+}
+
+.nonmodal-dialog.room-detail {
+  // border: none;
+  
+  .admin-buttons {
+    display: flex;
+    flex-direction: column;
+    
+  }
+}
+
+.reverse-x {
+  transform: translateX(-100%);
+}
+
+.reverse-y {
+  transform: translateY(-100%);
+}
+
+.reverse-x.reverse-y {
+  transform: translateX(-100%) translateY(-100%);
 }

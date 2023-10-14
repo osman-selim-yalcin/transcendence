@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../context/UserContext'
 import { room, roomPayload, user } from '../../types'
-import { Modal } from '../Modal'
+import { Modal } from '../Modal/Modal'
 import GroupCreation from '../forms/GroupCreation'
 import { deleteRoom } from '../../api/room'
 import "./RoomList.scss"

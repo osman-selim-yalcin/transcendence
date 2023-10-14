@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import UserInfo from "../components/UserInfo.tsx"
-import { Modal } from "../components/Modal.tsx"
+import { Modal } from "../components/Modal/Modal.tsx"
 import LoadIndicator from "../components/LoadIndicator/LoadIndicator.tsx"
 
 export default function Home() {

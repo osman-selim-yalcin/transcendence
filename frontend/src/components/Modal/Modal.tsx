@@ -1,13 +1,14 @@
-import { useContext, useEffect, useRef, useState } from "react"
-import { startRoom } from "../api/room"
-import { UserContext } from "../context/UserContext"
-import { user } from "../types"
+import { PropsWithChildren, useContext, useEffect, useRef, useState } from "react"
+import { startRoom } from "../../api/room"
+import { UserContext } from "../../context/UserContext"
+import { user } from "../../types"
+import "./Modal.scss"
 
 
-export function Modal({ children, isActive: [modal, setModal] }: any) {
+export function Modal({ children, isActive: [modal, setModal] }: PropsWithChildren<{ isActive: [boolean, Function] }>) {
 
   const modalRef = useRef<HTMLDialogElement>()
-  
+
   useEffect(() => {
     if (modal) {
       openModal(modalRef)
@@ -45,20 +46,35 @@ export function Modal({ children, isActive: [modal, setModal] }: any) {
   }
 
   return (
-    <dialog ref={modalRef} style={{
-      "position": "absolute",
-      "margin": "auto",
-      "width": "80vw",
-      "height": "60vh"
-    }}
+    <dialog
+      className={"modal-dialog"}
+      ref={modalRef}
       onClick={(e) => {
         closeModal(e, modalRef)
       }}>
-      <h2>This is the modal</h2>
-      {children}
+      <div className="modal-body">
+        {children}
+      </div>
     </dialog>
   )
 }
+
+
+
+
+
+
+// <---------------- REFACTOR ----------------->
+
+
+
+
+
+
+
+
+
+
 
 export function DeprecatedModal({
   dialogRef,
