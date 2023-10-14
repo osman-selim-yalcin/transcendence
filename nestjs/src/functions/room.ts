@@ -18,6 +18,7 @@ export function userModify(user: User) {
     friends: null,
     rooms: null,
     notifications: null,
+    blocked: null,
   };
 }
 

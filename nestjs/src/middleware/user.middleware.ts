@@ -10,6 +10,7 @@ export class idToUser implements NestMiddleware {
   async use(req: any, res: any, next: (error?: any) => void) {
     const friendUser = await this.idToUser(req.body.id, [
       'friends',
+      'blocked',
       'notifications',
       'notifications.user',
       'notifications.creator',

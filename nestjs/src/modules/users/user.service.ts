@@ -4,8 +4,10 @@ import { Like, Repository } from 'typeorm';
 import { User } from 'src/typeorm/User';
 import {
   addFriendHelper,
+  blockUserHelper,
   deleteFriendHelper,
   isFriend,
+  modifyBlockUser,
 } from 'src/functions/user';
 import { userDto } from 'src/types/user.dto';
 import {
@@ -21,13 +23,16 @@ export class UsersService {
     @InjectRepository(User) private userRep: Repository<User>,
   ) {}
 
-  async allUsers(query: any) {
+  async allUsers(query: any, user: User) {
     if (query.take > 50) throw new HttpException('too many users', 400);
-    const users = await this.userRep.find({
+    let users = await this.userRep.find({
       skip: query.skip ? query.skip : 0,
       take: query.take ? query.take : '',
       where: { username: Like((query.q ? query.q : '') + '%') },
-      relations: ['friends', 'notifications', 'notifications.creator'],
+    });
+    users = users?.map((u) => {
+      if (user.blocked.find((f) => f.id === u.id)) return modifyBlockUser(u);
+      else return u;
     });
     return users;
   }
@@ -69,6 +74,13 @@ export class UsersService {
 
   async getUserInfo(user: User) {
     return user;
+  }
+
+  async blockUser(user: User, otherUser: User) {
+    blockUserHelper(user, otherUser);
+    await this.userRep.save(user);
+    await this.userRep.save(otherUser);
+    return { msg: 'success' };
   }
 
   //ENDPOINT END HERE / UTILS START HERE

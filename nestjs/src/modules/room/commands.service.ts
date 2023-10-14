@@ -87,6 +87,28 @@ export class CommandsService {
     return userRoomModify(await this.roomRep.save(room));
   }
 
+  async muteUser(user: User, room: Room, otherUser: User) {
+    if (
+      (isMod(room, otherUser) && user.username !== room.creator) ||
+      otherUser.username === room.creator
+    )
+      throw new HttpException('not authorized', 400);
+    let content = `${otherUser.username} will be muted for 10 min`;
+    if (await this.roomService.isMuted(room, otherUser)) {
+      content = `${otherUser.username} unmuted`;
+      room.muteList = room.muteList.filter(
+        (u) => u.username !== otherUser.username,
+      );
+    } else {
+      room.muteList.push({
+        username: otherUser.username,
+        time: Date.now() + 1000 * 60 * 10,
+      });
+    }
+    await this.roomRep.save(room);
+    throw new HttpException(content, 200);
+  }
+
   //utils for notification
   async createInviteNotifcations(user: User, room: Room, friendUser: User) {
     const notification = await this.notificationRep.save({
