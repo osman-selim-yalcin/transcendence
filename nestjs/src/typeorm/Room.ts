@@ -44,6 +44,9 @@ export class Room {
   @Column('text', { array: true, nullable: true, default: [] })
   banList: string[];
 
+  @Column('jsonb', { array: false, nullable: true, default: [] })
+  muteList: { username: string; time: number }[];
+
   @Column({ default: false })
   isGroup: boolean;
 

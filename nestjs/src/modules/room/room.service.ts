@@ -87,10 +87,7 @@ export class RoomService {
     roomDetails.id = room.id;
     roomDetails.users = room.users;
     roomDetails.isGroup = room.isGroup;
-    this.specialMsg({
-      content: 'room updated',
-      id: room.id,
-    });
+    this.specialMsg('room updated', room);
     await this.roomRep.save({ ...room, ...roomDetails });
     return { msg: 'room updated' };
   }
@@ -110,10 +107,7 @@ export class RoomService {
       await this.notificationRep.remove(notification);
     } else checksForJoin(room, user, roomDetails.password);
     room.users.push(user);
-    this.specialMsg({
-      content: user.username + ' joined',
-      id: room.id,
-    });
+    this.specialMsg(user.username + ' joined', room);
     await this.roomRep.save(room);
     return { msg: 'user join the room' };
   }
@@ -128,6 +122,11 @@ export class RoomService {
   }
 
   async createMsg(user: User, room: Room, details: messageDto) {
+    if (!isUserInRoom(room, user))
+      throw new HttpException('user not in room', 400);
+    if (await this.isMuted(room, user))
+      throw new HttpException('user muted', 400);
+
     const msg = this.messageRep.create({
       owner: user.username,
       content: details.content,
@@ -165,11 +164,19 @@ export class RoomService {
     return room;
   }
 
-  async specialMsg(details: messageDto) {
-    const room = await this.idToRoom(details.id);
+  async isMuted(room: Room, user: User) {
+    const muted = room.muteList.find((u) => u.username === user.username);
+    if (muted?.time < Date.now()) {
+      room.muteList = room.muteList.filter((u) => u.username !== user.username);
+      await this.roomRep.save(room);
+    }
+    return room.muteList.find((u) => u.username === user.username);
+  }
+
+  async specialMsg(content: string, room: Room) {
     const msg = this.messageRep.create({
       owner: room.id.toString(),
-      content: details.content,
+      content: content,
       room,
     });
     const msgSaved = await this.messageRep.save(msg);
@@ -205,10 +212,7 @@ export class RoomService {
       }
     }
 
-    this.specialMsg({
-      content: user.username + ' leave',
-      id: room.id,
-    });
+    this.specialMsg(user.username + ' leave', room);
     await this.roomRep.save(room);
   }
 }

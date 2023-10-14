@@ -44,20 +44,19 @@ export class roomDto {
 
   @IsEmpty()
   messages: Message[];
+
   @IsEmpty()
   createdAt: string;
+
   @IsEmpty()
   creator: string;
+
   @IsEmpty()
   mods: string[];
+
   @IsEmpty()
   banList: string[];
+
+  @IsEmpty()
+  muteList: { username: string; time: number }[];
 }
-
-// export class roomCommands {
-//   @IsNotEmpty()
-//   id: number;
-
-//   @IsNotEmpty()
-//   user: User;
-// }

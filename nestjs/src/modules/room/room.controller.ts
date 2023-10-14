@@ -73,4 +73,9 @@ export class RoomController {
   modUser(@Req() req: any) {
     return this.commandService.modUser(req.user, req.room, req.friendUser);
   }
+
+  @Post('command/mute')
+  muteUser(@Req() req: any) {
+    return this.commandService.muteUser(req.user, req.room, req.friendUser);
+  }
 }
