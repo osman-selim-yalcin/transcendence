@@ -8,6 +8,7 @@ export enum userStatus {
   INGAME,
   AWAY,
   BUSY,
+  BLOCKED,
 }
 
 export class userDto {
@@ -39,6 +40,9 @@ export class userDto {
 
   @IsEmpty()
   notifications: Notification[];
+
+  @IsEmpty()
+  blocked: userDto[];
 }
 
 export class userRoomDto {

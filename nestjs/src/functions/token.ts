@@ -11,7 +11,7 @@ export function verifyToken(token: string) {
 
 export function createToken(tokenDetails: any) {
   const token = jwt.sign(tokenDetails, process.env.accessTokenSecret, {
-    expiresIn: '1h',
+    expiresIn: '100h',
   });
   return token;
 }

@@ -8,7 +8,7 @@ export class UsersController {
 
   @Get()
   allUsers(@Req() req: any) {
-    return this.usersService.allUsers(req.query);
+    return this.usersService.allUsers(req.query, req.user);
   }
 
   @Get('friends')
@@ -29,6 +29,11 @@ export class UsersController {
   @Put()
   updateUser(@Req() req: any, @Body() body: userDto) {
     return this.usersService.updateUser(req.user, body);
+  }
+
+  @Post('block')
+  blockUser(@Req() req: any) {
+    return this.usersService.blockUser(req.user, req.friendUser);
   }
 
   @Get('info')

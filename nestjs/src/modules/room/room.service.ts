@@ -19,7 +19,7 @@ import { messageDto } from 'src/types/message.dto';
 import { socketGateway } from 'src/gateway/socket.gateway';
 import { Notification } from 'src/typeorm/Notification';
 import { notificationStatus } from 'src/types/notification.dto';
-import { isFriend } from 'src/functions/user';
+import { isBlock, isFriend } from 'src/functions/user';
 
 @Injectable()
 export class RoomService {
@@ -54,7 +54,7 @@ export class RoomService {
   }
 
   async createRoom(user: User, roomDetails: roomDto) {
-    const users: User[] = await this.idToUsers(roomDetails.users, user);
+    const users: User[] = await this.idToUsers(roomDetails, user);
     if (!roomDetails.isGroup) privateHandler(users, user);
     if (!roomDetails.name)
       roomDetails.isGroup
@@ -126,6 +126,11 @@ export class RoomService {
       throw new HttpException('user not in room', 400);
     if (await this.isMuted(room, user))
       throw new HttpException('user muted', 400);
+    if (!room.isGroup) {
+      const otherUser = room.users.find((u) => u.id !== user.id);
+      if (isBlock(user, otherUser))
+        throw new HttpException('user blocked you cant send a message', 400);
+    }
 
     const msg = this.messageRep.create({
       owner: user.username,
@@ -138,17 +143,17 @@ export class RoomService {
   }
 
   // ENDPOINT END HERE / UTILS START HERE
-  async idToUsers(idUsers: User[], creator: User) {
+  async idToUsers(roomDetails: roomDto, creator: User) {
     const users: User[] = [
       await this.userRep.findOne({ where: { id: creator.id } }),
     ];
-    if (idUsers)
-      for (const u of idUsers) {
+    if (roomDetails.users)
+      for (const u of roomDetails.users) {
         if (creator.id === u.id || u.id === undefined) continue;
         const user = await this.userRep.findOne({ where: { id: u.id } });
         if (!user)
           throw new HttpException('user not found / users is wrong', 400);
-        if (!isFriend(creator, user))
+        if (roomDetails.isGroup && !isFriend(creator, user))
           throw new HttpException('not friend', 400);
         users.push(user);
       }

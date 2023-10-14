@@ -15,11 +15,11 @@ export class Room {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany(() => User, (user) => user.rooms, { cascade: true })
+  @ManyToMany(() => User, (user) => user.rooms, { onDelete: 'CASCADE' })
   @JoinColumn()
   users: User[];
 
-  @OneToMany(() => Message, (message) => message.room, { cascade: true })
+  @OneToMany(() => Message, (message) => message.room, { onDelete: 'CASCADE' })
   @JoinColumn()
   messages: Message[];
 

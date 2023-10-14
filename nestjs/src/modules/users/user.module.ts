@@ -21,5 +21,9 @@ export class UserModule {
     consumer
       .apply(idToUser)
       .forRoutes({ path: 'user', method: RequestMethod.POST });
+
+    consumer
+      .apply(idToUser)
+      .forRoutes({ path: 'user/block', method: RequestMethod.POST });
   }
 }
