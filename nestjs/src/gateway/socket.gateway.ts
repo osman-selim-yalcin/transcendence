@@ -1,5 +1,9 @@
 import { OnModuleInit } from '@nestjs/common';
-import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io'; // Import the 'Socket' type
 import { UsersService } from 'src/modules/users/user.service';
 import { userStatus } from 'src/types/user.dto';
@@ -17,6 +21,9 @@ interface CustomSocket extends Socket {
 })
 export class socketGateway implements OnModuleInit {
   constructor(private userService: UsersService) {}
+
+  queueList = [];
+  gameList = [];
 
   @WebSocketServer()
   server: Server;
@@ -47,6 +54,40 @@ export class socketGateway implements OnModuleInit {
         console.log('user', socketUser.username, 'disconnected');
       });
     });
+  }
+
+  @SubscribeMessage('join queue')
+  async joinQueue(client: Socket, sessionID: string) {
+    if (this.queueList.length === 1) {
+      const ID = this.startGame([sessionID, this.queueList[0]]);
+      this.server.in(ID).emit('game started');
+    } else this.queueList.push(sessionID);
+  }
+
+  startGame(sessionIDS: string[]) {
+    this.queueList = this.queueList.filter((sessionID) =>
+      sessionIDS.includes(sessionID),
+    );
+    sessionIDS.map((sessionID) =>
+      this.server
+        .in(sessionID)
+        .socketsJoin('game' + sessionIDS[0] + sessionIDS[1]),
+    );
+    const gameID = 'game' + sessionIDS[0] + sessionIDS[1];
+    this.gameList.push({
+      gameID,
+      user1: {
+        id: sessionIDS[0],
+        paddle1: new Paddle({ x: 0, y: 0 }),
+      },
+    });
+    return gameID;
+  }
+
+  @SubscribeMessage('on game')
+  async onGame(client: Socket, payload: any) {
+    if (payload.key === 'w') {
+    }
   }
 
   async joinRoom(sessionID: string, roomID: string) {
