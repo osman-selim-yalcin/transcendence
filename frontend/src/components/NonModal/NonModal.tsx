@@ -65,7 +65,7 @@ export default function NonModal() {
   return (
     <dialog className={"nonmodal-dialog " + getClassName()} ref={dialogRef}>
       {contentType === ContextMenuContentType.NOTIFICATION && <NotificationList />}
-      {contentType === ContextMenuContentType.ROOM_DETAIL_USER && <ContextMenuButtons clickedUser={contextContent.clickedUser} currentRoomId={contextContent.currentRoomId} canBeControlled={contextContent.canBeControlled} />}
+      {contentType === ContextMenuContentType.ROOM_DETAIL_USER && <ContextMenuButtons clickedUser={contextContent.clickedUser} clickedUserRank={contextContent.clickedUserRank} currentRoomId={contextContent.currentRoomId} currentRoomCreator={contextContent.currentRoomCreator} canBeControlled={contextContent.canBeControlled} />}
     </dialog>
   )
 }

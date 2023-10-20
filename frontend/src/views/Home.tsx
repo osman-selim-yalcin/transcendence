@@ -9,7 +9,7 @@ export default function Home() {
     <div>
       <h1>42 Transcendence by <i>bmat&osyalcin</i></h1>
       <UserInfo />
-      <Modal isActive={[modal, setModal]}>
+      <Modal isActive={[modal, setModal]} removable={true}>
         Welcome to Home Page
         <LoadIndicator />
       </Modal>

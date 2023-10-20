@@ -17,6 +17,7 @@ export default class Paddle {
   }
 
   set hue(value) {
-    this.paddleElem.style.setProperty("--hue", value.toString())
+    this.paddleElem.style.setProperty("--light", (50).toString())
+    this.paddleElem.style.setProperty("--hue", (value % 360).toString())
   }
 }

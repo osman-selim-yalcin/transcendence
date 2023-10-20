@@ -39,7 +39,7 @@ export default function UserRoomList() {
             :
             <LoadIndicator />
           }
-          <Modal isActive={[modal, setModal]}>
+          <Modal isActive={[modal, setModal]} removable={true}>
             <GroupCreation setModal={setModal} />
           </Modal>
         </>

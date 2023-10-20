@@ -1,15 +1,14 @@
 import { PropsWithChildren, useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../context/UserContext"
-import Room from "../Room"
-import List from "../List"
 import "./Chat.scss"
-import { room, user, message, RoomRank, ContextMenuContentType, ContextContent, UserListType } from "../../types"
-import { kickUser, leaveRoom, sendMessage } from "../../api/room"
+import { room, user, message, RoomRank, ContextMenuContentType, ContextContent, UserListType, MutedUser, userStatus } from "../../types"
+import { changeMod, changeMute, kickUser, leaveRoom, sendMessage } from "../../api/room"
 import LoadIndicator from "../LoadIndicator/LoadIndicator"
 import { useNavigate, useParams } from "react-router-dom"
 import { ContextMenuContext } from "../../context/ContextMenuContext"
 import { Modal } from "../Modal/Modal"
 import UserList from "../UserList/UserList"
+import { changeBlock } from "../../api/user"
 
 export function Chat() {
   const [showDetail, setShowDetail] = useState(false)
@@ -66,7 +65,7 @@ function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrent
           //   return null
         })}
       </ul>
-      <Modal isActive={[modal, setModal]}>
+      <Modal isActive={[modal, setModal]} removable={true}>
         <UserList userListType={UserListType.NEW_MESSAGE} setModal={setModal} />
       </Modal>
     </div>
@@ -144,7 +143,7 @@ function ChatContent({
               </li>
             ))}
           </ul>
-          <ChatForm currentRoomID={currentRoom.id} inputRef={inputRef} />
+          <ChatForm currentRoomID={currentRoom.id} roomMuteList={currentRoom.muteList} inputRef={inputRef} />
         </>
         :
         <div id={"placeholder"}>
@@ -155,23 +154,41 @@ function ChatContent({
   )
 }
 
-function ChatForm({ currentRoomID, inputRef }: { currentRoomID: number, inputRef: any }) {
+function ChatForm({ currentRoomID, roomMuteList, inputRef }: PropsWithChildren<{ currentRoomID: number, roomMuteList: MutedUser[], inputRef: any }>) {
   const [input, setInput] = useState("")
+  const [muted, setMuted] = useState(false)
+  const { user } = useContext(UserContext)
 
-  return (
-    <form onSubmit={async (e) => {
-      e.preventDefault()
-      if (input !== "") {
-        await sendMessage({ content: input, id: currentRoomID })
-        setInput("")
-      }
-    }}>
+
+  useEffect(() => {
+    const found = roomMuteList?.find((muted) => (muted.username === user.username))
+    if (found !== undefined) {
+      setMuted(true)
+    }
+  }, [currentRoomID])
+
+  if (muted) {
+    return (
+      <div className="muted">
+        <p>You have been muted in this channel</p>
+      </div>
+    )
+  } else {
+    return (
+      <form onSubmit={async (e) => {
+        e.preventDefault()
+        if (input !== "") {
+          await sendMessage({ content: input, id: currentRoomID })
+          setInput("")
+        }
+      }}>
       <input type="text" value={input} ref={inputRef} onChange={(e) => {
         setInput(e.target.value)
       }} />
       <button>Send</button>
     </form>
   )
+}
 }
 // CHAT CONTENT
 // CHAT DETAILS
@@ -254,10 +271,10 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
               e.preventDefault()
               openContextMenu(e.clientX, e.clientY,
                 ContextMenuContentType.ROOM_DETAIL_USER,
-                { clickedUser: singleUser, currentRoomId: currentRoom.id, canBeControlled: getRank(singleUser) < getRank(user) })
+                { clickedUser: singleUser, clickedUserRank: getRank(singleUser), currentRoomId: currentRoom.id, currentRoomCreator: currentRoom.creator, canBeControlled: getRank(singleUser) < getRank(user) })
             }} key={singleUser.id}>
               <img src={singleUser.avatar} alt={"user avatar"} />
-              <p>{getRankBadge(getRank(singleUser))} {singleUser.username} {singleUser.id === user.id && "(You)"}</p>
+              <p>{getRankBadge(getRank(singleUser))} {singleUser.username} {singleUser.id === user.id && "(You)"} {currentRoom.muteList.find((muted) => (muted.username === singleUser.username)) && <>&#128263;</>} {singleUser.status === userStatus.BLOCKED && <>&#9888;</>}</p>
             </li>
           ))}
         </ul>
@@ -280,38 +297,56 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
             reloadUserRooms()
           }, 1000);
         }} >Exit Group</button>
-        <Modal isActive={[modal, setModal]} >
+        <Modal isActive={[modal, setModal]} removable={true}>
           <UserList userListType={UserListType.INVITE_USER} room={currentRoom} />
         </Modal>
       </div>
     )
   } else {
     return (
-      <button>Block</button>
+      <button
+      >Block</button>
     )
   }
 }
 
-export function ContextMenuButtons({ clickedUser, currentRoomId, canBeControlled }: PropsWithChildren<ContextContent>) {
+export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId, currentRoomCreator, canBeControlled }: PropsWithChildren<ContextContent>) {
   const { reloadUserRooms } = useContext(UserContext)
   const { closeContextMenu } = useContext(ContextMenuContext)
+  const { user } = useContext(UserContext)
   return (
-    <div className={"admin-buttons" + (!canBeControlled ? " hidden" : "")}
-      onClick={(e) => {
-        e.stopPropagation()
-        closeContextMenu()
-      }}>
-      <button title="wow">Promote/Demote</button>
-      <button onClick={async () => {
-        console.log("room id:", currentRoomId, "clicked user id:", clickedUser.id)
-        await kickUser({ id: currentRoomId, user: { id: clickedUser.id } })
-        setTimeout(() => {
+    <>
+        <div className={"admin-buttons"}
+          onClick={(e) => {
+            e.stopPropagation()
+            closeContextMenu()
+          }}>
+          {user.username === currentRoomCreator &&
+            <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
+              await changeMod({ id: currentRoomId, user: { id: clickedUser.id } })
+              reloadUserRooms()//works without setimeout?
+            }}
+            >{clickedUserRank === RoomRank.MEMBER ? "Promote" : "Demote"}</button>
+          }
+          <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
+            console.log("room id:", currentRoomId, "clicked user id:", clickedUser.id)
+            await kickUser({ id: currentRoomId, user: { id: clickedUser.id } })
+            setTimeout(() => {
+              reloadUserRooms()
+            }, 1000);
+          }}
+          >Kick</button>
+          <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
+            await changeMute({id: currentRoomId, user: { id: clickedUser.id }})
+            reloadUserRooms()
+          }}>Mute</button>
+          <button>Ban</button>
+        <button className={(user.id === clickedUser.id ? "hidden" : "")} onClick={async () => {
+          await changeBlock({ id: clickedUser.id })
           reloadUserRooms()
-        }, 1000);
-      }}
-      >Kick</button>
-      <button>Ban</button>
-    </div>
+        }}>{clickedUser.status === userStatus.BLOCKED ? <>Unblock</> : <>Block</>}</button>
+        </div>
+    </>
   )
 }
 

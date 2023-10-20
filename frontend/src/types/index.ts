@@ -6,7 +6,7 @@ export type user = {
   id: number
   username: string
   sessionID: string
-  status: string
+  status: userStatus
   avatar: string
   lastSeen: string
 }
@@ -29,6 +29,7 @@ export enum userStatus {
   INGAME,
   AWAY,
   BUSY,
+  BLOCKED
 }
 
 /**
@@ -44,6 +45,7 @@ export type room = {
   creator: string
   mods: string[]
   banList: string[]
+  muteList: MutedUser[]
   inviteList: string[]
   isGroup: boolean
   isInviteOnly: boolean
@@ -59,7 +61,7 @@ export interface roomPayload {
   password?: string
 }
 
-export type roomKickBody = {
+export type roomCommandBody = {
   id: number,
   user: {
     id: number
@@ -122,7 +124,7 @@ export enum SocialView {
   USERS
 }
 
-export type ContextContent = { clickedUser: user, currentRoomId: number, canBeControlled: boolean } | null
+export type ContextContent = { clickedUser: user, clickedUserRank: RoomRank, currentRoomId: number, currentRoomCreator: string, canBeControlled: boolean } | null
 
 export interface NonModalContext {
   nonModalActive: boolean
@@ -153,6 +155,38 @@ export enum UserListType {
   ADD_FRIEND,
   INVITE_USER,
   NEW_MESSAGE
+}
+
+export type MutedUser = {
+  username: string
+  time: number
+}
+
+/**
+ ******************** GAME *********************
+ */
+
+export type currentPositions = {
+  ball: {
+    x: number
+    y: number
+  }
+  paddles: [
+    {
+      y: number
+    },
+    {
+      y: number
+    }
+  ]
+}
+
+export enum GameState {
+  PREQUEUE,
+  IN_QUEUE,
+  PREGAME_NOT_READY,
+  PREGAME_READY,
+  IN_GAME
 }
 
 // export type socketPayload = {}

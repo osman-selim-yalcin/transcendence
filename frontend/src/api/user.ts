@@ -55,3 +55,21 @@ export const getUsers = (queryString: string) => {
       console.log(err)
     })
 }
+
+export const changeBlock = async (body: { id: number }) => {
+  return axios
+    .post(
+      "http://localhost:3000/api/user/block",
+      body,
+      {
+        headers: {
+          Authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+        }
+      }
+    )
+    .catch(err => {
+      console.log(err)
+    })
+}

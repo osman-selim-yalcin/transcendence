@@ -32,7 +32,7 @@ export default function Navbar() {
           </>
         )}
       </div>
-      <Modal isActive={[modal, setModal]}>
+      <Modal isActive={[modal, setModal]} removable={true}>
         <Login />
       </Modal>
     </div>

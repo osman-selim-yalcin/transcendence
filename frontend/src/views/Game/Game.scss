@@ -26,7 +26,101 @@
       left: 0;
       right: 0;
       margin: auto;
+
+      .game-title {
+        color: white;
+        font-size: 8rem;
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .prequeue-content {
+        position: absolute;
+        top: 70%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+
+        dialog {
+          background-color: rgb(255, 255, 255, 0);
+          border: none;
+
+          .loading-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
+
+          .in-queue-buttons {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+        }
+  
+        dialog::backdrop {
+          opacity: 0;
+        }
+      }
+
+      .info {
+        width: 30%;
+        height: 15%;
+        border: 2px white solid;
+        position: absolute;
+        display: flex;
+        margin: 1.5rem 2.5rem;
       
+        .avatar {
+          aspect-ratio: 1 / 1;
+          height: 100%;
+          background-color: grey;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          img {
+            aspect-ratio: 1 / 1;
+            height: 80%;
+            border-radius: 50%;
+          }
+        }
+
+        .body {
+          flex-grow: 1;
+          color: white;
+          display: flex;
+          align-items: center;
+          font-weight: 900;
+        }
+      }
+
+      .opponent-info {
+        right: 0;
+
+        .body {
+          justify-content: flex-end;
+        }
+      }
+      
+      .ball {
+        --x: 50;
+        --y: 50;
+        position: absolute;
+        top: calc(var(--y) * 1%);
+        left: calc(var(--x) * 1%);
+        background-color: white;
+        width: 2.25%;
+        height: 4%;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+      }
       
       .paddle {
         background-color: white;
@@ -39,9 +133,10 @@
       .paddle.left {
         --position: 50;
         --hue: 160;
+        --light: 100;
         left: 3%;
         top: calc(var(--position) * 1%);
-        background-color: hsl(var(--hue), 100%, 50%);
+        background-color: hsl(var(--hue), 100%, calc(var(--light) * 1%));
         transition: 2000ms;
         transition-property: /*top,*/ left, transform, scale;
       }
@@ -61,8 +156,12 @@
         transition: 15ms;
       }
 
-      .temp {
+      .ready-state {
         position: absolute;
+        left: 50%;
+        top: 60%;
+        transform: translate(-50%, -50%);
+        color: white;
       }
 
       .color-select-buttons {

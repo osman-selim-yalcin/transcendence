@@ -1,5 +1,5 @@
 import axios from "axios"
-import { roomKickBody, roomPayload } from "../types"
+import { roomCommandBody, roomPayload } from "../types"
 
 // <---------------- REFACTOR ----------------->
 
@@ -105,7 +105,7 @@ export const leaveRoom = async (body: roomPayload) => {
     })
 }
 
-export const kickUser = async (body: roomKickBody) => {
+export const kickUser = async (body: roomCommandBody) => {
   return axios
     .post(
       "http://localhost:3000/api/room/command/kick",
@@ -141,7 +141,7 @@ export const joinRoom = async (body: { id: number }) => {
     })
 }
 
-export const sendInvite = async (body: roomKickBody) => {
+export const sendInvite = async (body: roomCommandBody) => {
   return axios
     .post(
       "http://localhost:3000/api/room/command/invite",
@@ -159,63 +159,14 @@ export const sendInvite = async (body: roomKickBody) => {
     })
 }
 
-
-
-
-// <---------------- REFACTOR ----------------->
-
-export const startRoom = async (username: string) => {
-  const response = axios.post(
-    "http://localhost:3000/api/user/startRoom",
-    {
-      username: username
-    },
-    {
-      headers: {
-        authorization:
-          "Bearer " +
-          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-      }
-    }
-  )
-  return (await response).data
-}
-
-// export const findRoom = async (roomId: number) => {
-//   return await axios
-//     .post(
-//       "http://localhost:3000/api/user/findRoom",
-//       {
-//         roomId
-//       },
-//       {
-//         headers: {
-//           authorization:
-//             "Bearer " +
-//             (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-//         }
-//       }
-//     )
-//     .then(res => {
-//       return res.data.messages
-//     })
-//     .catch(err => {
-//       console.log(err)
-//     })
-// }
-
-export const createMsg = async (msg: string, owner: string, roomID: number) => {
-  axios
+export const changeMod = async (body: roomCommandBody) => {
+  return axios
     .post(
-      "http://localhost:3000/api/user/createMsg",
-      {
-        msg,
-        owner,
-        roomID
-      },
+      "http://localhost:3000/api/room/command/mod",
+      body,
       {
         headers: {
-          authorization:
+          Authorization:
             "Bearer " +
             (localStorage.getItem("token") ? localStorage.getItem("token") : "")
         }
@@ -226,18 +177,20 @@ export const createMsg = async (msg: string, owner: string, roomID: number) => {
     })
 }
 
-export const joinGroup = async (body: any) => {
-  const response = axios.post(
-    "http://localhost:3000/api/user/joinGroup",
-    body,
-    {
-      headers: {
-        authorization:
-          "Bearer " +
-          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+export const changeMute = async (body: roomCommandBody) => {
+  return axios
+    .post(
+      "http://localhost:3000/api/room/command/mute",
+      body,
+      {
+        headers: {
+          Authorization:
+            "Bearer " +
+            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+        }
       }
-    }
-  )
-  return (await response).data
+    )
+    .catch(err => {
+      console.log(err)
+    })
 }
-

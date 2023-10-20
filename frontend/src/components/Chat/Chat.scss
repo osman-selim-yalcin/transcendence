@@ -129,6 +129,11 @@
     }
   }
 
+  .muted {
+    padding: 1rem;
+    background-color: rgb(240, 242, 245);
+    text-align: center;
+  }
 
   form {
     display: flex;
@@ -177,6 +182,7 @@
     img {
       aspect-ratio: 1 / 1;
       background-color: grey;
+      min-width: 80%;
       max-width: 80%;
       border-radius: 50%;
     }
