@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { notificationModify } from 'src/functions/Notification';
+import { notificationModify } from 'src/functions/notification';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
 import {
@@ -18,9 +18,9 @@ export class NotificationService {
   ) {}
 
   async getNotifications(user: User) {
-    return user.notifications.map((n) => notificationModify(n));
+    // return user.notifications.map((n) => notificationModify(n));
     return this.notificationRep.find({
-      relations: ['user', 'creator'],
+      relations: ['user', 'creator', 'sibling'],
     });
   }
 
@@ -30,6 +30,7 @@ export class NotificationService {
       relations: ['user', 'creator'],
     });
     if (!notification) throw new HttpException('not found', 404);
+    console.log(notification);
     if (notification.user.id !== user.id)
       throw new HttpException('not authorized', 401);
     if (notification.status === notificationStatus.QUESTION) {

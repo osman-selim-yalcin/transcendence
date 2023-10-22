@@ -93,10 +93,10 @@ export class UsersService {
     return this.userRep.save(user);
   }
 
-  async findUserBySessionID(sessionID: string) {
+  async findUserBySessionID(sessionID: string, relations?: string[]) {
     return this.userRep.findOne({
       where: { sessionID: sessionID },
-      relations: ['rooms'],
+      relations,
     });
   }
 

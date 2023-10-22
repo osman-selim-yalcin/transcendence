@@ -19,7 +19,7 @@ export class Room {
   @JoinColumn()
   users: User[];
 
-  @OneToMany(() => Message, (message) => message.room, { onDelete: 'CASCADE' })
+  @OneToMany(() => Message, (message) => message.room, { cascade: true })
   @JoinColumn()
   messages: Message[];
 
