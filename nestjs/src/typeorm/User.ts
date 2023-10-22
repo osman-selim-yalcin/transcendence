@@ -44,7 +44,7 @@ export class User {
   @JoinTable()
   blocked: User[];
 
-  @ManyToMany(() => Room, (room) => room.users)
+  @ManyToMany(() => Room, (room) => room.users, { cascade: true })
   @JoinTable()
   rooms: Room[];
 
