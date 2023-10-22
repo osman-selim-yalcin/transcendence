@@ -84,7 +84,7 @@ export class socketGateway implements OnModuleInit {
         intervalID: null,
       };
       this.gameList.push(game);
-      this.server.in(ID).emit('pre game', game.users); // USERSI NASIL İSTİYON AGA
+      this.server.in(ID).emit('pre-game', game.users); // USERSI NASIL İSTİYON AGA
     }
   }
 
@@ -147,7 +147,7 @@ export class socketGateway implements OnModuleInit {
     const intervalID = setInterval(() => {
       game = gameUpdate(game);
       this.server.emit('game update', {
-        users: game.users,
+        paddles: [game.users[0].paddle, game.users[1].paddle],
         ball: game.ball,
       });
       if (game.isOver) {
@@ -155,7 +155,7 @@ export class socketGateway implements OnModuleInit {
         this.server.in(game.gameID).socketsLeave(game.gameID);
         this.gameList.splice(this.gameList.indexOf(game), 1);
       }
-    }, 100);
+    }, 15);
     game.intervalID = intervalID;
     return game;
   }

@@ -31,7 +31,7 @@ export class Paddle extends Sprite {
 }
 
 export class Circle extends Sprite {
-  radius = 5;
+  radius = 1.125;
   speed = 5;
   lastHit = false;
   constructor() {

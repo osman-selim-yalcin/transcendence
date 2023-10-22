@@ -67,11 +67,14 @@ export default function Game() {
       socket.emit("ready", playerPaddle.hue)
     } else if (gameState === GameState.IN_GAME) {
       socket.off("game start")
+      socket.on("game over", () => {
+        clearInterval(interval.current)
+      })
       socket.on("game update", (data: currentPositions) => {
-        playerPaddle.position = data.paddles[0].y
-        opponentPaddle.position = data.paddles[1].y
-        ball.x = data.ball.x
-        ball.y = data.ball.y
+        playerPaddle.position = data.paddles[0].position.y
+        opponentPaddle.position = data.paddles[1].position.y
+        ball.x = data.ball.position.x
+        ball.y = data.ball.position.y
       })
       interval.current = setInterval(() => {
         // socket.emit("on game", keys.current)

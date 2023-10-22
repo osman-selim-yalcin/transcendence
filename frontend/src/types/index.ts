@@ -168,15 +168,21 @@ export type MutedUser = {
 
 export type currentPositions = {
   ball: {
-    x: number
-    y: number
+    position: {
+      x: number
+      y: number
+    }
   }
   paddles: [
     {
-      y: number
+      position: {
+        y: number
+      }
     },
     {
-      y: number
+      position: {
+        y: number
+      }
     }
   ]
 }
