@@ -15,6 +15,7 @@ import { NotificationController } from './modules/notification/notification.cont
 import { NotificationModule } from './modules/notification/notification.module';
 import { tokenMiddleware } from './middleware/token.middleware';
 import { SocketClientModule } from './gateway/socket.module';
+import { Game } from './typeorm/Game';
 @Module({
   imports: [
     UserModule,
@@ -29,7 +30,7 @@ import { SocketClientModule } from './gateway/socket.module';
       username: 'test',
       password: 'test',
       database: 'osyalcin',
-      entities: [User, Room, Message, Notification],
+      entities: [User, Room, Message, Notification, Game],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User]),

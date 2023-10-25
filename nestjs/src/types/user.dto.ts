@@ -1,4 +1,5 @@
 import { IsEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Game } from 'src/typeorm/Game';
 import { Notification } from 'src/typeorm/Notification';
 import { Room } from 'src/typeorm/Room';
 
@@ -19,6 +20,13 @@ export class userDto {
   @IsOptional()
   @IsNumber()
   id: number;
+
+  @IsOptional()
+  @IsString()
+  displayName: string;
+
+  @IsEmpty()
+  createdAt: string;
 
   @IsEmpty()
   sessionID: string;
@@ -43,6 +51,15 @@ export class userDto {
 
   @IsEmpty()
   blocked: userDto[];
+
+  @IsEmpty()
+  elo: number;
+
+  @IsEmpty()
+  won: Game[];
+
+  @IsEmpty()
+  lost: Game[];
 }
 
 export class userRoomDto {

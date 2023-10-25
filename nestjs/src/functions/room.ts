@@ -15,10 +15,15 @@ export function userModify(user: User) {
     status: user.status,
     avatar: user.avatar,
     lastSeen: user.lastSeen,
+    elo: user.elo,
+    displayName: user.displayName,
+    createdAt: user.createdAt,
     friends: null,
     rooms: null,
     notifications: null,
     blocked: null,
+    won: null,
+    lost: null,
   };
 }
 

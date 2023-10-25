@@ -7,9 +7,9 @@ import {
 import { Server, Socket } from 'socket.io'; // Import the 'Socket' type
 import { UsersService } from 'src/modules/users/user.service';
 import { userStatus } from 'src/types/user.dto';
-import { Circle, Paddle, keys, socketGame } from './game/classes';
+import { Circle, Paddle, typeKeys, socketGame } from './game/classes';
 import { gameUpdate } from './game';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { GameService } from 'src/modules/game/game.service';
 
 interface CustomSocket extends Socket {
   sessionID: string;
@@ -21,7 +21,10 @@ interface CustomSocket extends Socket {
   },
 })
 export class socketGateway implements OnModuleInit {
-  constructor(private userService: UsersService) {}
+  constructor(
+    private userService: UsersService,
+    private gameService: GameService,
+  ) {}
 
   queueList: string[] = [];
   gameList: socketGame[] = [];
@@ -59,6 +62,18 @@ export class socketGateway implements OnModuleInit {
       });
     });
   }
+
+  async joinRoom(sessionID: string, roomID: string) {
+    this.server.in(sessionID).socketsJoin(roomID);
+  }
+
+  async onPrivateMessage(payload: any) {
+    this.server.to(payload.to).emit('private message', {
+      ...payload.msg,
+    });
+  }
+
+  //GAME LOGIC
 
   @SubscribeMessage('join queue')
   async joinQueue(client: CustomSocket) {
@@ -107,21 +122,15 @@ export class socketGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('keys')
-  async onGame(client: CustomSocket, keys: keys) {
-    const game = this.findGame(client.sessionID, this.gameList);
-    const user = this.findUser(game, client.sessionID);
-    user.keys = keys;
-    this.gameList[this.gameList.indexOf(game)] = game;
-  }
-
-  async joinRoom(sessionID: string, roomID: string) {
-    this.server.in(sessionID).socketsJoin(roomID);
-  }
-
-  async onPrivateMessage(payload: any) {
-    this.server.to(payload.to).emit('private message', {
-      ...payload.msg,
-    });
+  async onGame(client: CustomSocket, keys: typeKeys) {
+    try {
+      const game = this.findGame(client.sessionID, this.gameList);
+      const user = this.findUser(game, client.sessionID);
+      user.keys = keys;
+      this.gameList[this.gameList.indexOf(game)] = game;
+    } catch (e) {
+      this.server.in(client.sessionID).emit('error', e);
+    }
   }
 
   findUsers(sessionIDS: string[]) {
@@ -151,13 +160,32 @@ export class socketGateway implements OnModuleInit {
         ball: game.ball,
       });
       if (game.isOver) {
-        this.server.in(game.gameID).emit('game over', game.users);
-        this.server.in(game.gameID).socketsLeave(game.gameID);
-        this.gameList.splice(this.gameList.indexOf(game), 1);
+        this.endGame(game);
       }
     }, 15);
     game.intervalID = intervalID;
     return game;
+  }
+
+  async endGame(game: socketGame) {
+    clearInterval(game.intervalID);
+    this.server.in(game.gameID).emit('game over', game.users);
+    this.server.in(game.gameID).socketsLeave(game.gameID);
+    this.gameList.splice(this.gameList.indexOf(game), 1);
+    const winner = await this.userService.findUserBySessionID(
+      game.users.find((u) => u.score === 5).sessionID,
+    );
+    const loser = await this.userService.findUserBySessionID(
+      game.users.find((u) => u.score !== 5).sessionID,
+    );
+    const gameLoser = game.users.find((u) => u.score !== 5);
+
+    this.gameService.createGame({
+      score: [5, gameLoser.score],
+      elo: 10,
+      winner,
+      loser,
+    });
   }
 
   findGame(sessionID: string, gameList: socketGame[]): socketGame {
