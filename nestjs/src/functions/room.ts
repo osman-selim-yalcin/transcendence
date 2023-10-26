@@ -24,6 +24,7 @@ export function userModify(user: User) {
     blocked: null,
     won: null,
     lost: null,
+    oldAvatar: null,
   };
 }
 

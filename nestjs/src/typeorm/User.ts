@@ -33,6 +33,9 @@ export class User {
   @Column({ default: 'https://source.unsplash.com/featured/300x202' })
   avatar: string;
 
+  @Column({ nullable: true })
+  oldAvatar: string;
+
   @Column({ type: 'enum', enum: userStatus, default: userStatus.OFFLINE })
   status: number;
 

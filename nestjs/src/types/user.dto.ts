@@ -13,8 +13,7 @@ export enum userStatus {
 }
 
 export class userDto {
-  @IsString()
-  @IsOptional()
+  @IsEmpty()
   avatar: string;
 
   @IsOptional()
@@ -60,6 +59,9 @@ export class userDto {
 
   @IsEmpty()
   lost: Game[];
+
+  @IsEmpty()
+  oldAvatar: string;
 }
 
 export class userRoomDto {
