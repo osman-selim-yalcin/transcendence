@@ -166,6 +166,15 @@ export type MutedUser = {
  ******************** GAME *********************
  */
 
+export type player = {
+  user: user,
+  color: number
+}
+
+export type gameScore = {
+  scores: number[]
+}
+
 export type currentPositions = {
   ball: {
     position: {
@@ -192,7 +201,8 @@ export enum GameState {
   IN_QUEUE,
   PREGAME_NOT_READY,
   PREGAME_READY,
-  IN_GAME
+  IN_GAME,
+  POST_GAME
 }
 
 // export type socketPayload = {}

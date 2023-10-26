@@ -4,11 +4,6 @@
   min-height: 0;
   overflow: hidden;
 
-  .gamebar {
-    background-color: blueviolet;
-  }
-
-
   .game-container {
     background-color: rgb(224, 224, 221);
     position: relative;
@@ -29,7 +24,7 @@
 
       .game-title {
         color: white;
-        font-size: 8rem;
+        font-size: 8vw;
         position: absolute;
         top: 30%;
         left: 50%;
@@ -44,28 +39,23 @@
         display: flex;
         flex-direction: column;
         gap: 2rem;
+      }
 
-        dialog {
-          background-color: rgb(255, 255, 255, 0);
-          border: none;
+      .queue-content {
 
-          .loading-screen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-          }
 
-          .in-queue-buttons {
-            position: absolute;
-            top: 70%;
-            left: 50%;
-            transform: translateX(-50%);
-          }
+        .loading-screen {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
-  
-        dialog::backdrop {
-          opacity: 0;
+
+        .in-queue-buttons {
+          position: absolute;
+          left: 50%;
+          top: 70%;
+          transform: translate(-50%, -50%);
         }
       }
 
@@ -156,6 +146,15 @@
         transition: 15ms;
       }
 
+      .scoreboard {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        font-size: 4vw;
+      }
+
       .ready-state {
         position: absolute;
         left: 50%;
@@ -174,6 +173,14 @@
         justify-content: space-around;
       }
 
+      .end-game-button {
+        position: absolute;
+        left: 50%;
+        top: 70%;
+        transform: translateX(-50%);
+
+      }
+
       .center {
         height: 10px;
         width: 10px;
@@ -183,10 +190,6 @@
         left: 50%;
         transform: translate(-50%, -50%);
       }
-    }
-
-    .modal-menu {
-
     }
   }
 }

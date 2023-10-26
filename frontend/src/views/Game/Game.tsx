@@ -2,9 +2,8 @@ import { PropsWithChildren, useContext, useEffect, useRef, useState } from "reac
 import { SocketContext } from "../../context/SocketContext"
 import "./Game.scss"
 import Paddle from "../../game/Paddle"
-import { Modal } from "../../components/Modal/Modal"
 import Ball from "../../game/Ball"
-import { GameState, currentPositions, user } from "../../types"
+import { GameState, currentPositions, player, user } from "../../types"
 import { UserContext } from "../../context/UserContext"
 import LoadIndicator from "../../components/LoadIndicator/LoadIndicator"
 // import { game_start } from "../game/index.js"
@@ -15,6 +14,8 @@ export default function Game() {
   const interval = useRef(null)
   const [gameState, setGameState] = useState<GameState>(GameState.PREQUEUE)
   const [opponent, setOpponent] = useState<user>(null)
+  const [selfIndex, setSelfIndex] = useState<number>(null)
+
   const keys = useRef({
     w: {
       pressed: false
@@ -46,6 +47,10 @@ export default function Game() {
     return (() => {
       document.removeEventListener("keydown", handleKeyDown)
       document.removeEventListener("keyup", handleKeyUp)
+      socket.off("pre-game")
+      socket.off("game start")
+      socket.off("game update")
+      socket.off("game over")
     })
   }, [])
 
@@ -54,42 +59,40 @@ export default function Game() {
     const opponentPaddle = new Paddle(document.getElementById("opponent"))
     const ball = new Ball(document.getElementById("ball"))
     if (gameState === GameState.IN_QUEUE) {
-      socket.on("pre-game", (data: user) => {
+      socket.on("pre-game", (data: player[]) => {
+        data.forEach((player, index) => {
+          if (player.user.id === user.id) {
+            setSelfIndex(index)
+          } else {
+            setOpponent(player.user)
+          }
+        })
         setGameState(GameState.PREGAME_NOT_READY)
       })
       socket.emit("join queue")
     } else if (gameState === GameState.PREGAME_NOT_READY) {
       socket.off("pre-game")
-      socket.on("game start", () => {
+      socket.on("game start", (data: player[]) => {
+        opponentPaddle.hue = data[1 - selfIndex].color
         setGameState(GameState.IN_GAME)
       })
     } else if (gameState === GameState.PREGAME_READY) {
       socket.emit("ready", playerPaddle.hue)
     } else if (gameState === GameState.IN_GAME) {
       socket.off("game start")
-      socket.on("game over", () => {
-        clearInterval(interval.current)
-      })
       socket.on("game update", (data: currentPositions) => {
-        playerPaddle.position = data.paddles[0].position.y
-        opponentPaddle.position = data.paddles[1].position.y
-        ball.x = data.ball.position.x
+        playerPaddle.position = data.paddles[selfIndex].position.y
+        opponentPaddle.position = data.paddles[1 - selfIndex].position.y
+        ball.x = !selfIndex ? data.ball.position.x : 100 - data.ball.position.x
         ball.y = data.ball.position.y
       })
+      socket.on("game over", () => {
+        clearInterval(interval.current)
+        setGameState(GameState.POST_GAME)
+      })
       interval.current = setInterval(() => {
-        // socket.emit("on game", keys.current)
-
         // console.log(0)
         socket.emit("keys", keys.current)
-        // if (keys.current.w.pressed && playerPaddle.position > 10) {
-        //   playerPaddle.position -= 1
-        // }
-        // if (keys.current.s.pressed && playerPaddle.position < 90) {
-
-        //   playerPaddle.position += 1
-        // }
-        // ball.x += 0.09
-        // ball.y += 0.16
       }, 15)
     }
     console.log("game state:", gameState)
@@ -102,35 +105,23 @@ export default function Game() {
     <div className={"game-frame"}>
       <div className="game-container">
         <div className="game">
-          <p className={"game-title game-center" + (gameState !== GameState.PREQUEUE ? " hidden" : "")}>PONG</p>
-          {gameState <= GameState.IN_QUEUE &&
+          {gameState === GameState.PREQUEUE &&
             <PreQueueContent gameStateHook={[gameState, setGameState]} />
           }
+          {gameState === GameState.IN_QUEUE &&
+            <QueueContent gameStateHook={[gameState, setGameState]} />
+          }
           {(gameState === GameState.PREGAME_NOT_READY || gameState === GameState.PREGAME_READY) &&
-            <>
-              <div className={"info user-info"}>
-                <div className={"avatar"}>
-                  <img src={user?.avatar} alt="user avatar" />
-                </div>
-                <div className={"body"}>
-                  <p>
-                    {user?.username.toUpperCase()}
-                  </p>
-                </div>
-              </div>
-              <div className={"info opponent-info"}>
-                <div className={"body"}>
-                  <p>
-                    {opponent?.username}
-                  </p>
-                </div>
-                <div className={"avatar"}></div>
-              </div>
-            </>}
-          <div id={"opponent"} className={"paddle right" + (gameState >= GameState.PREGAME_NOT_READY ? "" : " hidden")}></div>
-          <div id={"player"} className={"paddle left" + ((gameState !== GameState.PREGAME_NOT_READY && gameState !== GameState.PREGAME_READY)  ? "" : " not-ready") + (gameState === GameState.PREQUEUE ? " hidden" : "")}></div>
+            <UserFrames opponent={opponent} />
+          }
           <div id={"ball"} className={"ball" + (gameState <= GameState.PREGAME_READY ? " hidden" : "")}></div>
+          <div id={"opponent"} className={"paddle right" + (gameState >= GameState.PREGAME_NOT_READY ? "" : " hidden")}></div>
+          <div id={"player"} className={"paddle left" + ((gameState !== GameState.PREGAME_NOT_READY && gameState !== GameState.PREGAME_READY) ? "" : " not-ready") + (gameState === GameState.PREQUEUE ? " hidden" : "")}></div>
+
+          {gameState >= GameState.IN_GAME && <Scoreboard selfIndex={selfIndex} />}
           <CustomizeButtons gameStateHook={[gameState, setGameState]} />
+
+          {gameState === GameState.POST_GAME && <button onClick={() => { setGameState(GameState.PREQUEUE) }} className={"end-game-button"}>Main Menu</button>}
 
           <div className={"center hidden"}></div>
           <div className="temp">
@@ -140,10 +131,13 @@ export default function Game() {
               }
             }}>prev</button>
             <button onClick={() => {
-              if (gameState !== 4) {
+              if (gameState !== 5) {
                 setGameState(gameState + 1)
               }
             }}>next</button>
+            <button onClick={() => {
+              setGameState(GameState.POST_GAME)
+            }}>End</button>
           </div>
         </div>
       </div>
@@ -152,41 +146,66 @@ export default function Game() {
 }
 
 function PreQueueContent({ gameStateHook: [gameState, setGameState] }: PropsWithChildren<{ gameStateHook: [GameState, Function] }>) {
-  const [modal, setModal] = useState(false)
-
-  useEffect(() => {
-    if (gameState === GameState.IN_QUEUE) {
-      setModal(true)//queue
-    } else {
-      setModal(false)
-    }
-  }, [gameState])
-
 
   return (
     <>
+      <p className={"game-title game-center"}>PONG</p>
       <div className="prequeue-content">
-        <button className={(gameState === GameState.PREQUEUE ? "" : "hidden")} onClick={() => {
+        <button onClick={() => {
           setGameState(GameState.IN_QUEUE)
         }}
         >Join Queue</button>
-        <button disabled className={(gameState === GameState.PREQUEUE ? "" : "hidden")} onClick={() => {
+        <button disabled onClick={() => {
         }}>Invite a Player</button>
-        <Modal isActive={[modal, setModal]} removable={false}>
-          <LoadIndicator />
-          <div className="in-queue-buttons">
-            <button
-              onClick={() => {
-                setGameState(gameState + 1)
-              }}
-            >
-              Skip
-            </button> {/*temp*/}
-            <button className={"cancel-button" + (gameState !== GameState.IN_QUEUE ? " hidden" : "")} onClick={() => {
-              setGameState(GameState.PREQUEUE)
-            }}>Cancel</button>
-          </div>
-        </Modal>
+      </div>
+    </>
+  )
+}
+
+function QueueContent({ gameStateHook: [gameState, setGameState] }: PropsWithChildren<{ gameStateHook: [GameState, Function] }>) {
+  return (
+    <div className="queue-content">
+      <LoadIndicator />
+      <div className="in-queue-buttons">
+        <button
+          onClick={() => {
+            setGameState(gameState + 1)
+          }}
+        >
+          Skip
+        </button> {/*temp*/}
+        <button className={"cancel-button" + (gameState !== GameState.IN_QUEUE ? " hidden" : "")} onClick={() => {
+          setGameState(GameState.PREQUEUE)
+        }}>Cancel</button>
+      </div>
+    </div>
+  )
+}
+
+function UserFrames({ opponent }: PropsWithChildren<{ opponent: user }>) {
+  const { user } = useContext(UserContext)
+
+  return (
+    <>
+      <div className={"info user-info"}>
+        <div className={"avatar"}>
+          <img src={user?.avatar} alt="user avatar" />
+        </div>
+        <div className={"body"}>
+          <p>
+            {user?.username.toUpperCase()}
+          </p>
+        </div>
+      </div>
+      <div className={"info opponent-info"}>
+        <div className={"body"}>
+          <p>
+            {opponent?.username.toUpperCase()}
+          </p>
+        </div>
+        <div className={"avatar"}>
+          <img src={opponent?.avatar} alt="opponent avatar" />
+        </div>
       </div>
     </>
   )
@@ -202,7 +221,6 @@ function CustomizeButtons({ gameStateHook: [gameState, setGameState] }: PropsWit
           <div className={"ready-state"}>
             <button
               onClick={() => {
-                // setGameState(gameState + 1)
                 setGameState(GameState.PREGAME_READY)
               }}
             >Ready</button>
@@ -220,5 +238,23 @@ function CustomizeButtons({ gameStateHook: [gameState, setGameState] }: PropsWit
         </>
       }
     </>
+  )
+}
+
+function Scoreboard({ selfIndex }: PropsWithChildren<{ selfIndex: number }>) {
+  const [score, setScore] = useState([0, 0])
+  const socket = useContext(SocketContext)
+
+  useEffect(() => {
+    socket.on("game score", (data: number[]) => {
+      setScore(data)
+    })
+    return (() => {
+      socket.off("game score")
+    })
+  }, [])
+
+  return (
+    <div className="scoreboard">{score[selfIndex]} | {score[1 - selfIndex]}</div>
   )
 }

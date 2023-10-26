@@ -127,6 +127,14 @@
       align-self: flex-end;
       background-color: rgb(224, 252, 215);
     }
+
+    li.room-announcement {
+      align-self: center;
+      background-color: rgb(240, 242, 245);
+      padding: 0.2rem 0.8rem;
+      font-size: smaller;
+      color: rgb(87, 100, 110);
+    }
   }
 
   .muted {
