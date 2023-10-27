@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import { UserContext } from "../context/UserContext"
 
-export default function Profile() {
+export default function UserInfo() {
   const { user } = useContext(UserContext)
 
   return (

@@ -58,18 +58,27 @@ export const getUsers = (queryString: string) => {
 
 export const changeBlock = async (body: { id: number }) => {
   return axios
-    .post(
-      "http://localhost:3000/api/user/block",
-      body,
-      {
-        headers: {
-          Authorization:
-            "Bearer " +
-            (localStorage.getItem("token") ? localStorage.getItem("token") : "")
-        }
+    .post("http://localhost:3000/api/user/block", body, {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
       }
-    )
+    })
     .catch(err => {
       console.log(err)
     })
+}
+
+export const changeAvatar = async (body: any) => {
+  return axios.post("http://localhost:3000/api/user/", body, {
+    headers: {
+      Authorization:
+        "Bearer " +
+        (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+    }
+  })
+  .then((response) => {
+    return response.data
+  })
 }
