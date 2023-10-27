@@ -19,7 +19,7 @@ export class Paddle extends Sprite {
     else this.position.x = 100 - 4;
     this.position.y = 50;
   }
-  update(keys: keys, user: socketGameUser) {
+  update(keys: typeKeys, user: socketGameUser) {
     if (keys.s.pressed) {
       if (user.paddle.position.y + user.paddle.height / 2 + this.speed <= 100)
         user.paddle.position.y += this.speed;
@@ -55,7 +55,7 @@ export type socketGameUser = {
   color: string;
   score: number;
   sessionID: string;
-  keys: keys;
+  keys: typeKeys;
   paddle: Paddle;
 };
 
@@ -67,7 +67,7 @@ export type socketGame = {
   intervalID: NodeJS.Timeout;
 };
 
-export type keys = {
+export type typeKeys = {
   w: { pressed: boolean };
   s: { pressed: boolean };
 };

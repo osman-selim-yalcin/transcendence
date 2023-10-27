@@ -15,6 +15,7 @@ import {
   notificationTypes,
 } from 'src/types/notification.dto';
 import { Notification } from 'src/typeorm/Notification';
+import { CloudinaryResponse } from './cloudinary/cloudinary-response';
 @Injectable()
 export class UsersService {
   constructor(
@@ -154,5 +155,12 @@ export class UsersService {
     notification.sibling = siblingNotificaiton;
     await this.notificationRep.save(notification);
     throw new HttpException('notification created succesfully', 200);
+  }
+
+  async updateAvatar(user: User, cloudinaryResponse: CloudinaryResponse) {
+    user.avatar = cloudinaryResponse.secure_url;
+    user.oldAvatar = cloudinaryResponse.public_id;
+    await this.userRep.save(user);
+    throw new HttpException('avatar updated succesfully', 200);
   }
 }
