@@ -16,6 +16,9 @@ import {
 } from 'src/types/notification.dto';
 import { Notification } from 'src/typeorm/Notification';
 import { CloudinaryResponse } from './cloudinary/cloudinary-response';
+import * as speakeasy from 'speakeasy';
+import * as QRCode from 'qrcode';
+import { twoFactorDto } from 'src/types/2fa.dto';
 @Injectable()
 export class UsersService {
   constructor(
@@ -162,5 +165,32 @@ export class UsersService {
     user.oldAvatar = cloudinaryResponse.public_id;
     await this.userRep.save(user);
     throw new HttpException('avatar updated succesfully', 200);
+  }
+
+  async createQR(user: User) {
+    if (user.twoFactorEnabled)
+      throw new HttpException('2fa already enabled', 400);
+    const secret = speakeasy.generateSecret({
+      name: 'Transcendence: osyalcin && bmat',
+    });
+
+    const qrcode = await QRCode.toDataURL(secret.otpauth_url).then((data) => {
+      return data;
+    });
+    return { base32: secret.base32, qrcode };
+  }
+
+  async verify2fa(user: User, details: twoFactorDto) {
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret ? user.twoFactorSecret : details.base32,
+      encoding: 'base32',
+      token: details.token,
+    });
+    if (verified && !user.twoFactorEnabled) {
+      user.twoFactorSecret = details.base32;
+      user.twoFactorEnabled = true;
+      await this.userRep.save(user);
+    }
+    return verified;
   }
 }

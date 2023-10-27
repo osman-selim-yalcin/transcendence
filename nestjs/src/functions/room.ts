@@ -6,6 +6,7 @@ import {
   notificationStatus,
   notificationTypes,
 } from 'src/types/notification.dto';
+import { roomDto } from 'src/types/room.dto';
 
 export function userModify(user: User) {
   return {
@@ -29,7 +30,7 @@ export function userModify(user: User) {
 }
 
 export function userRoomModify(room: Room) {
-  room.users = room.users.map((u) => userModify(u));
+  // const users = room.users.map((u) => userModify(u));
   if (room.password) return { ...room, password: true };
   return { ...room, password: false };
 }
@@ -52,7 +53,7 @@ export function privateHandler(users: User[], loginUser: User) {
   }
 }
 
-export function hashPassword(room: Room) {
+export function hashPassword(room: roomDto) {
   if (room.password) {
     room.password = room.password.toString();
     const salt = bcrypt.genSaltSync(10);

@@ -14,6 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from 'src/modules/users/user.service';
 import { userDto } from 'src/types/user.dto';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { twoFactorDto } from 'src/types/2fa.dto';
 
 @Controller('user')
 export class UsersController {
@@ -55,6 +56,16 @@ export class UsersController {
   @Get('info')
   getUserInfo(@Req() req: any) {
     return this.usersService.getUserInfo(req.user);
+  }
+
+  @Post('2fa')
+  async enable2fa(@Req() req: any) {
+    return this.usersService.createQR(req.user);
+  }
+
+  @Post('2fa/verify')
+  async verify2fa(@Req() req: any, @Body() body: twoFactorDto) {
+    return this.usersService.verify2fa(req.user, body);
   }
 
   @Post('file')

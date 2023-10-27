@@ -27,6 +27,12 @@ export class User {
   @Column({ nullable: false })
   sessionID: string;
 
+  @Column({ nullable: true })
+  twoFactorSecret: string;
+
+  @Column({ nullable: true })
+  twoFactorEnabled: boolean;
+
   @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;
 
