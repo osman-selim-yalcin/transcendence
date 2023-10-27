@@ -24,7 +24,6 @@ export class tokenMiddleware implements NestMiddleware {
       where: { id: loginUserInfo.id },
       relations: [
         'friends',
-        'blocked',
         'rooms',
         'rooms.users',
         'rooms.messages',

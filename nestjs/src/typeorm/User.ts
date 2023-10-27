@@ -56,9 +56,8 @@ export class User {
   @JoinTable()
   friends: User[];
 
-  @ManyToMany(() => User, (user) => user.blocked)
-  @JoinTable()
-  blocked: User[];
+  @Column('jsonb', { array: false, nullable: false, default: [] })
+  blockList: { blockingUser: string; blockedUser: string }[];
 
   @ManyToMany(() => Room, (room) => room.users, { cascade: true })
   @JoinTable()

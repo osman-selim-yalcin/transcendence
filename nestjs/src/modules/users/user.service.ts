@@ -6,6 +6,7 @@ import {
   addFriendHelper,
   blockUserHelper,
   deleteFriendHelper,
+  isBlock,
   isFriend,
   modifyBlockUser,
 } from 'src/functions/user';
@@ -35,7 +36,7 @@ export class UsersService {
       where: { username: Like((query.q ? query.q : '') + '%') },
     });
     users = users?.map((u) => {
-      if (user.blocked.find((f) => f.id === u.id)) return modifyBlockUser(u);
+      if (isBlock(user, u)) return modifyBlockUser(u);
       else return u;
     });
     return users;
@@ -46,6 +47,7 @@ export class UsersService {
   }
 
   async addFriend(user: User, otherUser: User) {
+    if (isBlock(user, otherUser)) throw new HttpException('blocked', 400);
     const notification = await this.notificationHandler(user, otherUser);
     addFriendHelper(user, otherUser);
     await this.userRep.save(user);
@@ -69,9 +71,6 @@ export class UsersService {
   }
 
   async updateUser(user: User, userDetails: userDto) {
-    if (userDetails.id !== user.id)
-      throw new HttpException('id cannot be changed', 401);
-
     await this.userRep.save({ ...user, ...userDetails });
     return { msg: 'success' };
   }
