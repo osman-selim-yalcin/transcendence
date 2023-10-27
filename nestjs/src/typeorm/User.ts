@@ -67,7 +67,6 @@ export class User {
   @JoinColumn()
   notifications: Notification[];
 
-  // @Column('jsonb', { array: false, nullable: true, default: [] })
   @Column({ default: 1500 })
   elo: number;
 

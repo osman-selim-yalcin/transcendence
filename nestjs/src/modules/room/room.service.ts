@@ -12,6 +12,7 @@ import {
   isCreator,
   isRoomNotificationExist,
   isMod,
+  userRoomModify,
 } from 'src/functions/room';
 import { roomDto } from 'src/types/room.dto';
 import { Message } from 'src/typeorm/Message';
@@ -49,7 +50,7 @@ export class RoomService {
 
   async getUserRooms(user: User) {
     const userRooms = [];
-    for (const room of user.rooms) userRooms.push(roomModify(room));
+    for (const room of user.rooms) userRooms.push(userRoomModify(room, user));
     return userRooms;
   }
 
