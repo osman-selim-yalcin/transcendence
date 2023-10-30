@@ -11,7 +11,6 @@ import { Circle, Paddle, typeKeys, socketGame } from './game/classes';
 import { gameUpdate } from './game';
 import { GameService } from 'src/modules/game/game.service';
 import { User } from 'src/typeorm/User';
-import { last } from 'rxjs';
 
 interface CustomSocket extends Socket {
   sessionID: string;
@@ -95,7 +94,6 @@ export class socketGateway implements OnModuleInit {
       'notifications',
     ]);
     const friendUser = await this.userService.findUserBySessionID(to);
-    console.log(user, friendUser);
   }
 
   @SubscribeMessage('join queue')

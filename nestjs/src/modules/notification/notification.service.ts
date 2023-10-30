@@ -30,7 +30,6 @@ export class NotificationService {
       relations: ['user', 'creator'],
     });
     if (!notification) throw new HttpException('not found', 404);
-    console.log(notification);
     if (notification.user.id !== user.id)
       throw new HttpException('not authorized', 401);
     if (notification.status === notificationStatus.QUESTION) {

@@ -44,7 +44,6 @@ export class GameService {
   }
 
   history(user: User) {
-    console.log(user);
     const wons = user.won;
     const losts = user.lost;
     const allGames = [...wons, ...losts];
@@ -65,7 +64,6 @@ export class GameService {
       throw new HttpException('already in game', 400);
     if (user.status === userStatus.OFFLINE)
       throw new HttpException('user is offline', 400);
-    console.log('La bura', user);
     const notification = await this.gameNotificationHandler(user, otherUser);
     this.server.preGame([user.sessionID, otherUser.sessionID]);
     await this.notificationRep.save({
