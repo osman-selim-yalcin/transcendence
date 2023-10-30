@@ -180,7 +180,7 @@ export class socketGateway implements OnModuleInit {
   startGame(game: socketGame) {
     const intervalID = setInterval(() => {
       game = gameUpdate(game);
-      this.server.emit('game update', {
+      this.server.in(game.gameID).emit('game update', {
         paddles: [game.users[0].paddle, game.users[1].paddle],
         ball: game.ball,
       });

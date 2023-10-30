@@ -38,12 +38,12 @@ export class Circle extends Sprite {
     super();
     this.position.x = 50;
     this.position.y = 50;
-    this.velocity = { x: 1, y: 1 };
+    this.velocity = { x: 1, y: 0.1 };
   }
   reset() {
     this.position.x = 50;
     this.position.y = 50;
-    this.velocity = { x: 1, y: 1 };
+    this.velocity = { x: 1, y: 0.1 };
   }
   update() {
     this.position.x += this.velocity.x;
