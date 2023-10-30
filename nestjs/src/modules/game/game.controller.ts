@@ -12,11 +12,21 @@ export class GameController {
 
   @Get('history')
   history(@Req() req: any) {
-    this.gameService.history(req.user);
+    return this.gameService.history(req.user);
   }
 
   @Post('invite')
   invite(@Req() req: any) {
-    this.gameService.invite(req.user, req.friendUser);
+    return this.gameService.invite(req.user, req.friendUser);
+  }
+
+  @Get('leaderboard')
+  leaderboard() {
+    return this.gameService.leaderboard();
+  }
+
+  @Get('my-games')
+  myGames(@Req() req: any) {
+    return this.gameService.myGames(req.user);
   }
 }

@@ -32,7 +32,11 @@ export class tokenMiddleware implements NestMiddleware {
         'notifications.sibling',
         'notifications.user',
         'won',
+        'won.winner',
+        'won.loser',
         'lost',
+        'lost.winner',
+        'lost.loser',
       ],
     });
     if (!user) throw new HttpException('user not found', 400);

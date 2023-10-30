@@ -31,13 +31,29 @@ export class GameService {
     this.userRep.save(newGame.winner);
     this.userRep.save(newGame.loser);
   }
-
   allGames() {
     return this.gameRep.find({ relations: ['winner', 'loser'] });
   }
 
-  history(user: User) {
+  leaderboard() {
+    return this.userRep.find({ order: { elo: 'DESC' } });
+  }
+
+  myGames(user: User) {
     return { wons: user.won, losts: user.lost };
+  }
+
+  history(user: User) {
+    console.log(user);
+    const wons = user.won;
+    const losts = user.lost;
+    const allGames = [...wons, ...losts];
+    const history = allGames.sort((a, b) => {
+      if (a.createdAt > b.createdAt) return -1;
+      if (a.createdAt < b.createdAt) return 1;
+      return 0;
+    });
+    return history;
   }
 
   async invite(user: User, otherUser: User) {
@@ -47,6 +63,9 @@ export class GameService {
       otherUser.status === userStatus.INGAME
     )
       throw new HttpException('already in game', 400);
+    if (user.status === userStatus.OFFLINE)
+      throw new HttpException('user is offline', 400);
+    console.log('La bura', user);
     const notification = await this.gameNotificationHandler(user, otherUser);
     this.server.preGame([user.sessionID, otherUser.sessionID]);
     await this.notificationRep.save({
@@ -60,9 +79,6 @@ export class GameService {
   }
 
   async gameNotificationHandler(user: User, otherUser: User) {
-    // if (isFriend(user, otherUser)) // is in game?
-    //   throw new HttpException('already friend', 400);
-
     const notification = await this.isGameNotificationExist(
       user,
       otherUser,
