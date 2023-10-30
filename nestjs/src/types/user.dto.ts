@@ -1,7 +1,4 @@
-import { IsEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Game } from 'src/typeorm/Game';
-import { Notification } from 'src/typeorm/Notification';
-import { Room } from 'src/typeorm/Room';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export enum userStatus {
   ONLINE,

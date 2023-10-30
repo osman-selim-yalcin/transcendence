@@ -16,6 +16,8 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { tokenMiddleware } from './middleware/token.middleware';
 import { SocketClientModule } from './gateway/socket.module';
 import { Game } from './typeorm/Game';
+import { GameModule } from './modules/game/game.module';
+import { GameController } from './modules/game/game.controller';
 @Module({
   imports: [
     UserModule,
@@ -23,6 +25,7 @@ import { Game } from './typeorm/Game';
     RoomModule,
     SocketClientModule,
     NotificationModule,
+    GameModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -44,6 +47,11 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(tokenMiddleware)
-      .forRoutes(UsersController, RoomController, NotificationController);
+      .forRoutes(
+        UsersController,
+        RoomController,
+        NotificationController,
+        GameController,
+      );
   }
 }

@@ -89,9 +89,6 @@ export class UsersService {
   //ENDPOINT END HERE / UTILS START HERE
 
   async handleStatusChange(user: User, status: number) {
-    user = await this.userRep.findOne({
-      where: { id: user.id },
-    });
     user.status = status;
     return this.userRep.save(user);
   }

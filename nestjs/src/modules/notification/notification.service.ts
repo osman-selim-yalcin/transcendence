@@ -39,6 +39,8 @@ export class NotificationService {
         content = 'Friend request declined by ' + notification.user.username;
       } else if (notification.type === notificationTypes.ROOM) {
         content = 'Room invitation declined by ' + notification.user.username;
+      } else if (notification.type === notificationTypes.GAME) {
+        content = 'Game invitation declined by ' + notification.user.username;
       }
 
       await this.notificationRep.save({
