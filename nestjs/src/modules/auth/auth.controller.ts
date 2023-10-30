@@ -71,8 +71,8 @@ export class AuthController {
     ).toString(16);
     if (!sessionID) return;
     const details = {
-      ...body,
       sessionID,
+      username: body.username,
     };
     return this.authService.tmpCreate(details);
   }
