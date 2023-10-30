@@ -48,10 +48,8 @@ export class User {
   @Column({ type: 'enum', enum: userStatus, default: userStatus.OFFLINE })
   status: number;
 
-  @Column({
-    default: new Date().toLocaleString('tr-TR', {
-      timeZone: 'Europe/Istanbul',
-    }),
+  @CreateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP',
   })
   lastSeen: string;
 

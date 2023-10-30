@@ -11,6 +11,7 @@ import { Circle, Paddle, typeKeys, socketGame } from './game/classes';
 import { gameUpdate } from './game';
 import { GameService } from 'src/modules/game/game.service';
 import { User } from 'src/typeorm/User';
+import { last } from 'rxjs';
 
 interface CustomSocket extends Socket {
   sessionID: string;
@@ -70,7 +71,7 @@ export class socketGateway implements OnModuleInit {
         if (socketUser.status === userStatus.INGAME)
           this.handleGameDisconnect(socketUser);
         this.server.emit('user disconnected', socket.sessionID);
-        this.userService.handleStatusChange(socketUser, userStatus.OFFLINE);
+        this.userService.handleUserDisconnect(socketUser);
         console.log('user', socketUser.username, 'disconnected');
       });
     });

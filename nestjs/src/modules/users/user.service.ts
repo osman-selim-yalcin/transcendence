@@ -10,7 +10,7 @@ import {
   isFriend,
   modifyBlockUser,
 } from 'src/functions/user';
-import { userDto } from 'src/types/user.dto';
+import { userDto, userStatus } from 'src/types/user.dto';
 import {
   notificationStatus,
   notificationTypes,
@@ -90,6 +90,12 @@ export class UsersService {
 
   async handleStatusChange(user: User, status: number) {
     user.status = status;
+    return this.userRep.save(user);
+  }
+
+  async handleUserDisconnect(user: User) {
+    user.status = userStatus.OFFLINE;
+    user.lastSeen = new Date().toISOString();
     return this.userRep.save(user);
   }
 
