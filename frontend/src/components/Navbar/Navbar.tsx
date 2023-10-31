@@ -26,7 +26,7 @@ export default function Navbar() {
           }}>Login</button>
         ) : (
           <>
-            <p style={{ alignSelf: "center" }}>{user.username}</p>
+            <p style={{ alignSelf: "center" }}>{user.displayName || user.username}</p>
             <Logout />
             <NotificationList />
           </>

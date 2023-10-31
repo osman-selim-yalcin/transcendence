@@ -67,7 +67,7 @@ function UserListConsumer({ users, userListType, room, setModal }: PropsWithChil
         <li key={singleUser.id}>
           <p>
             <b>
-              {singleUser.username} - {singleUser.id}
+              {singleUser.displayName || singleUser.username} - {singleUser.id}
             </b>
           </p>
           {userListType === UserListType.ADD_FRIEND && <AddFriendIndexContent userId={singleUser.id} />}

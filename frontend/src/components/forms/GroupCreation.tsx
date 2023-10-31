@@ -117,7 +117,7 @@ export default function GroupCreation({ setModal }: any) {
                 (e) => handleCheckboxChange(e.target.value, e.target.checked)
               }
             />
-            <label htmlFor={friend.username}>{friend.username}</label>
+            <label htmlFor={friend.username}>{friend.displayName || friend.username}</label>
           </div>
         ))}
 

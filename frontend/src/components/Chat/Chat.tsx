@@ -19,6 +19,9 @@ export function Chat() {
   useEffect(() => {
     if (userRooms) {
       const room = userRooms.find((room: room) => room.id === parseInt(id))
+      if (room === undefined) {
+        setShowDetail(false)
+      }
       setCurrentRoom(room)
     }
   }, [id, userRooms])
@@ -86,7 +89,7 @@ function MessageIndex({ room }: { room: room }) {
     if (room.isGroup) {
       return room.name
     }
-    return room.users[0].id === user.id ? room.users[1].username : room.users[0].username
+    return room.users[0].id === user.id ? (room.users[1].displayName || room.users[1].username) : (room.users[0].displayName || room.users[0].username)
   }
 
   return (
@@ -121,7 +124,7 @@ function ChatContent({
   const inputRef = useRef(null)
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
+    scrollRef.current?.scrollIntoView({ behavior: "instant", block: "start" })
     inputRef.current?.focus()
   }, [currentRoom])
 
@@ -164,6 +167,8 @@ function ChatForm({ currentRoomID, roomMuteList, inputRef }: PropsWithChildren<{
     const found = roomMuteList?.find((muted) => (muted.username === user.username))
     if (found !== undefined) {
       setMuted(true)
+    } else {
+      setMuted(false)
     }
   }, [currentRoomID])
 
@@ -225,9 +230,10 @@ function DetailHeader({ currentRoom }: { currentRoom: room }) {
       </div>
     )
   } else {
+    const found = currentRoom.users.find((singleUser) => (user.id !== singleUser.id))
     return (
       <div className={"room-header"}>
-        <h3 className={"room-name"}>{currentRoom.users.find((singleUser) => (user.id !== singleUser.id)).username.toUpperCase()}</h3>
+        <h3 className={"room-name"}>{found.displayName ? found.displayName.toUpperCase() : found.username.toUpperCase()}</h3>
         <p>Private Chat</p>
       </div>
     )
@@ -274,7 +280,7 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
                 { clickedUser: singleUser, clickedUserRank: getRank(singleUser), currentRoomId: currentRoom.id, currentRoomCreator: currentRoom.creator, canBeControlled: getRank(singleUser) < getRank(user) })
             }} key={singleUser.id}>
               <img src={singleUser.avatar} alt={"user avatar"} />
-              <p>{getRankBadge(getRank(singleUser))} {singleUser.username} {singleUser.id === user.id && "(You)"} {currentRoom.muteList.find((muted) => (muted.username === singleUser.username)) && <>&#128263;</>} {singleUser.status === userStatus.BLOCKED && <>&#9888;</>}</p>
+              <p>{getRankBadge(getRank(singleUser))} {singleUser.displayName || singleUser.username} {singleUser.id === user.id && "(You)"} {currentRoom.muteList.find((muted) => (muted.username === singleUser.username)) && <>&#128263;</>} {singleUser.status === userStatus.BLOCKED && <>&#9888;</>}</p>
             </li>
           ))}
         </ul>
@@ -282,7 +288,7 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
           <button onClick={() => {
             setModal(true)
           }}>
-            Invite friend
+            Invite
           </button>}
         <button onClick={async () => {
           await leaveRoom({
@@ -314,6 +320,7 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
   const { reloadUserRooms } = useContext(UserContext)
   const { closeContextMenu } = useContext(ContextMenuContext)
   const { user } = useContext(UserContext)
+  const navigate = useNavigate()
   return (
     <>
         <div className={"admin-buttons"}
@@ -321,6 +328,9 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
             e.stopPropagation()
             closeContextMenu()
           }}>
+          <button onClick={() => {
+            navigate(`/profile/${clickedUser.username}`)
+          }}>Profile</button>
           {user.username === currentRoomCreator &&
             <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
               await changeMod({ id: currentRoomId, user: { id: clickedUser.id } })
@@ -340,7 +350,6 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
             await changeMute({id: currentRoomId, user: { id: clickedUser.id }})
             reloadUserRooms()
           }}>Mute</button>
-          <button>Ban</button>
         <button className={(user.id === clickedUser.id ? "hidden" : "")} onClick={async () => {
           await changeBlock({ id: clickedUser.id })
           reloadUserRooms()

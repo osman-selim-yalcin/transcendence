@@ -66,7 +66,7 @@ function FriendIndex({ singleFriend, setBarActive }: { singleFriend: user, setBa
   return (
     <>
       <p>
-        {singleFriend.username} - <small>{singleFriend.status}</small>
+        {singleFriend.displayName || singleFriend.username} - <small>{singleFriend.status}</small>
       </p>
       <button onClick={async () => {
         const room = await getPrivateChat(singleFriend)

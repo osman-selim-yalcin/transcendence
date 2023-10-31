@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom"
 import Home from "../views/Home"
-import Profile from "../views/Profile"
+import Profile from "../views/Profile/Profile"
 import RootLayout from "../layouts/RootLayout"
 import Game from "../views/Game/Game"
 import { Chat } from "../components/Chat/Chat"
@@ -16,6 +16,10 @@ export const router = createBrowserRouter([
       },
       {
         path: "/profile",
+        element: <Profile />
+      },
+      {
+        path: "/profile/:username",
         element: <Profile />
       },
       {

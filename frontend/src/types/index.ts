@@ -5,7 +5,7 @@
 export type user = {
   id: number
   username: string
-  nickname: string
+  displayName: string
   sessionID: string
   status: userStatus
   avatar: string

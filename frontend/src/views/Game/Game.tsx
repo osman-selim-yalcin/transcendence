@@ -193,14 +193,14 @@ function UserFrames({ opponent }: PropsWithChildren<{ opponent: user }>) {
         </div>
         <div className={"body"}>
           <p>
-            {user?.username.toUpperCase()}
+            {user.displayName ?  user.displayName.toUpperCase() : user.username.toUpperCase()}
           </p>
         </div>
       </div>
       <div className={"info opponent-info"}>
         <div className={"body"}>
           <p>
-            {opponent?.username.toUpperCase()}
+            {opponent.displayName ?  opponent.displayName.toUpperCase() : opponent.username.toUpperCase()}
           </p>
         </div>
         <div className={"avatar"}>

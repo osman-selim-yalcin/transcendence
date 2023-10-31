@@ -85,7 +85,6 @@ function DoubleButtonNotification({ notification, onAccept }: PropsWithChildren<
     <>
       <p>
         {notification.content}
-        {/* You have a friend request from {notification.creator.username} */}
       </p>
       <div className="buttons">
         <button onClick={onAccept}>&#10003;</button>

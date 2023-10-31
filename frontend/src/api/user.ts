@@ -71,9 +71,25 @@ export const changeBlock = async (body: { id: number }) => {
 }
 
 export const changeAvatar = async (body: any) => {
-  return axios.post("http://localhost:3000/api/user/", body, {
+  return axios.post("http://localhost:3000/api/user/file", body, {
     headers: {
-      Authorization:
+    'accept': '*/*',
+    'Accept-Language': 'en-US,en;q=0.8',
+    'Content-Type': 'multipart/form-data;',
+      "Authorization":
+        "Bearer " +
+        (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+    }
+  })
+  .then((response) => {
+    return response.data
+  })
+}
+
+export const changeNickname = async (body: any) => {
+  return axios.put("http://localhost:3000/api/user", body, {
+    headers: {
+      "Authorization":
         "Bearer " +
         (localStorage.getItem("token") ? localStorage.getItem("token") : "")
     }

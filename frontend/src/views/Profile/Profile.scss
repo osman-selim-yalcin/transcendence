@@ -1,0 +1,46 @@
+.user-profile {
+
+  .avatar {
+    display: flex;
+    justify-content: center;
+
+    img {
+      --thickness: 10px;
+      width: 20%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      border: var(--thickness) solid rgb(80, 163, 97);
+      border-bottom: var(--thickness) solid rgb(129, 132, 141);
+      padding: var(--thickness);
+    }
+  }
+
+  .name-plate {
+    text-align: center;
+
+
+    .username {
+      font-size: 30px;
+      font-weight: 700;
+    }
+  }
+
+  .tables {
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+    gap: calc(100vw - 900px);
+    margin-top: max(calc(4rem + ((100vw - 900px) * -0.6)), -250px);
+    
+    .table {
+      width: 30%;
+      max-width: 400px;
+      aspect-ratio: 1 / 1;
+      border: black solid 1px;
+    }
+  }
+
+  .not-valid {
+    color: red;
+  }
+}

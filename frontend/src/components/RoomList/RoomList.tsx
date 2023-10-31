@@ -72,7 +72,7 @@ function UserRoomIndex({ room, user }: { room: room, user: user }) {
   return (
     <>
       {/* <img src={room.avatar} alt="" /> */}
-      <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i> | <b>Members:</b> {room.users.map((user: user) => (user.username)).join(", ")} | <b>ID:</b> {room.id}</p>
+      <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i> | <b>Members:</b> {room.users.map((user: user) => (user.displayName)).join(", ")} | <b>ID:</b> {room.id}</p>
       {room.creator === user.username ?
         <button onClick={() => {
           handleDelete(room)
