@@ -120,7 +120,16 @@ export class socketGateway implements OnModuleInit {
       setTimeout(() => {
         this.gameList[this.gameList.indexOf(game)] = this.startGame(game);
       }, 3000);
-      this.server.in(game.gameID).emit('game start', game.users);
+      const right = await this.userService.findUserBySessionID(
+        game.users[0].sessionID,
+      );
+      const left = await this.userService.findUserBySessionID(
+        game.users[1].sessionID,
+      );
+      this.server.in(game.gameID).emit('game start', [
+        { ...left, color: game.users[1].color },
+        { ...right, color: game.users[0].color },
+      ]);
     } catch (e) {
       this.server.in(client.sessionID).emit('error', e);
     }
@@ -166,15 +175,14 @@ export class socketGateway implements OnModuleInit {
       intervalID: null,
     };
     this.gameList.push(game);
-    await this.userService.handleStatusChange(
-      await this.userService.findUserBySessionID(sessionIDS[0]),
-      userStatus.INGAME,
-    );
-    await this.userService.handleStatusChange(
-      await this.userService.findUserBySessionID(sessionIDS[1]),
-      userStatus.INGAME,
-    );
-    this.server.in(gameID).emit('pre-game', game.users); // USERSI NASIL İSTİYON AGA
+    const right = await this.userService.findUserBySessionID(sessionIDS[0]);
+    const left = await this.userService.findUserBySessionID(sessionIDS[1]);
+    await this.userService.handleStatusChange(right, userStatus.INGAME);
+    await this.userService.handleStatusChange(left, userStatus.INGAME);
+    this.server.in(gameID).emit('pre-game', [
+      { ...left, color: '' },
+      { ...right, color: '' },
+    ]);
   }
 
   startGame(game: socketGame) {
