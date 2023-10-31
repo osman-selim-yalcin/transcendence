@@ -127,8 +127,8 @@ export class socketGateway implements OnModuleInit {
         game.users[1].sessionID,
       );
       this.server.in(game.gameID).emit('game start', [
-        { player: left, color: game.users[1].color },
-        { player: right, color: game.users[0].color },
+        { user: left, color: game.users[1].color },
+        { user: right, color: game.users[0].color },
       ]);
     } catch (e) {
       this.server.in(client.sessionID).emit('error', e);
@@ -180,8 +180,8 @@ export class socketGateway implements OnModuleInit {
     await this.userService.handleStatusChange(right, userStatus.INGAME);
     await this.userService.handleStatusChange(left, userStatus.INGAME);
     this.server.in(gameID).emit('pre-game', [
-      { player: left, color: '' },
-      { player: right, color: '' },
+      { user: left, color: '' },
+      { user: right, color: '' },
     ]);
   }
 
