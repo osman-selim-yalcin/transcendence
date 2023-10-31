@@ -10,6 +10,7 @@ import { userStatus } from 'src/types/user.dto';
 import { Circle, Paddle, typeKeys, socketGame } from './game/classes';
 import { gameUpdate } from './game';
 import { GameService } from 'src/modules/game/game.service';
+import { User } from 'src/typeorm/User';
 
 interface CustomSocket extends Socket {
   sessionID: string;
@@ -24,7 +25,14 @@ export class socketGateway implements OnModuleInit {
   constructor(
     private userService: UsersService,
     private gameService: GameService,
-  ) {}
+  ) {
+    setInterval(() => {
+      console.log(this.queueList.length);
+      if (this.queueList.length > 1) {
+        this.preGame([this.queueList[0], this.queueList[1]]);
+      }
+    }, 10000);
+  }
 
   queueList: string[] = [];
   gameList: socketGame[] = [];
@@ -43,7 +51,7 @@ export class socketGateway implements OnModuleInit {
     });
 
     this.server.on('connection', async (socket: CustomSocket) => {
-      const socketUser = await this.userService.findUserBySessionID(
+      let socketUser = await this.userService.findUserBySessionID(
         socket.sessionID,
         ['rooms'],
       );
@@ -54,10 +62,15 @@ export class socketGateway implements OnModuleInit {
       console.log('user', socketUser.username, 'connected');
       this.userService.handleStatusChange(socketUser, userStatus.ONLINE);
       socket.on('disconnect', async () => {
-        this.userService.handleStatusChange(socketUser, userStatus.OFFLINE);
-        if (this.queueList.includes(socket.sessionID))
-          this.queueList.splice(this.queueList.indexOf(socket.sessionID), 1);
+        socketUser = await this.userService.findUserBySessionID(
+          socket.sessionID,
+          ['rooms'],
+        );
+        this.leaveQueue([socket.sessionID]);
+        if (socketUser.status === userStatus.INGAME)
+          this.handleGameDisconnect(socketUser);
         this.server.emit('user disconnected', socket.sessionID);
+        this.userService.handleUserDisconnect(socketUser);
         console.log('user', socketUser.username, 'disconnected');
       });
     });
@@ -75,32 +88,24 @@ export class socketGateway implements OnModuleInit {
 
   //GAME LOGIC
 
+  @SubscribeMessage('invite')
+  async invite(client: CustomSocket, to: string) {
+    const user = await this.userService.findUserBySessionID(client.sessionID, [
+      'notifications',
+    ]);
+    const friendUser = await this.userService.findUserBySessionID(to);
+  }
+
   @SubscribeMessage('join queue')
-  async joinQueue(client: CustomSocket) {
+  joinQueue(client: CustomSocket) {
     if (!this.queueList.includes(client.sessionID))
       this.queueList.push(client.sessionID);
-    if (this.queueList.length === 2) {
-      const sessionIDS = [client.sessionID, this.queueList[0]];
-      const ID = this.preGame(sessionIDS);
-      // const users = findUsers(sessionIDS);
-      const game = {
-        gameID: ID,
-        users: sessionIDS.map((sessionID: string, i: number) => {
-          return {
-            keys: { w: { pressed: false }, s: { pressed: false } },
-            color: '',
-            score: 0,
-            sessionID: sessionID,
-            paddle: new Paddle(i && true),
-          };
-        }),
-        ball: new Circle(),
-        isOver: false,
-        intervalID: null,
-      };
-      this.gameList.push(game);
-      this.server.in(ID).emit('pre-game', game.users); // USERSI NASIL İSTİYON AGA
-    }
+  }
+
+  leaveQueue(sessionIDS: string[]) {
+    this.queueList = this.queueList.filter(
+      (sessionID) => !sessionIDS.includes(sessionID),
+    );
   }
 
   @SubscribeMessage('ready')
@@ -139,23 +144,43 @@ export class socketGateway implements OnModuleInit {
     );
   }
 
-  preGame(sessionIDS: string[]) {
-    this.queueList = this.queueList.filter((sessionID) =>
-      sessionIDS.includes(sessionID),
-    );
-    sessionIDS.map((sessionID) =>
-      this.server
-        .in(sessionID)
-        .socketsJoin('game' + sessionIDS[0] + sessionIDS[1]),
-    );
+  async preGame(sessionIDS: string[]) {
+    this.leaveQueue(sessionIDS);
     const gameID = 'game' + sessionIDS[0] + sessionIDS[1];
-    return gameID;
+    sessionIDS.map((sessionID) =>
+      this.server.in(sessionID).socketsJoin(gameID),
+    );
+    const game = {
+      gameID: gameID,
+      users: sessionIDS.map((sessionID: string, i: number) => {
+        return {
+          keys: { w: { pressed: false }, s: { pressed: false } },
+          color: '',
+          score: 0,
+          sessionID: sessionID,
+          paddle: new Paddle(i && true),
+        };
+      }),
+      ball: new Circle(),
+      isOver: false,
+      intervalID: null,
+    };
+    this.gameList.push(game);
+    await this.userService.handleStatusChange(
+      await this.userService.findUserBySessionID(sessionIDS[0]),
+      userStatus.INGAME,
+    );
+    await this.userService.handleStatusChange(
+      await this.userService.findUserBySessionID(sessionIDS[1]),
+      userStatus.INGAME,
+    );
+    this.server.in(gameID).emit('pre-game', game.users); // USERSI NASIL İSTİYON AGA
   }
 
   startGame(game: socketGame) {
     const intervalID = setInterval(() => {
       game = gameUpdate(game);
-      this.server.emit('game update', {
+      this.server.in(game.gameID).emit('game update', {
         paddles: [game.users[0].paddle, game.users[1].paddle],
         ball: game.ball,
       });
@@ -165,6 +190,24 @@ export class socketGateway implements OnModuleInit {
     }, 15);
     game.intervalID = intervalID;
     return game;
+  }
+
+  async handleGameDisconnect(socketUser: User) {
+    const game = this.findGame(socketUser.sessionID, this.gameList);
+    if (game.intervalID) clearInterval(game.intervalID);
+    const otherUser = await this.userService.findUserBySessionID(
+      game.users.find((u) => u.sessionID !== socketUser.sessionID).sessionID,
+    );
+    this.server.in(game.gameID).emit('game over', game.users);
+    this.server.in(game.gameID).socketsLeave(game.gameID);
+    this.gameList.splice(this.gameList.indexOf(game), 1);
+    this.userService.handleStatusChange(otherUser, userStatus.ONLINE);
+    this.gameService.createGame({
+      score: [5, 0],
+      elo: 10,
+      winner: otherUser,
+      loser: socketUser,
+    });
   }
 
   async endGame(game: socketGame) {
@@ -180,6 +223,8 @@ export class socketGateway implements OnModuleInit {
     );
     const gameLoser = game.users.find((u) => u.score !== 5);
 
+    await this.userService.handleStatusChange(winner, userStatus.ONLINE);
+    await this.userService.handleStatusChange(loser, userStatus.ONLINE);
     this.gameService.createGame({
       score: [5, gameLoser.score],
       elo: 10,

@@ -30,7 +30,6 @@ export class NotificationService {
       relations: ['user', 'creator'],
     });
     if (!notification) throw new HttpException('not found', 404);
-    console.log(notification);
     if (notification.user.id !== user.id)
       throw new HttpException('not authorized', 401);
     if (notification.status === notificationStatus.QUESTION) {
@@ -39,6 +38,8 @@ export class NotificationService {
         content = 'Friend request declined by ' + notification.user.username;
       } else if (notification.type === notificationTypes.ROOM) {
         content = 'Room invitation declined by ' + notification.user.username;
+      } else if (notification.type === notificationTypes.GAME) {
+        content = 'Game invitation declined by ' + notification.user.username;
       }
 
       await this.notificationRep.save({

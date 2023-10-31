@@ -35,7 +35,7 @@ export class CommandsService {
     this.createInviteNotifcations(user, room, otherUser);
     if (room.banList.includes(otherUser.username))
       room.banList = room.banList.filter((u) => u !== otherUser.username);
-    return userRoomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room), user);
   }
 
   async kickUser(user: User, room: Room, otherUser: User) {
@@ -48,7 +48,7 @@ export class CommandsService {
       throw new HttpException('not authorized', 400);
     this.kickHandler(user, room, otherUser);
     await this.roomService.leaveheadler(room, otherUser);
-    return userRoomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room), user);
   }
 
   async modUser(user: User, room: Room, otherUser: User) {
@@ -63,7 +63,7 @@ export class CommandsService {
       room.mods.push(otherUser.username);
       this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
     }
-    return userRoomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room), user);
   }
 
   async banUser(user: User, room: Room, otherUser: User) {
@@ -84,7 +84,7 @@ export class CommandsService {
       const notification = isRoomNotificationExist(room, otherUser);
       if (notification) await this.notificationRep.remove(notification);
     }
-    return userRoomModify(await this.roomRep.save(room));
+    return userRoomModify(await this.roomRep.save(room), user);
   }
 
   async muteUser(user: User, room: Room, otherUser: User) {

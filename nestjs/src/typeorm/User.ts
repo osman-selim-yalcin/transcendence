@@ -27,10 +27,19 @@ export class User {
   @Column({ nullable: false })
   sessionID: string;
 
+  @Column({ nullable: true })
+  twoFactorSecret: string;
+
+  @Column({ nullable: true })
+  twoFactorEnabled: boolean;
+
   @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
   createdAt: string;
 
-  @Column({ default: 'https://source.unsplash.com/featured/300x202' })
+  @Column({
+    default:
+      'https://res.cloudinary.com/dzhczcggz/image/upload/v1698681962/transcendence/mbmjyryi4wceu2xjehj9.jpg',
+  })
   avatar: string;
 
   @Column({ nullable: true })
@@ -39,10 +48,8 @@ export class User {
   @Column({ type: 'enum', enum: userStatus, default: userStatus.OFFLINE })
   status: number;
 
-  @Column({
-    default: new Date().toLocaleString('tr-TR', {
-      timeZone: 'Europe/Istanbul',
-    }),
+  @CreateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP',
   })
   lastSeen: string;
 
@@ -50,9 +57,8 @@ export class User {
   @JoinTable()
   friends: User[];
 
-  @ManyToMany(() => User, (user) => user.blocked)
-  @JoinTable()
-  blocked: User[];
+  @Column('jsonb', { array: false, nullable: false, default: [] })
+  blockList: { blockingUser: string; blockedUser: string }[];
 
   @ManyToMany(() => Room, (room) => room.users, { cascade: true })
   @JoinTable()
@@ -62,7 +68,6 @@ export class User {
   @JoinColumn()
   notifications: Notification[];
 
-  // @Column('jsonb', { array: false, nullable: true, default: [] })
   @Column({ default: 1500 })
   elo: number;
 

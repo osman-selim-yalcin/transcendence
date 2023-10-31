@@ -6,16 +6,20 @@ import {
   addFriendHelper,
   blockUserHelper,
   deleteFriendHelper,
+  isBlock,
   isFriend,
   modifyBlockUser,
 } from 'src/functions/user';
-import { userDto } from 'src/types/user.dto';
+import { userDto, userStatus } from 'src/types/user.dto';
 import {
   notificationStatus,
   notificationTypes,
 } from 'src/types/notification.dto';
 import { Notification } from 'src/typeorm/Notification';
 import { CloudinaryResponse } from './cloudinary/cloudinary-response';
+import * as speakeasy from 'speakeasy';
+import * as QRCode from 'qrcode';
+import { twoFactorDto } from 'src/types/2fa.dto';
 @Injectable()
 export class UsersService {
   constructor(
@@ -32,7 +36,7 @@ export class UsersService {
       where: { username: Like((query.q ? query.q : '') + '%') },
     });
     users = users?.map((u) => {
-      if (user.blocked.find((f) => f.id === u.id)) return modifyBlockUser(u);
+      if (isBlock(user, u)) return modifyBlockUser(u);
       else return u;
     });
     return users;
@@ -43,6 +47,7 @@ export class UsersService {
   }
 
   async addFriend(user: User, otherUser: User) {
+    if (isBlock(user, otherUser)) throw new HttpException('blocked', 400);
     const notification = await this.notificationHandler(user, otherUser);
     addFriendHelper(user, otherUser);
     await this.userRep.save(user);
@@ -66,9 +71,6 @@ export class UsersService {
   }
 
   async updateUser(user: User, userDetails: userDto) {
-    if (userDetails.id !== user.id)
-      throw new HttpException('id cannot be changed', 401);
-
     await this.userRep.save({ ...user, ...userDetails });
     return { msg: 'success' };
   }
@@ -87,10 +89,13 @@ export class UsersService {
   //ENDPOINT END HERE / UTILS START HERE
 
   async handleStatusChange(user: User, status: number) {
-    user = await this.userRep.findOne({
-      where: { id: user.id },
-    });
     user.status = status;
+    return this.userRep.save(user);
+  }
+
+  async handleUserDisconnect(user: User) {
+    user.status = userStatus.OFFLINE;
+    user.lastSeen = new Date().toISOString();
     return this.userRep.save(user);
   }
 
@@ -162,5 +167,32 @@ export class UsersService {
     user.oldAvatar = cloudinaryResponse.public_id;
     await this.userRep.save(user);
     throw new HttpException('avatar updated succesfully', 200);
+  }
+
+  async createQR(user: User) {
+    if (user.twoFactorEnabled)
+      throw new HttpException('2fa already enabled', 400);
+    const secret = speakeasy.generateSecret({
+      name: 'Transcendence: osyalcin && bmat',
+    });
+
+    const qrcode = await QRCode.toDataURL(secret.otpauth_url).then((data) => {
+      return data;
+    });
+    return { base32: secret.base32, qrcode };
+  }
+
+  async verify2fa(user: User, details: twoFactorDto) {
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret ? user.twoFactorSecret : details.base32,
+      encoding: 'base32',
+      token: details.token,
+    });
+    if (verified && !user.twoFactorEnabled) {
+      user.twoFactorSecret = details.base32;
+      user.twoFactorEnabled = true;
+      await this.userRep.save(user);
+    }
+    return verified;
   }
 }

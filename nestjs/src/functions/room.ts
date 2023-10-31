@@ -6,30 +6,35 @@ import {
   notificationStatus,
   notificationTypes,
 } from 'src/types/notification.dto';
+import { roomDto } from 'src/types/room.dto';
+import { isBlock } from './user';
+import { userStatus } from 'src/types/user.dto';
 
-export function userModify(user: User) {
+export function userModify(otherUser: User, user: User): User {
   return {
-    id: user.id,
-    username: user.username,
-    sessionID: user.sessionID,
-    status: user.status,
-    avatar: user.avatar,
-    lastSeen: user.lastSeen,
-    elo: user.elo,
-    displayName: user.displayName,
-    createdAt: user.createdAt,
+    id: otherUser.id,
+    username: otherUser.username,
+    sessionID: otherUser.sessionID,
+    status: isBlock(user, otherUser) ? userStatus.BLOCKED : otherUser.status,
+    avatar: otherUser.avatar,
+    lastSeen: otherUser.lastSeen,
+    elo: otherUser.elo,
+    displayName: otherUser.displayName,
+    createdAt: otherUser.createdAt,
+    twoFactorEnabled: null,
+    twoFactorSecret: null,
+    blockList: null,
     friends: null,
     rooms: null,
     notifications: null,
-    blocked: null,
+    oldAvatar: null,
     won: null,
     lost: null,
-    oldAvatar: null,
   };
 }
 
-export function userRoomModify(room: Room) {
-  room.users = room.users.map((u) => userModify(u));
+export function userRoomModify(room: Room, user: User) {
+  room.users = room.users.map((u) => userModify(u, user));
   if (room.password) return { ...room, password: true };
   return { ...room, password: false };
 }
@@ -52,7 +57,7 @@ export function privateHandler(users: User[], loginUser: User) {
   }
 }
 
-export function hashPassword(room: Room) {
+export function hashPassword(room: roomDto) {
   if (room.password) {
     room.password = room.password.toString();
     const salt = bcrypt.genSaltSync(10);

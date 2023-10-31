@@ -8,8 +8,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Message } from 'src/typeorm/Message';
-import { userDto, userRoomDto } from './user.dto';
+import { userRoomDto } from './user.dto';
 import { Type } from 'class-transformer';
+import { User } from 'src/typeorm/User';
 
 export class roomDto {
   @IsOptional()
@@ -28,7 +29,7 @@ export class roomDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => userRoomDto)
-  users: userDto[];
+  users: User[];
 
   @IsString()
   @IsOptional()

@@ -44,7 +44,7 @@ export class Room {
   @Column('text', { array: true, nullable: true, default: [] })
   banList: string[];
 
-  @Column('jsonb', { array: false, nullable: true, default: [] })
+  @Column('jsonb', { array: false, nullable: false, default: [] })
   muteList: { username: string; time: number }[];
 
   @Column({ default: false })
