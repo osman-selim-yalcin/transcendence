@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { notificationModify } from 'src/functions/notification';
+import { notificationModify } from 'src/functions/Notification';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
 import {
@@ -18,10 +18,7 @@ export class NotificationService {
   ) {}
 
   async getNotifications(user: User) {
-    // return user.notifications.map((n) => notificationModify(n));
-    return this.notificationRep.find({
-      relations: ['user', 'creator', 'sibling'],
-    });
+    return user.notifications.map((n) => notificationModify(n));
   }
 
   async deleteNotification(user: User, notificationDetails: notificationDto) {

@@ -23,7 +23,6 @@ import { socketGateway } from 'src/gateway/socket.gateway';
 export class CommandsService {
   constructor(
     private roomService: RoomService,
-    @InjectRepository(User) private userRep: Repository<User>,
     @InjectRepository(Room) private roomRep: Repository<Room>,
     @InjectRepository(Notification)
     private notificationRep: Repository<Notification>,

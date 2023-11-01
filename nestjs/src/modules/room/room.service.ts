@@ -62,7 +62,10 @@ export class RoomService {
         ? (roomDetails.name = 'default name')
         : (roomDetails.name = users[0].username + ' & ' + users[1].username);
     const room = await this.roomRep.save({
-      ...roomDetails,
+      name: roomDetails.name,
+      isGroup: roomDetails.isGroup,
+      isInviteOnly: roomDetails.isInviteOnly,
+      password: roomDetails.password,
       users: users,
       creator: user.username,
       mods: [user.username],
@@ -71,7 +74,6 @@ export class RoomService {
     for (const u of room.users)
       this.server.joinRoom(u.sessionID, room.id.toString());
     return await this.roomRep.save(room);
-    return { msg: 'room created' };
   }
 
   async deleteRoom(user: User, room: Room) {
@@ -85,11 +87,12 @@ export class RoomService {
     if (!room.isGroup || !isCreator(room, user))
       throw new HttpException('not authorized', 400);
     hashPassword(roomDetails);
-    roomDetails.id = room.id;
-    roomDetails.users = room.users;
-    roomDetails.isGroup = room.isGroup;
+    if (roomDetails.isGroup) room.isGroup = roomDetails.isGroup;
+    if (roomDetails.isInviteOnly) room.isInviteOnly = roomDetails.isInviteOnly;
+    if (roomDetails.name) room.name = roomDetails.name;
+    if (roomDetails.password) room.password = roomDetails.password;
     this.specialMsg('room updated', room);
-    await this.roomRep.save({ ...room, ...roomDetails });
+    await this.roomRep.save({ ...room });
     return { msg: 'room updated' };
   }
 
@@ -108,6 +111,7 @@ export class RoomService {
       await this.notificationRep.remove(notification);
     } else checksForJoin(room, user, roomDetails.password);
     room.users.push(user);
+    this.server.joinRoom(user.sessionID, room.id.toString());
     this.specialMsg(user.username + ' joined', room);
     await this.roomRep.save(room);
     return { msg: 'user join the room' };

@@ -71,7 +71,7 @@ export class UsersService {
   }
 
   async updateUser(user: User, userDetails: userDto) {
-    await this.userRep.save({ ...user, ...userDetails });
+    await this.userRep.save({ ...user, displayName: userDetails.displayName });
     return { msg: 'success' };
   }
 

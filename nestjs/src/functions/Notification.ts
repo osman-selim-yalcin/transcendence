@@ -20,5 +20,6 @@ export function notificationModify(notification: notificationDto) {
   return {
     ...notification,
     sibling: null,
+    user: null,
   };
 }

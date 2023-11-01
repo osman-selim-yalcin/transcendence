@@ -37,7 +37,10 @@ export class Room {
   @Column()
   name: string;
 
-  @Column({ default: 'https://source.unsplash.com/featured/300x202' })
+  @Column({
+    default:
+      'https://res.cloudinary.com/dzhczcggz/image/upload/v1698681962/transcendence/mbmjyryi4wceu2xjehj9.jpg',
+  })
   avatar: string;
 
   @Column({ nullable: true })
