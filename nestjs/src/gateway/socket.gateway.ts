@@ -31,7 +31,7 @@ export class socketGateway implements OnModuleInit {
       if (this.queueList.length > 1) {
         this.preGame([this.queueList[0], this.queueList[1]]);
       }
-    }, 10000);
+    }, 1000);
   }
 
   queueList: string[] = [];

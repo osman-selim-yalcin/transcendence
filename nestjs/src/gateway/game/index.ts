@@ -1,6 +1,8 @@
 import { socketGame } from './classes';
 import { collisions, isRoundOver } from './utils';
 
+const maxScore = 7;
+
 export function round_restart(game: socketGame, server: any) {
   game.ball.reset();
   game.users[0].paddle.reset();
@@ -9,9 +11,7 @@ export function round_restart(game: socketGame, server: any) {
   if (game.ball.lastHit) game.users[0].score++;
   else game.users[1].score++;
 
-  game.ball.lastHit = false;
-
-  if (game.users[0].score === 5 || game.users[1].score === 5)
+  if (game.users[0].score === maxScore || game.users[1].score === maxScore)
     game.isOver = true;
 
   server
