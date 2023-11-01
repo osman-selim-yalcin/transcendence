@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Modal } from '../components/Modal/Modal'
 import { UserContext } from '../context/UserContext'
 import NicknameSetter from '../components/NicknameSetter'
+import PopUp from '../components/PopUp/PopUp'
 
 export default function RootLayout() {
   const [modal, setModal] = useState(false)
@@ -28,6 +29,7 @@ export default function RootLayout() {
       <footer>
         Transcedence &copy;
       </footer>
+      <PopUp />
       <Modal isActive={[modal, setModal]} removable={false} >
         <NicknameSetter setModal={setModal} />
       </Modal>

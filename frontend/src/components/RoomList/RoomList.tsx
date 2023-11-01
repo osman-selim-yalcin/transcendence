@@ -3,7 +3,7 @@ import { UserContext } from '../../context/UserContext'
 import { room, roomPayload, user } from '../../types'
 import { Modal } from '../Modal/Modal'
 import GroupCreation from '../forms/GroupCreation'
-import { deleteRoom } from '../../api/room'
+import { deleteRoom, getRooms } from '../../api/room'
 import "./RoomList.scss"
 import LoadIndicator from '../LoadIndicator/LoadIndicator'
 
@@ -22,19 +22,7 @@ export default function UserRoomList() {
           }}>Create Room</button>
           {userRooms ?
             <>
-              {userRooms.length ?
-                <ul className={"room-ul"}>
-                  {userRooms.map((room: room) => {
-                    return (
-                      <li key={room.id}>
-                        <UserRoomIndex room={room} user={user} />
-                      </li>
-                    )
-                  })}
-                </ul>
-                :
-                <p>You do not have any membership in any of the rooms</p>
-              }
+              <RoomFilter />
             </>
             :
             <LoadIndicator />
@@ -51,9 +39,54 @@ export default function UserRoomList() {
 }
 
 
+function RoomFilter() {
+  const [search, setSearch] = useState("")
+  const [rooms, setRooms] = useState<room[]>(null)
 
-function UserRoomIndex({ room, user }: { room: room, user: user }) {
+  useEffect(() => {
+    if (search !== "") {
+      getRooms(search)
+        .then((response: room[]) => {
+          setRooms(response)
+        })
+    } else {
+      setRooms(null)
+    }
+
+  }, [search])
+
+
+  return (
+    <>
+      <h4>Search Rooms</h4>
+      <input type="text" value={search} onChange={(e) => {
+        setSearch(e.target.value)
+      }} />
+      {rooms ?
+        <>
+          {rooms.length ?
+            <ul className={"room-ul"}>
+              {rooms.map((room) => (
+                <li key={room.id}>
+                  <UserRoomIndex room={room} />
+                </li>
+              ))}
+            </ul>
+            :
+            <p>No room found with the given input</p>
+          }
+        </>
+        :
+        <p>Type something to search</p>
+      }
+    </>
+  )
+}
+
+
+function UserRoomIndex({ room }: { room: room }) {
   const { reloadUserRooms } = useContext(UserContext)
+  const { user } = useContext(UserContext)
 
   async function handleDelete(room: room) {
     const payload: roomPayload = {
@@ -71,8 +104,10 @@ function UserRoomIndex({ room, user }: { room: room, user: user }) {
 
   return (
     <>
-      {/* <img src={room.avatar} alt="" /> */}
-      <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i> | <b>Members:</b> {room.users.map((user: user) => (user.displayName)).join(", ")} | <b>ID:</b> {room.id}</p>
+      <div className="avatar">
+        <img src={room.avatar} alt="" />
+      </div>
+      <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i></p>
       {room.creator === user.username ?
         <button onClick={() => {
           handleDelete(room)

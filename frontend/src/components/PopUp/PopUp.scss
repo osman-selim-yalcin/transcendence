@@ -1,0 +1,61 @@
+.popup-container {
+  position: absolute;
+  right: 0;
+  top: 3%;
+  transform: translateX(100%);
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    
+    li {
+      position: relative;
+      height: 100px;
+      aspect-ratio: 4 / 1;
+      color: white;
+      background-color: rgb(85, 202, 85);
+      animation: popup 9s ease-out;
+
+      @keyframes popup {
+        0% {
+          right: 0;
+        }
+        5% {
+          right: 450px;
+        }
+        95% {
+          right: 450px;
+        }
+        100% {
+          right: 0;
+        }
+      }
+
+      .progress-bar {
+        position: absolute;
+        bottom: 0;
+        height: 10%;
+        background-color: rgb(69, 164, 69);
+        animation: 9s countdown linear;
+
+        @keyframes countdown {
+          0% {
+            width: 0;
+          }
+          5% {
+            width: 0;
+          }
+          95% {
+            width: 100%;
+          }
+          100% {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}

@@ -60,6 +60,7 @@ export default function Game() {
     const ball = new Ball(document.getElementById("ball"))
     if (gameState === GameState.IN_QUEUE) {
       socket.on("pre-game", (data: player[]) => {
+        console.log(data)
         data.forEach((player, index) => {
           if (player.user.id === user.id) {
             setSelfIndex(index)
@@ -71,8 +72,12 @@ export default function Game() {
       })
       socket.emit("join queue")
     } else if (gameState === GameState.PREGAME_NOT_READY) {
+      const opponentPaddle = new Paddle(document.getElementById("opponent"))
+      opponentPaddle.hue = 160
+
       socket.off("pre-game")
       socket.on("game start", (data: player[]) => {
+        console.log(data[0].color, data[1].color)
         opponentPaddle.hue = data[1 - selfIndex].color
         setGameState(GameState.IN_GAME)
       })
@@ -121,7 +126,10 @@ export default function Game() {
           {gameState >= GameState.IN_GAME && <Scoreboard selfIndex={selfIndex} />}
           <CustomizeButtons gameStateHook={[gameState, setGameState]} />
 
-          {gameState === GameState.POST_GAME && <button onClick={() => { setGameState(GameState.PREQUEUE) }} className={"end-game-button"}>Main Menu</button>}
+          {gameState === GameState.POST_GAME && <button onClick={() => {
+            const opponentPaddle = new Paddle(document.getElementById("opponent"))
+            setGameState(GameState.PREQUEUE)
+            }} className={"end-game-button"}>Main Menu</button>}
 
           <div className={"center hidden"}></div>
           <div className="temp">

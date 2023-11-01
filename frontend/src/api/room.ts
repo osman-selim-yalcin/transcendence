@@ -19,13 +19,17 @@ export const getUserRooms = async () => {
       console.log(err)
     })
 }
-export const getRooms = async () => {
+export const getRooms = async (queryString: string) => {
   return axios
     .get("http://localhost:3000/api/room", {
       headers: {
         Authorization:
           "Bearer " +
           (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      },
+      params: {
+        take: 10,
+        q: queryString
       }
     })
     .then(response => {
