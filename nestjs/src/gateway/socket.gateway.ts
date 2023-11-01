@@ -189,7 +189,7 @@ export class socketGateway implements OnModuleInit {
     const intervalID = setInterval(() => {
       game = gameUpdate(game);
       this.server.in(game.gameID).emit('game update', {
-        paddles: [game.users[0].paddle, game.users[1].paddle],
+        paddles: [game.users[1].paddle, game.users[0].paddle],
         ball: game.ball,
       });
       if (game.isOver) {
