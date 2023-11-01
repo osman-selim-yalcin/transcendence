@@ -66,12 +66,21 @@ export class socketGateway implements OnModuleInit {
           socket.sessionID,
           ['rooms'],
         );
-        this.leaveQueue([socket.sessionID]);
-        if (socketUser.status === userStatus.INGAME)
-          this.handleGameDisconnect(socketUser);
-        this.server.emit('user disconnected', socket.sessionID);
-        this.userService.handleUserDisconnect(socketUser);
-        console.log('user', socketUser.username, 'disconnected');
+        if (
+          (await this.server.in(socket.sessionID).fetchSockets()).length !== 0
+        )
+          console.log(
+            'disconect count here',
+            (await this.server.in(socket.sessionID).fetchSockets()).length,
+          );
+        else {
+          this.leaveQueue([socket.sessionID]);
+          if (socketUser.status === userStatus.INGAME)
+            this.handleGameDisconnect(socketUser);
+          this.server.emit('user disconnected', socket.sessionID);
+          this.userService.handleUserDisconnect(socketUser);
+          console.log('user', socketUser.username, 'disconnected');
+        }
       });
     });
   }
@@ -87,15 +96,6 @@ export class socketGateway implements OnModuleInit {
   }
 
   //GAME LOGIC
-
-  @SubscribeMessage('invite')
-  async invite(client: CustomSocket, to: string) {
-    const user = await this.userService.findUserBySessionID(client.sessionID, [
-      'notifications',
-    ]);
-    const friendUser = await this.userService.findUserBySessionID(to);
-  }
-
   @SubscribeMessage('join queue')
   joinQueue(client: CustomSocket) {
     if (!this.queueList.includes(client.sessionID))
@@ -189,7 +189,7 @@ export class socketGateway implements OnModuleInit {
     const intervalID = setInterval(() => {
       game = gameUpdate(game);
       this.server.in(game.gameID).emit('game update', {
-        paddles: [game.users[0].paddle, game.users[1].paddle],
+        paddles: [game.users[1].paddle, game.users[0].paddle],
         ball: game.ball,
       });
       if (game.isOver) {

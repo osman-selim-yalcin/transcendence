@@ -10,6 +10,11 @@ import {
 import { User } from './User';
 import { Message } from './Message';
 
+export type muteType = {
+  username: string;
+  time: NodeJS.Timeout;
+};
+
 @Entity({ name: 'rooms' })
 export class Room {
   @PrimaryGeneratedColumn()
@@ -45,7 +50,7 @@ export class Room {
   banList: string[];
 
   @Column('jsonb', { array: false, nullable: false, default: [] })
-  muteList: { username: string; time: number }[];
+  muteList: muteType[];
 
   @Column({ default: false })
   isGroup: boolean;

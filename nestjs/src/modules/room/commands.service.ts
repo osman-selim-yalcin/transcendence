@@ -16,6 +16,8 @@ import {
   notificationTypes,
 } from 'src/types/notification.dto';
 import { RoomService } from './room.service';
+import { setTimeout } from 'timers';
+import { socketGateway } from 'src/gateway/socket.gateway';
 
 @Injectable()
 export class CommandsService {
@@ -25,6 +27,7 @@ export class CommandsService {
     @InjectRepository(Room) private roomRep: Repository<Room>,
     @InjectRepository(Notification)
     private notificationRep: Repository<Notification>,
+    private server: socketGateway,
   ) {}
 
   async inviteUser(user: User, room: Room, otherUser: User) {
@@ -96,13 +99,17 @@ export class CommandsService {
     let content = `${otherUser.username} will be muted for 10 min`;
     if (await this.roomService.isMuted(room, otherUser)) {
       content = `${otherUser.username} unmuted`;
-      room.muteList = room.muteList.filter(
-        (u) => u.username !== otherUser.username,
+      clearTimeout(
+        room.muteList.find((u) => u.username === otherUser.username).time,
       );
+      this.unMuteHandler(room, otherUser);
     } else {
+      const timeoutID = setTimeout(() => {
+        this.unMuteHandler(room, otherUser);
+      }, 1000 * 60 * 10);
       room.muteList.push({
         username: otherUser.username,
-        time: Date.now() + 1000 * 60 * 10,
+        time: timeoutID,
       });
     }
     await this.roomRep.save(room);
@@ -200,5 +207,14 @@ export class CommandsService {
       status,
       content,
     );
+  }
+
+  unMuteHandler(room: Room, otherUser: User) {
+    room.muteList = room.muteList.filter(
+      (u) => u.username !== otherUser.username,
+    );
+    this.server.server
+      .to(room.id.toString())
+      .emit('unmute', otherUser.username);
   }
 }

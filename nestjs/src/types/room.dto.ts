@@ -11,6 +11,7 @@ import { Message } from 'src/typeorm/Message';
 import { userRoomDto } from './user.dto';
 import { Type } from 'class-transformer';
 import { User } from 'src/typeorm/User';
+import { muteType } from 'src/typeorm/Room';
 
 export class roomDto {
   @IsOptional()
@@ -59,5 +60,5 @@ export class roomDto {
   banList: string[];
 
   @IsEmpty()
-  muteList: { username: string; time: number }[];
+  muteList: muteType[];
 }

@@ -171,11 +171,6 @@ export class RoomService {
   }
 
   async isMuted(room: Room, user: User) {
-    const muted = room.muteList.find((u) => u.username === user.username);
-    if (muted?.time < Date.now()) {
-      room.muteList = room.muteList.filter((u) => u.username !== user.username);
-      await this.roomRep.save(room);
-    }
     return room.muteList.find((u) => u.username === user.username);
   }
 
