@@ -2,7 +2,7 @@ import { PropsWithChildren, useContext, useEffect, useRef, useState } from "reac
 import { UserContext } from "../../context/UserContext.tsx"
 import { changeAvatar, changeNickname, getUsers } from "../../api/user.ts"
 import { useParams } from "react-router-dom"
-import { user, userStatus } from "../../types/index.ts"
+import { user } from "../../types/index.ts"
 import UserInfo from "../../components/UserInfo.tsx"
 import './Profile.scss'
 

@@ -127,7 +127,7 @@ export const kickUser = async (body: roomCommandBody) => {
     })
 }
 
-export const joinRoom = async (body: { id: number }) => {
+export const joinRoom = async (body: { id: number, password?: string }) => {
   return axios
     .post(
       "http://localhost:3000/api/room/join",

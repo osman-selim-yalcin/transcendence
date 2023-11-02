@@ -3,9 +3,11 @@ import { UserContext } from '../../context/UserContext'
 import { room, roomPayload, user } from '../../types'
 import { Modal } from '../Modal/Modal'
 import GroupCreation from '../forms/GroupCreation'
-import { deleteRoom, getRooms } from '../../api/room'
+import { deleteRoom, getRooms, joinRoom } from '../../api/room'
 import "./RoomList.scss"
 import LoadIndicator from '../LoadIndicator/LoadIndicator'
+import GroupJoin from '../forms/GroupJoin'
+import { useNavigate } from 'react-router-dom'
 
 export default function UserRoomList() {
   const { user, userRooms } = useContext(UserContext)
@@ -42,6 +44,8 @@ export default function UserRoomList() {
 function RoomFilter() {
   const [search, setSearch] = useState("")
   const [rooms, setRooms] = useState<room[]>(null)
+  const [modal, setModal] = useState(false)
+  const [clickedRoom, setClickedRoom] = useState(null)
 
   useEffect(() => {
     if (search !== "") {
@@ -54,6 +58,19 @@ function RoomFilter() {
     }
 
   }, [search])
+
+  useEffect(() => {
+    if (clickedRoom) {
+      console.log("clicked:", clickedRoom)
+      setModal(true)
+    }
+  }, [clickedRoom])
+
+  useEffect(() => {
+    if (!modal)
+      setClickedRoom(null)
+  }, [modal])
+  
 
 
   return (
@@ -68,7 +85,7 @@ function RoomFilter() {
             <ul className={"room-ul"}>
               {rooms.map((room) => (
                 <li key={room.id}>
-                  <UserRoomIndex room={room} />
+                  <UserRoomIndex room={room} setClickedRoom={setClickedRoom} setModal={setModal} />
                 </li>
               ))}
             </ul>
@@ -79,28 +96,15 @@ function RoomFilter() {
         :
         <p>Type something to search</p>
       }
+      <Modal isActive={[modal, setModal]} removable={true}>
+        <GroupJoin room={clickedRoom} setModal={setModal} />
+      </Modal>
     </>
   )
 }
 
 
-function UserRoomIndex({ room }: { room: room }) {
-  const { reloadUserRooms } = useContext(UserContext)
-  const { user } = useContext(UserContext)
-
-  async function handleDelete(room: room) {
-    const payload: roomPayload = {
-      id: room.id,
-      users: [],
-      name: room.name,
-      isGroup: room.isGroup
-    }
-    await deleteRoom(payload)
-      .then((response) => {
-        console.log("delete response:", response)
-      })
-    reloadUserRooms()
-  }
+function UserRoomIndex({ room, setClickedRoom, setModal }: { room: room, setClickedRoom: Function, setModal: Function }) {
 
   return (
     <>
@@ -108,12 +112,10 @@ function UserRoomIndex({ room }: { room: room }) {
         <img src={room.avatar} alt="" />
       </div>
       <p><b>Name:</b>{room.name} | <b>Creator:</b> <i>{room.creator}</i></p>
-      {room.creator === user.username ?
-        <button onClick={() => {
-          handleDelete(room)
-        }}>Delete Room</button>
-        : null
-      }
+      <button onClick={() => {
+        setClickedRoom(room)
+        setModal(true)
+      }}>&#8942;</button>
     </>
   )
 }
