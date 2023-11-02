@@ -1,29 +1,49 @@
+.profile {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .edit {
+    align-self: flex-start;
+  }
+}
+
+.name-plate {
+  text-align: center;
+
+
+  .username {
+    font-size: 30px;
+    font-weight: 700;
+  }
+}
 .user-profile {
 
   .avatar {
     display: flex;
     justify-content: center;
 
+    --thickness: 10px;
     img {
-      --thickness: 10px;
       width: 20%;
       aspect-ratio: 1 / 1;
       border-radius: 50%;
-      border: var(--thickness) solid rgb(80, 163, 97);
-      border-bottom: var(--thickness) solid rgb(129, 132, 141);
       padding: var(--thickness);
     }
-  }
-
-  .name-plate {
-    text-align: center;
-
-
-    .username {
-      font-size: 30px;
-      font-weight: 700;
+    img.online {
+      border: var(--thickness) solid rgb(80, 163, 97);
+    }
+    img.offline {
+      border: var(--thickness) solid rgb(129, 132, 141);
+    }
+    img.busy {
+      border: var(--thickness) solid rgb(231, 181, 78);
+    }
+    img.in-game {
+      border: var(--thickness) solid rgb(54, 121, 229);
     }
   }
+
 
   .tables {
     display: flex;
@@ -40,7 +60,21 @@
     }
   }
 
-  .not-valid {
-    color: red;
+}
+
+.blocked-profile {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+
+  .blocked {
+    text-align: center;
+    margin: auto;
   }
+  
+}
+
+.not-valid {
+  color: red;
 }

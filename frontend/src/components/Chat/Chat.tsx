@@ -133,23 +133,31 @@ function ChatContent({
       <div className="chat-content-header">
         <h2>Chat Content</h2>
         <button
-          disabled={currentRoom ? false : true}
+          className={currentRoom ? "" : "hidden"}
           onClick={() => { setShowDetail(!showDetail) }}
         >&#8942;</button>
       </div>
       {currentRoom ?
         <>
-          <ul className={"message-list"}>
-            {currentRoom.messages.map((message: message, index: number) => (
-              <li className={user.username === message.owner ? "main-user" : (message.owner === currentRoom.id.toString() ? "room-announcement" : "")} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
-                <p>{message.content}</p>
-              </li>
-            ))}
-          </ul>
-          <ChatForm currentRoomID={currentRoom.id} roomMuteList={currentRoom.muteList} inputRef={inputRef} />
+          {!currentRoom.isGroup && currentRoom.users.find((singleUser) => (user.id !== singleUser.id)).status === userStatus.BLOCKED ?
+            <div className="placeholder">
+              <p>Your chat is restricted with this user by a block</p>
+            </div>
+            :
+            <>
+              <ul className={"message-list"}>
+                {currentRoom.messages.map((message: message, index: number) => (
+                  <li className={user.username === message.owner ? "main-user" : (message.owner === currentRoom.id.toString() ? "room-announcement" : "")} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
+                    <p>{message.content}</p>
+                  </li>
+                ))}
+              </ul>
+              <ChatForm currentRoomID={currentRoom.id} roomMuteList={currentRoom.muteList} inputRef={inputRef} />
+            </>
+          }
         </>
         :
-        <div id={"placeholder"}>
+        <div className={"placeholder"}>
           <p>Send and receive messages without keeping your phone online.</p>
         </div>
       }
@@ -187,13 +195,13 @@ function ChatForm({ currentRoomID, roomMuteList, inputRef }: PropsWithChildren<{
           setInput("")
         }
       }}>
-      <input type="text" value={input} ref={inputRef} onChange={(e) => {
-        setInput(e.target.value)
-      }} />
-      <button>Send</button>
-    </form>
-  )
-}
+        <input type="text" value={input} ref={inputRef} onChange={(e) => {
+          setInput(e.target.value)
+        }} />
+        <button>Send</button>
+      </form>
+    )
+  }
 }
 // CHAT CONTENT
 // CHAT DETAILS
@@ -309,9 +317,17 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
       </div>
     )
   } else {
+    const found = currentRoom.users.find((singleUser) => (user.id !== singleUser.id))
     return (
-      <button
-      >Block</button>
+      <>
+        <button onClick={() => {
+          navigate(`/profile/${found.username}`)
+        }}>Profile</button>
+        <button onClick={async () => {
+          await changeBlock({ id: found.id })
+          reloadUserRooms()
+        }}>Block</button>
+      </>
     )
   }
 }
@@ -323,38 +339,38 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
   const navigate = useNavigate()
   return (
     <>
-        <div className={"admin-buttons"}
-          onClick={(e) => {
-            e.stopPropagation()
-            closeContextMenu()
-          }}>
-          <button onClick={() => {
-            navigate(`/profile/${clickedUser.username}`)
-          }}>Profile</button>
-          {user.username === currentRoomCreator &&
-            <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
-              await changeMod({ id: currentRoomId, user: { id: clickedUser.id } })
-              reloadUserRooms()//works without setimeout?
-            }}
-            >{clickedUserRank === RoomRank.MEMBER ? "Promote" : "Demote"}</button>
-          }
+      <div className={"admin-buttons"}
+        onClick={(e) => {
+          e.stopPropagation()
+          closeContextMenu()
+        }}>
+        <button onClick={() => {
+          navigate(`/profile/${clickedUser.username}`)
+        }}>Profile</button>
+        {user.username === currentRoomCreator &&
           <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
-            console.log("room id:", currentRoomId, "clicked user id:", clickedUser.id)
-            await kickUser({ id: currentRoomId, user: { id: clickedUser.id } })
-            setTimeout(() => {
-              reloadUserRooms()
-            }, 1000);
+            await changeMod({ id: currentRoomId, user: { id: clickedUser.id } })
+            reloadUserRooms()//works without setimeout?
           }}
-          >Kick</button>
-          <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
-            await changeMute({id: currentRoomId, user: { id: clickedUser.id }})
+          >{clickedUserRank === RoomRank.MEMBER ? "Promote" : "Demote"}</button>
+        }
+        <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
+          console.log("room id:", currentRoomId, "clicked user id:", clickedUser.id)
+          await kickUser({ id: currentRoomId, user: { id: clickedUser.id } })
+          setTimeout(() => {
             reloadUserRooms()
-          }}>Mute</button>
+          }, 1000);
+        }}
+        >Kick</button>
+        <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
+          await changeMute({ id: currentRoomId, user: { id: clickedUser.id } })
+          reloadUserRooms()
+        }}>Mute</button>
         <button className={(user.id === clickedUser.id ? "hidden" : "")} onClick={async () => {
           await changeBlock({ id: clickedUser.id })
           reloadUserRooms()
         }}>{clickedUser.status === userStatus.BLOCKED ? <>Unblock</> : <>Block</>}</button>
-        </div>
+      </div>
     </>
   )
 }

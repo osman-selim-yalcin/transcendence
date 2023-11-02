@@ -2,13 +2,13 @@ import { PropsWithChildren, useContext, useEffect, useRef, useState } from "reac
 import { UserContext } from "../../context/UserContext.tsx"
 import { changeAvatar, changeNickname, getUsers } from "../../api/user.ts"
 import { useParams } from "react-router-dom"
-import { user } from "../../types/index.ts"
+import { user, userStatus } from "../../types/index.ts"
 import UserInfo from "../../components/UserInfo.tsx"
 import './Profile.scss'
 
 export default function Profile() {
   const [editView, setEditView] = useState(false)
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<user>(null);
   const { username } = useParams()
   const { user } = useContext(UserContext)
 
@@ -39,9 +39,9 @@ export default function Profile() {
   }
 
   return (
-    <div>
+    <div className="profile">
       <h1>Profile</h1>
-      {editView ? <button onClick={() => { setEditView(false) }}>Back</button> : <button onClick={() => { setEditView(true) }}>Edit</button>}
+      {editView ? <button className="edit" onClick={() => { setEditView(false) }}>Back</button> : <button className="edit" onClick={() => { setEditView(true) }}>Edit</button>}
       {editView ? <EditProfile /> :
         <>
           <UserInfo user={currentUser} />
@@ -66,9 +66,6 @@ function ChangeNickname() {
   const [nickname, setNickname] = useState(user.displayName)
   const [showInput, setShowInput] = useState<boolean>(false)
 
-  useEffect(() => {
-    console.log(user)
-  }, [])
   return (
     <>
       <h2>Nickname</h2>
@@ -88,8 +85,11 @@ function ChangeNickname() {
         :
         <>
           <input type="text" value={nickname} onChange={(e) => { setNickname(e.target.value) }} />
+          <span className={nickname.length === 0 || nickname.length > 12 ? "not-valid" : ""}>{nickname.length}/12</span>
           <br />
-          <button onClick={async () => {
+          <button 
+          disabled={nickname.length === 0 || nickname.length > 12}
+          onClick={async () => {
             await changeNickname({
               id: user.id,
               displayName: nickname

@@ -13,14 +13,10 @@ const useInitial = () => {
   const [notifications, setNotifications] = useState(null)
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      console.log("there is TOKEN")
-    }
-
     async function getInitialData() {
       getUser()
         .then((response: any) => {
-          // console.log("current user ", response, "but user is", user)
+          console.log("current user ", response, "but user is", user)
           setUser(response)
 
           if (response !== undefined) {
