@@ -6,13 +6,8 @@ export class GameController {
   constructor(private gameService: GameService) {}
 
   @Get()
-  allGames() {
-    return this.gameService.allGames();
-  }
-
-  @Get('history')
-  history(@Req() req: any) {
-    return this.gameService.history(req.user);
+  allGames(@Req() req: any) {
+    return this.gameService.allGames(req.user);
   }
 
   @Post('invite')
@@ -23,10 +18,5 @@ export class GameController {
   @Get('leaderboard')
   leaderboard() {
     return this.gameService.leaderboard();
-  }
-
-  @Get('my-games')
-  myGames(@Req() req: any) {
-    return this.gameService.myGames(req.user);
   }
 }

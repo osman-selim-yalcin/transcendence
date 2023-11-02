@@ -71,7 +71,23 @@ export class UsersService {
   }
 
   async updateUser(user: User, userDetails: userDto) {
-    await this.userRep.save({ ...user, displayName: userDetails.displayName });
+    if (userDetails.displayName.length > 12)
+      throw new HttpException('display name too long', 400);
+
+    userDetails.displayName = userDetails.displayName.trim();
+
+    if (!/^[a-zA-Z]+$/.test(userDetails.displayName))
+      throw new HttpException('display name must contain only letters', 400);
+
+    const userCheck = await this.userRep.findOne({
+      where: { username: userDetails.displayName },
+    });
+    if (userCheck) throw new HttpException('display name already exists', 400);
+
+    await this.userRep.save({
+      ...user,
+      displayName: userDetails.displayName.trim(),
+    });
     return { msg: 'success' };
   }
 

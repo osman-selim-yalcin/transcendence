@@ -31,19 +31,8 @@ export class GameService {
     this.userRep.save(newGame.winner);
     this.userRep.save(newGame.loser);
   }
-  allGames() {
-    return this.gameRep.find({ relations: ['winner', 'loser'] });
-  }
 
-  leaderboard() {
-    return this.userRep.find({ order: { elo: 'DESC' } });
-  }
-
-  myGames(user: User) {
-    return { wons: user.won, losts: user.lost };
-  }
-
-  history(user: User) {
+  allGames(user: User) {
     const wons = user.won;
     const losts = user.lost;
     const allGames = [...wons, ...losts];
@@ -53,6 +42,10 @@ export class GameService {
       return 0;
     });
     return history;
+  }
+
+  leaderboard() {
+    return this.userRep.find({ order: { elo: 'DESC' } });
   }
 
   async invite(user: User, otherUser: User) {

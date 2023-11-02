@@ -79,6 +79,9 @@ export class RoomService {
   async deleteRoom(user: User, room: Room) {
     if (!room.isGroup || (room.isGroup && !isCreator(room, user)))
       throw new HttpException('not authorized', 400);
+    (await this.notificationRep.find()).map((n) => {
+      if (n.roomID === room.id) this.notificationRep.remove(n);
+    });
     await this.roomRep.remove(room);
     return { msg: 'room deleted' };
   }
