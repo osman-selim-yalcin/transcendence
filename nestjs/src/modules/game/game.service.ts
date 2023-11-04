@@ -2,10 +2,11 @@ import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isBlock } from 'src/functions/user';
 import { socketGateway } from 'src/gateway/socket.gateway';
+import { idToUser } from 'src/middleware/user.middleware';
 import { Game } from 'src/typeorm/Game';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
-import { typeGame } from 'src/types/game.dto';
+import { gameDto, typeGame } from 'src/types/game.dto';
 import {
   notificationStatus,
   notificationTypes,
@@ -32,7 +33,8 @@ export class GameService {
     this.userRep.save(newGame.loser);
   }
 
-  allGames(user: User) {
+  async allGames(body: gameDto) {
+    const user = await this.idToUser(body.id, ['won', 'lost']);
     const wons = user.won;
     const losts = user.lost;
     const allGames = [...wons, ...losts];
@@ -120,5 +122,17 @@ export class GameService {
         n.status === status,
     );
     return notification;
+  }
+
+  async idToUser(id: number, relations?: string[]) {
+    if (!id) throw new HttpException('id required', 404);
+    if (typeof id !== 'number')
+      throw new HttpException('id must be a number', 404);
+    const user = await this.userRep.findOne({
+      where: { id: id },
+      relations: relations || [],
+    });
+    if (!user) throw new HttpException('user not found', 404);
+    return user;
   }
 }

@@ -10,12 +10,12 @@ import { roomDto } from 'src/types/room.dto';
 import { isBlock } from './user';
 import { userStatus } from 'src/types/user.dto';
 
-export function userModify(otherUser: User, user: User): User {
+export function userRoomModify(otherUser: User, user: User): User {
   return {
     id: otherUser.id,
     username: otherUser.username,
     sessionID: otherUser.sessionID,
-    status: isBlock(user, otherUser) ? userStatus.BLOCKED : otherUser.status,
+    status: isBlock(user, otherUser) ? userStatus.BLOCKED : otherUser?.status,
     avatar: otherUser.avatar,
     lastSeen: otherUser.lastSeen,
     elo: otherUser.elo,
@@ -33,13 +33,13 @@ export function userModify(otherUser: User, user: User): User {
   };
 }
 
-export function userRoomModify(room: Room, user: User) {
-  room.users = room.users.map((u) => userModify(u, user));
+export function userRoomModifyHandler(room: Room, user: User) {
+  room.users = room.users.map((u) => userRoomModify(u, user));
   if (room.password) return { ...room, password: true };
   return { ...room, password: false };
 }
 
-export function roomModify(room: Room) {
+export function roomModifyHandler(room: Room) {
   if (room.password) return { ...room, password: true };
   return { ...room, password: false };
 }
@@ -76,7 +76,7 @@ export function checksForJoin(room: Room, loginUser: User, password: string) {
 
 export function checkPassword(room: Room, password: string) {
   if (room.password) {
-    if (!bcrypt.compareSync(password, room.password)) {
+    if (!password || !bcrypt.compareSync(password, room.password)) {
       throw new HttpException('password uncorrect', 400);
     }
   }
