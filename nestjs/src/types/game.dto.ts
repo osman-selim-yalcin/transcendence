@@ -1,4 +1,3 @@
-import { IsNumber } from 'class-validator';
 import { User } from 'src/typeorm/User';
 
 export type typeGame = {
@@ -8,7 +7,6 @@ export type typeGame = {
   score: number[];
 };
 
-export class gameDto {
-  @IsNumber()
-  id: number;
-}
+export type gameDto = {
+  id: string;
+};

@@ -32,9 +32,19 @@ export class RoomController {
   }
 
   //special msg / private end
-  @Put()
-  updateRoom(@Req() req: any, @Body() body: roomDto) {
-    return this.roomService.updateRoom(req.user, req.room, body);
+  @Put('password')
+  changePassword(@Req() req: any, @Body() body: roomDto) {
+    return this.roomService.changePassword(req.user, req.room, body);
+  }
+
+  @Put('is-invite-only')
+  changeIsInviteOnly(@Req() req: any) {
+    return this.roomService.changeIsInviteOnly(req.user, req.room);
+  }
+
+  @Put('name')
+  changeName(@Req() req: any, @Body() body: roomDto) {
+    return this.roomService.changeName(req.user, req.room, body);
   }
 
   @Post('join')
