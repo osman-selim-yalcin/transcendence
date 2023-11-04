@@ -10,6 +10,8 @@ export type user = {
   status: userStatus
   avatar: string
   lastSeen: string
+  blockList: { blockedUser: string, blockingUser: string }[]
+  elo: number
 }
 
 export interface userContext {
