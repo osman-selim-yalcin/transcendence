@@ -91,8 +91,6 @@ export class RoomService {
     if (!room.isGroup || !isCreator(room, user))
       throw new HttpException('not authorized', 400);
     hashPassword(roomDetails);
-    console.log(roomDetails);
-    if (roomDetails.isGroup) room.isGroup = roomDetails.isGroup;
     if (roomDetails.isInviteOnly) room.isInviteOnly = roomDetails.isInviteOnly;
     if (roomDetails.name) room.name = roomDetails.name;
     room.password = roomDetails.password;
