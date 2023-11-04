@@ -32,10 +32,30 @@ export class GameService {
     this.userRep.save(newGame.loser);
   }
 
-  async allGames(param: gameDto) {
-    const user = await this.idToUser(param.id, ['won', 'lost']);
-    const wons = user.won;
-    const losts = user.lost;
+  modifyGame(games: Game[], result: boolean) {
+    return games.map((g) => {
+      const opponent = result ? g.loser : g.winner;
+      return {
+        id: g.id,
+        score: g.score,
+        elo: g.elo,
+        createdAt: g.createdAt,
+        result,
+        opponent,
+      };
+    });
+  }
+
+  async allGames(query: gameDto) {
+    console.log(query);
+    const user = await this.idToUser(Number(query.id), [
+      'won',
+      'won.loser',
+      'lost',
+      'lost.winner',
+    ]);
+    const wons = this.modifyGame(user.won, true);
+    const losts = this.modifyGame(user.lost, false);
     const allGames = [...wons, ...losts];
     const history = allGames.sort((a, b) => {
       if (a.createdAt > b.createdAt) return -1;

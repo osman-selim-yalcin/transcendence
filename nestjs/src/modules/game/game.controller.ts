@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { GameService } from './game.service';
 import { gameDto } from 'src/types/game.dto';
 
@@ -7,8 +7,8 @@ export class GameController {
   constructor(private gameService: GameService) {}
 
   @Get()
-  allGames(@Req() req: any, @Param() param: gameDto) {
-    return this.gameService.allGames(param);
+  allGames(@Req() req: any, @Query() query: gameDto) {
+    return this.gameService.allGames(query);
   }
 
   @Post('invite')
