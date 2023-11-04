@@ -57,13 +57,14 @@ export function privateHandler(users: User[], loginUser: User) {
   }
 }
 
-export function hashPassword(room: roomDto) {
-  if (room.password) {
-    room.password = room.password.toString();
+export function hashPassword(password: string) {
+  if (password) {
+    password = password.toString();
     const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(room.password, salt);
-    room.password = hash;
+    const hash = bcrypt.hashSync(password, salt);
+    return hash;
   }
+  return null;
 }
 
 export function checksForJoin(room: Room, loginUser: User, password: string) {

@@ -2,7 +2,6 @@ import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isBlock } from 'src/functions/user';
 import { socketGateway } from 'src/gateway/socket.gateway';
-import { idToUser } from 'src/middleware/user.middleware';
 import { Game } from 'src/typeorm/Game';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
@@ -33,8 +32,8 @@ export class GameService {
     this.userRep.save(newGame.loser);
   }
 
-  async allGames(body: gameDto) {
-    const user = await this.idToUser(body.id, ['won', 'lost']);
+  async allGames(param: gameDto) {
+    const user = await this.idToUser(param.id, ['won', 'lost']);
     const wons = user.won;
     const losts = user.lost;
     const allGames = [...wons, ...losts];

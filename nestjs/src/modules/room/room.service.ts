@@ -71,7 +71,7 @@ export class RoomService {
       creator: user.username,
       mods: [user.username],
     });
-    hashPassword(room);
+    room.password = hashPassword(roomDetails.password);
     for (const u of room.users)
       this.server.joinRoom(u.sessionID, room.id.toString());
     return await this.roomRep.save(room);
@@ -87,13 +87,28 @@ export class RoomService {
     return { msg: 'room deleted' };
   }
 
-  async updateRoom(user: User, room: Room, roomDetails: roomDto) {
+  async changePassword(user: User, room: Room, roomDetails: roomDto) {
     if (!room.isGroup || !isCreator(room, user))
       throw new HttpException('not authorized', 400);
-    hashPassword(roomDetails);
-    if (roomDetails.isInviteOnly) room.isInviteOnly = roomDetails.isInviteOnly;
-    if (roomDetails.name) room.name = roomDetails.name;
-    room.password = roomDetails.password;
+    room.password = hashPassword(roomDetails.password);
+    this.specialMsg('room updated', room);
+    await this.roomRep.save({ ...room });
+    return { msg: 'room updated' };
+  }
+
+  async changeIsInviteOnly(user: User, room: Room) {
+    if (!room.isGroup || !isCreator(room, user))
+      throw new HttpException('not authorized', 400);
+    room.isInviteOnly = !room.isInviteOnly;
+    this.specialMsg('room updated', room);
+    await this.roomRep.save({ ...room });
+    return { msg: 'room updated' };
+  }
+
+  async changeName(user: User, room: Room, roomDetails: roomDto) {
+    if (!room.isGroup || !isCreator(room, user))
+      throw new HttpException('not authorized', 400);
+    room.name = roomDetails.name;
     this.specialMsg('room updated', room);
     await this.roomRep.save({ ...room });
     return { msg: 'room updated' };
