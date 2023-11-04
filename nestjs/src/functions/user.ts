@@ -12,6 +12,29 @@ export function modifyBlockUser(user: User) {
   };
 }
 
+// export function userModify(user: User) {
+//   return {
+//     id: user.id,
+//     username: user.username,
+//     sessionID: user.sessionID,
+//     status: user.status,
+//     avatar: user.avatar,
+//     lastSeen: user.lastSeen,
+//     elo: user.elo,
+//     displayName: user.displayName,
+//     createdAt: user.createdAt,
+//     twoFactorEnabled: null,
+//     twoFactorSecret: null,
+//     blockList: null,
+//     friends: null,
+//     rooms: null,
+//     notifications: null,
+//     oldAvatar: null,
+//     won: null,
+//     lost: null,
+//   };
+// }
+
 export function isFriend(user: User, friend: User) {
   return user.friends.some((u) => u.id === friend.id);
 }
@@ -51,6 +74,9 @@ export function isBlocking(user: User, friend: User) {
 }
 
 export function isBlock(user: User, friend: User) {
+  if (!user || !friend) {
+    return false;
+  }
   return (
     user.blockList.some(
       (blockList) => blockList.blockedUser === friend.username,

@@ -7,12 +7,12 @@ import {
   checksForJoin,
   hashPassword,
   privateHandler,
-  roomModify,
+  roomModifyHandler,
   isUserInRoom,
   isCreator,
   isRoomNotificationExist,
   isMod,
-  userRoomModify,
+  userRoomModifyHandler,
 } from 'src/functions/room';
 import { roomDto } from 'src/types/room.dto';
 import { Message } from 'src/typeorm/Message';
@@ -44,13 +44,14 @@ export class RoomService {
     });
 
     const newAllRooms = [];
-    for (const room of rooms) newAllRooms.push(roomModify(room));
+    for (const room of rooms) newAllRooms.push(roomModifyHandler(room));
     return newAllRooms;
   }
 
   async getUserRooms(user: User) {
     const userRooms = [];
-    for (const room of user.rooms) userRooms.push(userRoomModify(room, user));
+    for (const room of user.rooms)
+      userRooms.push(userRoomModifyHandler(room, user));
     return userRooms;
   }
 
@@ -90,10 +91,11 @@ export class RoomService {
     if (!room.isGroup || !isCreator(room, user))
       throw new HttpException('not authorized', 400);
     hashPassword(roomDetails);
+    console.log(roomDetails);
     if (roomDetails.isGroup) room.isGroup = roomDetails.isGroup;
     if (roomDetails.isInviteOnly) room.isInviteOnly = roomDetails.isInviteOnly;
     if (roomDetails.name) room.name = roomDetails.name;
-    if (roomDetails.password) room.password = roomDetails.password;
+    room.password = roomDetails.password;
     this.specialMsg('room updated', room);
     await this.roomRep.save({ ...room });
     return { msg: 'room updated' };

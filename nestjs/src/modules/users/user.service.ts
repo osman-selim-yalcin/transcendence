@@ -84,10 +84,14 @@ export class UsersService {
     });
     if (userCheck) throw new HttpException('display name already exists', 400);
 
-    await this.userRep.save({
-      ...user,
-      displayName: userDetails.displayName.trim(),
-    });
+    try {
+      await this.userRep.save({
+        ...user,
+        displayName: userDetails.displayName,
+      });
+    } catch (e) {
+      throw new HttpException('display name already exists', 400);
+    }
     return { msg: 'success' };
   }
 

@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export enum userStatus {
   ONLINE,
@@ -10,7 +10,6 @@ export enum userStatus {
 }
 
 export class userDto {
-  @IsOptional()
   @IsString()
   displayName: string;
 }

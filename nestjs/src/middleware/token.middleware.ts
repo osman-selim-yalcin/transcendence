@@ -22,6 +22,21 @@ export class tokenMiddleware implements NestMiddleware {
     const loginUserInfo = verifyToken(token);
     const user = await this.userRep.findOne({
       where: { id: loginUserInfo.id },
+      // select: [
+      //   'id',
+      //   'username',
+      //   'avatar',
+      //   'sessionID',
+      //   'displayName',
+      //   'createdAt',
+      //   'status',
+      //   'lastSeen',
+      //   'blockList',
+      //   'elo',
+      //   'twoFactorEnabled',
+      //   'twoFactorSecret',
+      //   'oldAvatar',
+      // ],
       relations: [
         'friends',
         'rooms',

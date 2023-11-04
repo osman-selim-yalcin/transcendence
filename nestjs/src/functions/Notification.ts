@@ -1,7 +1,7 @@
 import { HttpException } from '@nestjs/common';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
-import { notificationDto } from 'src/types/notification.dto';
+// import { userModify } from './user';
 
 export function isNotificationExist(
   user: User,
@@ -16,7 +16,7 @@ export function isNotificationExist(
   if (user.id === creator.id) throw new HttpException('same user', 400);
 }
 
-export function notificationModify(notification: notificationDto) {
+export function notificationModify(notification: Notification) {
   return {
     ...notification,
     sibling: null,
