@@ -121,16 +121,16 @@
       }
       
       .paddle.left {
+        --light: 100;
         --position: 50;
-        --hue: 160;
-        --light: 50;
+        --hue: 30;
         left: 3%;
         top: calc(var(--position) * 1%);
         background-color: hsl(var(--hue), 100%, calc(var(--light) * 1%));
         transition: 2000ms;
         transition-property: /*top,*/ left, transform, scale;
       }
-
+      
       .paddle.left.not-ready {
         top: 50%;
         left: 50%;
@@ -140,9 +140,10 @@
       }
       
       .paddle.right {
+        --light: 100;
         --position: 50;
-        --hue: 160;
-        background-color: hsl(var(--hue), 100%, 50%);
+        --hue: 30;
+        background-color: hsl(var(--hue), 100%, calc(var(--light) * 1%));
         right: 3%;
         top: calc(var(--position) * 1%);
         transition: 15ms;

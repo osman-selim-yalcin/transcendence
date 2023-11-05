@@ -3,7 +3,7 @@ import { UserContext } from "../../context/UserContext.tsx"
 import { changeAvatar, changeNickname, getUsers } from "../../api/user.ts"
 import { useParams } from "react-router-dom"
 import { user } from "../../types/index.ts"
-import UserInfo from "../../components/UserInfo.tsx"
+import UserInfo from "../../components/UserInfo/UserInfo.tsx"
 import './Profile.scss'
 
 export default function Profile() {

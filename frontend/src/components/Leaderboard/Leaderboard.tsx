@@ -16,21 +16,24 @@ export default function () {
     }
   }, [user])
   return (
-    <div className="leaderboard">
-      <h2>Leaderboard</h2>
-      <div className="list">
-        <ul>
-          {leaderboad && leaderboad.map((player, i) => {
-            return (
-              <>
-                <li key={player.id}>
-                  <span>{i + 1}</span> <span className="username">{player.username}</span> <span className="elo">{player.elo}</span>
-                </li>
-              </>
-            )
-          })}
-        </ul>
-      </div>
-    </div>
+    <>
+      {leaderboad?.length &&
+
+        <div className="leaderboard">
+          <h2>Leaderboard</h2>
+          <div className="list">
+            <ul>
+              {leaderboad && leaderboad.map((player, i) => {
+                return (
+                  <li key={player.id}>
+                    <span>{i + 1}</span> <span className="username">{player.username}</span> <span className="elo">{player.elo}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      }
+    </>
   )
 }

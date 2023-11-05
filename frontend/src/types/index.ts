@@ -171,7 +171,7 @@ export type MutedUser = {
 
 export type player = {
   user: user,
-  color: number
+  color: number | string
 }
 
 export type gameScore = {
@@ -206,6 +206,15 @@ export enum GameState {
   PREGAME_READY,
   IN_GAME,
   POST_GAME
+}
+
+export type GameInfo = {
+    id: number
+    score: number[]
+    elo: number
+    createdAt: string
+    result: boolean
+    opponent: user
 }
 
 /**
