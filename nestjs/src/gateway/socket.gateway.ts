@@ -1,4 +1,4 @@
-import { Inject, OnModuleInit, forwardRef } from '@nestjs/common';
+import { OnModuleInit } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -24,15 +24,16 @@ interface CustomSocket extends Socket {
 })
 export class socketGateway implements OnModuleInit {
   constructor(
-    @Inject(forwardRef(() => UsersService)) private userService: UsersService,
+    private userService: UsersService,
     private gameService: GameService,
   ) {
     setInterval(() => {
-      // console.log(this.queueList.length);
+      console.log(this.queueList.length);
+      // console.log(this.server);
       if (this.queueList.length > 1) {
         this.preGame([this.queueList[0], this.queueList[1]]);
       }
-    }, 2000);
+    }, 3000);
   }
 
   queueList: string[] = [];
@@ -68,13 +69,8 @@ export class socketGateway implements OnModuleInit {
           ['rooms'],
         );
         if (
-          (await this.server.in(socket.sessionID).fetchSockets()).length !== 0
-        )
-          console.log(
-            'disconect count here',
-            (await this.server.in(socket.sessionID).fetchSockets()).length,
-          );
-        else {
+          (await this.server.in(socket.sessionID).fetchSockets()).length === 0
+        ) {
           this.leaveQueue([socket.sessionID]);
           if (socketUser.status === userStatus.INGAME)
             this.handleGameDisconnect(socketUser);
@@ -97,15 +93,15 @@ export class socketGateway implements OnModuleInit {
   }
 
   async reloadFriend(user: User) {
-    this.server.in(user.sessionID).emit('reload friends');
+    this.server.in(user.sessionID).emit('reload', 'friend');
   }
 
   async reloadNotification(user: User) {
-    this.server.in(user.sessionID).emit('reload notification');
+    this.server.in(user.sessionID).emit('reload', 'notification');
   }
 
   async reloadRoom(user: User) {
-    this.server.in(user.sessionID).emit('reload userRooms');
+    this.server.in(user.sessionID).emit('reload', 'userRooms');
   }
 
   gameInviteAccepted(user: User, otherUser: User) {
