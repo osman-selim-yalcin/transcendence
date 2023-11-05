@@ -74,6 +74,9 @@ export class RoomService {
     room.password = hashPassword(roomDetails.password);
     for (const u of room.users)
       this.server.joinRoom(u.sessionID, room.id.toString());
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     return await this.roomRep.save(room);
   }
 
@@ -83,6 +86,9 @@ export class RoomService {
     (await this.notificationRep.find()).map((n) => {
       if (n.roomID === room.id) this.notificationRep.remove(n);
     });
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     await this.roomRep.remove(room);
     return { msg: 'room deleted' };
   }
@@ -92,6 +98,10 @@ export class RoomService {
       throw new HttpException('not authorized', 400);
     room.password = hashPassword(roomDetails.password);
     this.specialMsg('room updated', room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
+
     await this.roomRep.save({ ...room });
     return { msg: 'room updated' };
   }
@@ -101,6 +111,9 @@ export class RoomService {
       throw new HttpException('not authorized', 400);
     room.isInviteOnly = !room.isInviteOnly;
     this.specialMsg('room updated', room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     await this.roomRep.save({ ...room });
     return { msg: 'room updated' };
   }
@@ -110,6 +123,9 @@ export class RoomService {
       throw new HttpException('not authorized', 400);
     room.name = roomDetails.name;
     this.specialMsg('room updated', room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     await this.roomRep.save({ ...room });
     return { msg: 'room updated' };
   }
@@ -126,11 +142,16 @@ export class RoomService {
         user: notification.creator,
         creator: notification.user,
       });
+      this.server.reloadNotification(notification.user);
+      this.server.reloadNotification(notification.creator);
       await this.notificationRep.remove(notification);
     } else checksForJoin(room, user, roomDetails.password);
     room.users.push(user);
     this.server.joinRoom(user.sessionID, room.id.toString());
     this.specialMsg(user.username + ' joined', room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     await this.roomRep.save(room);
     return { msg: 'user join the room' };
   }
@@ -140,6 +161,9 @@ export class RoomService {
       throw new HttpException('private room cannot be leaveable', 400);
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     await this.leaveheadler(room, user);
     return { msg: 'user leaved' };
   }

@@ -6,7 +6,6 @@ import {
   notificationStatus,
   notificationTypes,
 } from 'src/types/notification.dto';
-import { roomDto } from 'src/types/room.dto';
 import { isBlock } from './user';
 import { userStatus } from 'src/types/user.dto';
 

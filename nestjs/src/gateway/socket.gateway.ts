@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common';
+import { Inject, OnModuleInit, forwardRef } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -24,7 +24,7 @@ interface CustomSocket extends Socket {
 })
 export class socketGateway implements OnModuleInit {
   constructor(
-    private userService: UsersService,
+    @Inject(forwardRef(() => UsersService)) private userService: UsersService,
     private gameService: GameService,
   ) {
     setInterval(() => {
@@ -94,6 +94,18 @@ export class socketGateway implements OnModuleInit {
     this.server.to(payload.to).emit('private message', {
       ...payload.msg,
     });
+  }
+
+  async reloadFriend(user: User) {
+    this.server.in(user.sessionID).emit('reload friends');
+  }
+
+  async reloadNotification(user: User) {
+    this.server.in(user.sessionID).emit('reload notification');
+  }
+
+  async reloadRoom(user: User) {
+    this.server.in(user.sessionID).emit('reload userRooms');
   }
 
   //GAME LOGIC
