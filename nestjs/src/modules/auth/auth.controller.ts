@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   Inject,
   Post,
   Redirect,
@@ -20,7 +21,7 @@ interface reqWithModifiy extends Request {
     id: number;
     sessionID: string;
   };
-  logout: (any) => void;
+  logout: (err: any) => void;
 }
 
 @Controller('auth')
@@ -52,8 +53,30 @@ export class AuthController {
   }
 
   @Get('user')
-  handleUser(@Req() request: reqWithModifiy) {
+  async handleUser(@Req() request: reqWithModifiy, @Body() body: any) {
     if (!request.user) return null;
+    const user = await this.authService.findUserByUsername(
+      request.user.username,
+      [
+        'id',
+        'username',
+        'avatar',
+        'sessionID',
+        'displayName',
+        'createdAt',
+        'status',
+        'lastSeen',
+        'blockList',
+        'elo',
+        'twoFactorEnabled',
+        'twoFactorSecret',
+        'oldAvatar',
+      ],
+    );
+    if (user.twoFactorEnabled) {
+      if (!this.authService.verify2fa(user, body))
+        throw new HttpException('2fa code is wrong', 400);
+    }
     return {
       token: createToken({
         username: request.user.username,

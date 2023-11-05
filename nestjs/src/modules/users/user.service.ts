@@ -76,14 +76,6 @@ export class UsersService {
 
     userDetails.displayName = userDetails.displayName.trim();
 
-    if (!/^[a-zA-Z]+$/.test(userDetails.displayName))
-      throw new HttpException('display name must contain only letters', 400);
-
-    const userCheck = await this.userRep.findOne({
-      where: { username: userDetails.displayName },
-    });
-    if (userCheck) throw new HttpException('display name already exists', 400);
-
     try {
       await this.userRep.save({
         ...user,
@@ -192,24 +184,27 @@ export class UsersService {
   async createQR(user: User) {
     if (user.twoFactorEnabled)
       throw new HttpException('2fa already enabled', 400);
-    const secret = speakeasy.generateSecret({
-      name: 'Transcendence: osyalcin && bmat',
-    });
+    else {
+      const secret = speakeasy.generateSecret({
+        name: 'Transcendence: osyalcin && bmat',
+      });
 
-    const qrcode = await QRCode.toDataURL(secret.otpauth_url).then((data) => {
-      return data;
-    });
-    return { base32: secret.base32, qrcode };
+      const qrcode = await QRCode.toDataURL(secret.otpauth_url).then((data) => {
+        return data;
+      });
+      user.twoFactorSecret = secret.base32;
+      await this.userRep.save(user);
+      return { qrcode };
+    }
   }
 
   async verify2fa(user: User, details: twoFactorDto) {
     const verified = speakeasy.totp.verify({
-      secret: user.twoFactorSecret ? user.twoFactorSecret : details.base32,
+      secret: user.twoFactorSecret,
       encoding: 'base32',
       token: details.token,
     });
     if (verified && !user.twoFactorEnabled) {
-      user.twoFactorSecret = details.base32;
       user.twoFactorEnabled = true;
       await this.userRep.save(user);
     }

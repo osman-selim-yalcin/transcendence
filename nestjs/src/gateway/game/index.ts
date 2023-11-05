@@ -1,7 +1,7 @@
 import { socketGame } from './classes';
 import { collisions, isRoundOver } from './utils';
 
-const maxScore = 7;
+export const maxScore = 5;
 
 export function round_restart(game: socketGame, server: any) {
   game.ball.reset();

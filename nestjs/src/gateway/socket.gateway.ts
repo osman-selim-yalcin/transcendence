@@ -11,6 +11,7 @@ import { Circle, Paddle, typeKeys, socketGame } from './game/classes';
 import { gameUpdate } from './game';
 import { GameService } from 'src/modules/game/game.service';
 import { User } from 'src/typeorm/User';
+import { maxScore } from './game';
 
 interface CustomSocket extends Socket {
   sessionID: string;
@@ -211,7 +212,7 @@ export class socketGateway implements OnModuleInit {
     this.gameList.splice(this.gameList.indexOf(game), 1);
     this.userService.handleStatusChange(otherUser, userStatus.ONLINE);
     this.gameService.createGame({
-      score: [5, 0],
+      score: [maxScore, 0],
       elo: 10,
       winner: otherUser,
       loser: socketUser,
@@ -224,17 +225,17 @@ export class socketGateway implements OnModuleInit {
     this.server.in(game.gameID).socketsLeave(game.gameID);
     this.gameList.splice(this.gameList.indexOf(game), 1);
     const winner = await this.userService.findUserBySessionID(
-      game.users.find((u) => u.score === 5).sessionID,
+      game.users.find((u) => u.score === maxScore).sessionID,
     );
     const loser = await this.userService.findUserBySessionID(
-      game.users.find((u) => u.score !== 5).sessionID,
+      game.users.find((u) => u.score !== maxScore).sessionID,
     );
-    const gameLoser = game.users.find((u) => u.score !== 5);
+    const gameLoser = game.users.find((u) => u.score !== maxScore);
 
     await this.userService.handleStatusChange(winner, userStatus.ONLINE);
     await this.userService.handleStatusChange(loser, userStatus.ONLINE);
     this.gameService.createGame({
-      score: [5, gameLoser.score],
+      score: [maxScore, gameLoser.score],
       elo: 10,
       winner,
       loser,

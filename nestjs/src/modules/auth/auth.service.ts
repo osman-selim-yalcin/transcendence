@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/typeorm/User';
 import { createToken } from 'src/functions/token';
-
+import { twoFactorDto } from 'src/types/2fa.dto';
+import * as speakeasy from 'speakeasy';
 @Injectable()
 export class AuthService {
   constructor(@InjectRepository(User) private userRep: Repository<User>) {}
@@ -17,8 +18,13 @@ export class AuthService {
     return this.userRep.save(newUser);
   }
 
-  async findUserByUsername(username: string) {
-    const user = await this.userRep.findOneBy({ username: username });
+  async findUserByUsername(username: string, select?: any) {
+    const user = await this.userRep.findOne({
+      where: {
+        username: username,
+      },
+      select,
+    });
     return user;
   }
 
@@ -42,5 +48,18 @@ export class AuthService {
       token,
       user,
     };
+  }
+
+  async verify2fa(user: User, details: twoFactorDto) {
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token: details.token,
+    });
+    if (verified && !user.twoFactorEnabled) {
+      user.twoFactorEnabled = true;
+      await this.userRep.save(user);
+    }
+    return verified;
   }
 }

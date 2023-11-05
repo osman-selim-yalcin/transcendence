@@ -27,10 +27,10 @@ export class User {
   @Column({ nullable: false })
   sessionID: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   twoFactorSecret: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   twoFactorEnabled: boolean;
 
   @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
@@ -42,7 +42,7 @@ export class User {
   })
   avatar: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   oldAvatar: string;
 
   @Column({ type: 'enum', enum: userStatus, default: userStatus.OFFLINE })
