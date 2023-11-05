@@ -46,6 +46,22 @@ export class GameService {
     });
   }
 
+  async getOppenent(user: User) {
+    try {
+      if (user.status !== userStatus.INGAME)
+        throw new HttpException('user not in game', 400);
+      const game = this.server.findGame(user.sessionID, this.server.gameList);
+      return game.users.find((u, i) => {
+        const userGame = u.sessionID !== user.sessionID;
+        if (userGame) {
+          return { user: userGame, index: i };
+        }
+      });
+    } catch (e) {
+      throw new HttpException('user not in game', 400);
+    }
+  }
+
   async allGames(query: gameDto) {
     const user = await this.idToUser(Number(query.id), [
       'won',

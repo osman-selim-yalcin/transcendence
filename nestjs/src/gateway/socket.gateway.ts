@@ -109,14 +109,18 @@ export class socketGateway implements OnModuleInit {
   }
 
   gameInviteAccepted(user: User, otherUser: User) {
-    this.server.in(user.sessionID).emit('game invite accepted', otherUser);
-    this.server.in(otherUser.sessionID).emit('game invite accepted', user);
+    this.server.in(user.sessionID).emit('game invite accepted');
+    this.server.in(otherUser.sessionID).emit('game invite accepted');
   }
 
   //GAME LOGIC
   @SubscribeMessage('join queue')
-  joinQueue(client: CustomSocket) {
-    if (!this.queueList.includes(client.sessionID))
+  async joinQueue(client: CustomSocket) {
+    if (
+      !this.queueList.includes(client.sessionID) ||
+      (await this.userService.findUserBySessionID(client.sessionID)).status !==
+        userStatus.INGAME
+    )
       this.queueList.push(client.sessionID);
   }
 
