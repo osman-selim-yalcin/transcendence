@@ -10,7 +10,6 @@ const socket = io("http://localhost:3000", { autoConnect: false });
 
 export function SocketProvider({ children }: PropsWithChildren) {
   const { user, userRooms, setUserRooms, reloadFriends, reloadNotifications, reloadUserRooms } = useContext(UserContext)
-  const navigate = useNavigate()
 
   useEffect(() => {
     socket.on("connect_error", (error) => {
@@ -40,7 +39,7 @@ export function SocketProvider({ children }: PropsWithChildren) {
       reloadUserRooms()
     })
     socket.on("game invite accepted", () => {
-      navigate(`/game?ref=invite`)
+      window.location.href = `/game?ref=invite`
     })
     return (() => {
       socket.off("game invite accepted")
