@@ -20,12 +20,14 @@ import { CloudinaryResponse } from './cloudinary/cloudinary-response';
 import * as speakeasy from 'speakeasy';
 import * as QRCode from 'qrcode';
 import { twoFactorDto } from 'src/types/2fa.dto';
+import { socketGateway } from 'src/gateway/socket.gateway';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Notification)
     private notificationRep: Repository<Notification>,
     @InjectRepository(User) private userRep: Repository<User>,
+    private server: socketGateway,
   ) {}
 
   async allUsers(query: any, user: User) {
@@ -59,12 +61,18 @@ export class UsersService {
       user: notification.creator,
       creator: notification.user,
     });
+    this.server.reloadFriend(user);
+    this.server.reloadFriend(otherUser);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(otherUser);
     await this.notificationRep.remove(notification);
     return { msg: 'success' };
   }
 
   async deleteFriend(user: User, otherUser: User) {
     deleteFriendHelper(user, otherUser);
+    this.server.reloadFriend(user);
+    this.server.reloadFriend(otherUser);
     await this.userRep.save(user);
     await this.userRep.save(otherUser);
     return { msg: 'success' };
@@ -95,6 +103,11 @@ export class UsersService {
     blockUserHelper(user, otherUser);
     await this.userRep.save(user);
     await this.userRep.save(otherUser);
+
+    //reload room
+    this.server.reloadRoom(user);
+    this.server.reloadRoom(otherUser);
+
     return { msg: 'success' };
   }
 
@@ -171,6 +184,8 @@ export class UsersService {
     });
     notification.sibling = siblingNotificaiton;
     await this.notificationRep.save(notification);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(friendUser);
     throw new HttpException('notification created succesfully', 200);
   }
 

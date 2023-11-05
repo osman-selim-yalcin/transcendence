@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common';
+import { Inject, OnModuleInit, forwardRef } from '@nestjs/common';
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -24,7 +24,7 @@ interface CustomSocket extends Socket {
 })
 export class socketGateway implements OnModuleInit {
   constructor(
-    private userService: UsersService,
+    @Inject(forwardRef(() => UsersService)) private userService: UsersService,
     private gameService: GameService,
   ) {
     setInterval(() => {
@@ -32,7 +32,7 @@ export class socketGateway implements OnModuleInit {
       if (this.queueList.length > 1) {
         this.preGame([this.queueList[0], this.queueList[1]]);
       }
-    }, 1000);
+    }, 2000);
   }
 
   queueList: string[] = [];
@@ -96,10 +96,31 @@ export class socketGateway implements OnModuleInit {
     });
   }
 
+  async reloadFriend(user: User) {
+    this.server.in(user.sessionID).emit('reload friends');
+  }
+
+  async reloadNotification(user: User) {
+    this.server.in(user.sessionID).emit('reload notification');
+  }
+
+  async reloadRoom(user: User) {
+    this.server.in(user.sessionID).emit('reload userRooms');
+  }
+
+  gameInviteAccepted(user: User, otherUser: User) {
+    this.server.in(user.sessionID).emit('game invite accepted');
+    this.server.in(otherUser.sessionID).emit('game invite accepted');
+  }
+
   //GAME LOGIC
   @SubscribeMessage('join queue')
-  joinQueue(client: CustomSocket) {
-    if (!this.queueList.includes(client.sessionID))
+  async joinQueue(client: CustomSocket) {
+    if (
+      !this.queueList.includes(client.sessionID) ||
+      (await this.userService.findUserBySessionID(client.sessionID)).status !==
+        userStatus.INGAME
+    )
       this.queueList.push(client.sessionID);
   }
 

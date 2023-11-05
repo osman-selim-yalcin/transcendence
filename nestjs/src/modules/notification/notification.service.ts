@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { notificationModify } from 'src/functions/Notification';
+import { socketGateway } from 'src/gateway/socket.gateway';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
 import {
@@ -13,6 +14,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class NotificationService {
   constructor(
+    private server: socketGateway,
     @InjectRepository(Notification)
     private notificationRep: Repository<Notification>,
   ) {}
@@ -47,6 +49,8 @@ export class NotificationService {
         creator: notification.user,
       });
     }
+    this.server.reloadNotification(notification.creator);
+    this.server.reloadNotification(notification.user);
     await this.notificationRep.remove(notification);
     return { msg: 'success' };
   }

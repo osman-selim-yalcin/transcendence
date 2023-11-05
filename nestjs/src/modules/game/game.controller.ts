@@ -16,6 +16,11 @@ export class GameController {
     return this.gameService.invite(req.user, req.friendUser);
   }
 
+  @Get('opponent')
+  opponent(@Req() req: any) {
+    return this.gameService.getOppenent(req.user);
+  }
+
   @Get('leaderboard')
   leaderboard() {
     return this.gameService.leaderboard();

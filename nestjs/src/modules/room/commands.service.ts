@@ -50,6 +50,9 @@ export class CommandsService {
       throw new HttpException('not authorized', 400);
     this.kickHandler(user, room, otherUser);
     await this.roomService.leaveheadler(room, otherUser);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     return userRoomModifyHandler(await this.roomRep.save(room), user);
   }
 
@@ -65,6 +68,9 @@ export class CommandsService {
       room.mods.push(otherUser.username);
       this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
     }
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     return userRoomModifyHandler(await this.roomRep.save(room), user);
   }
 
@@ -86,6 +92,9 @@ export class CommandsService {
       const notification = isRoomNotificationExist(room, otherUser);
       if (notification) await this.notificationRep.remove(notification);
     }
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     return userRoomModifyHandler(await this.roomRep.save(room), user);
   }
 
@@ -112,6 +121,9 @@ export class CommandsService {
       });
     }
     await this.roomRep.save(room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     throw new HttpException(content, 200);
   }
 
@@ -135,6 +147,8 @@ export class CommandsService {
       sibling: notification,
     });
     notification.sibling = siblingNotificaiton;
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(friendUser);
     await this.notificationRep.save(notification);
   }
 
