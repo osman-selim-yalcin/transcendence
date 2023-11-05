@@ -79,6 +79,7 @@ export class GameService {
       throw new HttpException('user is offline', 400);
     const notification = await this.gameNotificationHandler(user, otherUser);
     this.server.preGame([user.sessionID, otherUser.sessionID]);
+    this.server.gameInviteAccepted(user, otherUser);
     await this.notificationRep.save({
       type: notification.type,
       content: `${user.username} accepted your game request`,
@@ -86,6 +87,8 @@ export class GameService {
       user: notification.creator,
       creator: notification.user,
     });
+    this.server.reloadNotification(notification.creator);
+    this.server.reloadNotification(notification.user);
     await this.notificationRep.remove(notification);
   }
 
@@ -125,6 +128,8 @@ export class GameService {
     });
     notification.sibling = siblingNotificaiton;
     await this.notificationRep.save(notification);
+    this.server.reloadNotification(notification.creator);
+    this.server.reloadNotification(notification.user);
     throw new HttpException('game notification created succesfully', 200);
   }
 

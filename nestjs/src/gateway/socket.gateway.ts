@@ -32,7 +32,7 @@ export class socketGateway implements OnModuleInit {
       if (this.queueList.length > 1) {
         this.preGame([this.queueList[0], this.queueList[1]]);
       }
-    }, 1000);
+    }, 2000);
   }
 
   queueList: string[] = [];
@@ -106,6 +106,11 @@ export class socketGateway implements OnModuleInit {
 
   async reloadRoom(user: User) {
     this.server.in(user.sessionID).emit('reload userRooms');
+  }
+
+  gameInviteAccepted(user: User, otherUser: User) {
+    this.server.in(user.sessionID).emit('game invite accepted', otherUser);
+    this.server.in(otherUser.sessionID).emit('game invite accepted', user);
   }
 
   //GAME LOGIC
