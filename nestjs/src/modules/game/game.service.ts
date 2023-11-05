@@ -47,7 +47,6 @@ export class GameService {
   }
 
   async allGames(query: gameDto) {
-    console.log(query);
     const user = await this.idToUser(Number(query.id), [
       'won',
       'won.loser',
