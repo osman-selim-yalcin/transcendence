@@ -22,7 +22,6 @@ export default function GroupJoin({ room, setModal }: PropsWithChildren<{ room: 
       .then((response) => {
         console.log("delete response:", response)
       })
-    reloadUserRooms()
   }
   return (
     <>

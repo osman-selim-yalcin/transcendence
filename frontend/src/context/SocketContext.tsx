@@ -1,7 +1,7 @@
 import { PropsWithChildren, createContext, useContext, useEffect } from "react"
 import { Socket, io } from "socket.io-client"
 import { UserContext } from "./UserContext"
-import { message, room, user } from "../types";
+import { message, room } from "../types";
 import { useNavigate } from "react-router-dom";
 
 export const SocketContext = createContext<Socket>(null)

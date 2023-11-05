@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { roomPayload, user } from "../../types"
 import { createRoom } from "../../api/room";
 import { UserContext } from "../../context/UserContext";
@@ -7,7 +7,7 @@ export default function GroupCreation({ setModal }: any) {
   const [checkboxes, setCheckboxes] = useState([])
   const [groupName, setGroupName] = useState("")
   const [password, setPassword] = useState("")
-  const { friends, reloadUserRooms } = useContext(UserContext)
+  const { friends } = useContext(UserContext)
 
   const handleCheckboxChange = (value: string, checked: boolean) => {
     if (checked) {
@@ -61,7 +61,6 @@ export default function GroupCreation({ setModal }: any) {
       .then((res) => {
         console.log("new room created:", res)
       })
-      reloadUserRooms()
 
       setModal(false)
       document.querySelectorAll(".group_creation_input").forEach((item: any) => {

@@ -249,7 +249,7 @@ function DetailHeader({ currentRoom }: { currentRoom: room }) {
 }
 
 function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setShowDetail: Function }) {
-  const { user, reloadUserRooms } = useContext(UserContext)
+  const { user } = useContext(UserContext)
   const { openContextMenu } = useContext(ContextMenuContext)
   const navigate = useNavigate()
   const [modal, setModal] = useState(false)
@@ -307,9 +307,6 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
           })
           navigate("/chat")
           setShowDetail(false)
-          setTimeout(() => { // to be changed
-            reloadUserRooms()
-          }, 1000);
         }} >Exit Group</button>
         <Modal isActive={[modal, setModal]} removable={true}>
           <UserList userListType={UserListType.INVITE_USER} room={currentRoom} />
@@ -325,7 +322,6 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
         }}>Profile</button>
         <button onClick={async () => {
           await changeBlock({ id: found.id })
-          reloadUserRooms()
         }}>Block</button>
       </>
     )
@@ -333,7 +329,6 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
 }
 
 export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId, currentRoomCreator, canBeControlled }: PropsWithChildren<ContextContent>) {
-  const { reloadUserRooms } = useContext(UserContext)
   const { closeContextMenu } = useContext(ContextMenuContext)
   const { user } = useContext(UserContext)
   const navigate = useNavigate()
@@ -350,25 +345,19 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
         {user.username === currentRoomCreator &&
           <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
             await changeMod({ id: currentRoomId, user: { id: clickedUser.id } })
-            reloadUserRooms()//works without setimeout?
           }}
           >{clickedUserRank === RoomRank.MEMBER ? "Promote" : "Demote"}</button>
         }
         <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
           console.log("room id:", currentRoomId, "clicked user id:", clickedUser.id)
           await kickUser({ id: currentRoomId, user: { id: clickedUser.id } })
-          setTimeout(() => {
-            reloadUserRooms()
-          }, 1000);
         }}
         >Kick</button>
         <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
           await changeMute({ id: currentRoomId, user: { id: clickedUser.id } })
-          reloadUserRooms()
         }}>Mute</button>
         <button className={(user.id === clickedUser.id ? "hidden" : "")} onClick={async () => {
           await changeBlock({ id: clickedUser.id })
-          reloadUserRooms()
         }}>{clickedUser.status === userStatus.BLOCKED ? <>Unblock</> : <>Block</>}</button>
       </div>
     </>

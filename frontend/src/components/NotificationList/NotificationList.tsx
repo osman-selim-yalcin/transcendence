@@ -37,7 +37,6 @@ export default function NotificationList() {
 }
 
 function NotificationIndex({ notification }: { notification: notification }) {
-  const { reloadFriends, reloadNotifications, reloadUserRooms } = useContext(UserContext)
   let statement = null
   if (notification.status === NotificationStatus.PENDING || notification.status === NotificationStatus.DECLINED) {
     statement = <ReadyContentSingleButtonNotification notification={notification} isPositive={false} />
@@ -47,16 +46,10 @@ function NotificationIndex({ notification }: { notification: notification }) {
     if (notification.type === NotificationType.FRIEND) {
       statement = <DoubleButtonNotification notification={notification} onAccept={async () => {
         await addFriend({ id: notification.creator.id })
-        reloadFriends()
-        reloadNotifications()
       }} />
     } else if (notification.type === NotificationType.ROOM) {
       statement = <DoubleButtonNotification notification={notification} onAccept={async () => {
         await joinRoom({ id: notification.roomID })
-        setTimeout(() => {
-          reloadNotifications()
-          reloadUserRooms()
-        }, 1000);
       }} />
     }
   }
@@ -64,7 +57,6 @@ function NotificationIndex({ notification }: { notification: notification }) {
 }
 
 function ReadyContentSingleButtonNotification({ notification, isPositive }: PropsWithChildren<{ notification: notification, isPositive: boolean }>) {
-  const { reloadNotifications } = useContext(UserContext)
   return (
     <>
       <p>
@@ -72,14 +64,12 @@ function ReadyContentSingleButtonNotification({ notification, isPositive }: Prop
       </p>
       <button onClick={async () => {
         await deleteNotification({ id: notification.id })
-        reloadNotifications()
       }}>{isPositive ? <>&#10003;</> : <>&#10005;</>}</button>
     </>
   )
 }
 
 function DoubleButtonNotification({ notification, onAccept }: PropsWithChildren<{ notification: notification, onAccept: MouseEventHandler<HTMLButtonElement> }>) {
-  const { reloadNotifications } = useContext(UserContext)
 
   return (
     <>
@@ -90,7 +80,6 @@ function DoubleButtonNotification({ notification, onAccept }: PropsWithChildren<
         <button onClick={onAccept}>&#10003;</button>
         <button onClick={async () => {
           await deleteNotification({ id: notification.id })
-          reloadNotifications()
         }}>&#10005;</button>
       </div>
     </>

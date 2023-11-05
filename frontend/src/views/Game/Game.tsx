@@ -7,6 +7,7 @@ import { GameState, currentPositions, player, user } from "../../types"
 import { UserContext } from "../../context/UserContext"
 import LoadIndicator from "../../components/LoadIndicator/LoadIndicator"
 import { getOpponent } from "../../api/game"
+import { useSearchParams } from "react-router-dom"
 // import { game_start } from "../game/index.js"
 
 export default function Game() {
@@ -16,6 +17,8 @@ export default function Game() {
   const [gameState, setGameState] = useState<GameState>(GameState.PREQUEUE)
   const [opponent, setOpponent] = useState<user>(null)
   const [selfIndex, setSelfIndex] = useState<number>(null)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const myParam = searchParams.get('ref');
 
   const keys = useRef({
     w: {
@@ -43,6 +46,10 @@ export default function Game() {
       } else if (event.key === "s") {
         keys.current.s.pressed = false
       }
+    }
+
+    if (myParam === "invite") {
+      setGameState(GameState.PREGAME_NOT_READY)
     }
 
     return (() => {
@@ -84,11 +91,13 @@ export default function Game() {
       playerPaddle.hue = 30
       playerPaddle.light = 100
 
-      getOpponent()
+      if (myParam === "invite") {
+        getOpponent()
         .then((res: {user: user, index: number}) => {
           setOpponent(res.user)
           setSelfIndex(1 - res.index)
         })
+      }
 
       socket.off("pre-game")
       socket.on("game start", (data: player[]) => {

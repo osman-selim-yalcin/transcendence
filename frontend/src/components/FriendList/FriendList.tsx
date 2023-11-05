@@ -38,7 +38,7 @@ export default function FriendList({ setBarActive }: { setBarActive: Function })
 }
 
 function FriendIndex({ singleFriend, setBarActive }: { singleFriend: user, setBarActive: Function }) {
-  const { reloadFriends, userRooms, setUserRooms, user } = useContext(UserContext)
+  const { userRooms, setUserRooms, user } = useContext(UserContext)
   const navigate = useNavigate()
 
   async function getPrivateChat(friend: user) {
@@ -75,7 +75,6 @@ function FriendIndex({ singleFriend, setBarActive }: { singleFriend: user, setBa
       }}>Chat</button>
       <button onClick={async () => {
         await deleteFriend({ id: singleFriend.id })
-        reloadFriends()
       }}>Remove Friend</button>
     </>
   )
