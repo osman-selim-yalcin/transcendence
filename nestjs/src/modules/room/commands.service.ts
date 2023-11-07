@@ -56,24 +56,6 @@ export class CommandsService {
     return userRoomModifyHandler(await this.roomRep.save(room), user);
   }
 
-  async modUser(user: User, room: Room, otherUser: User) {
-    if (user.username !== room.creator)
-      throw new HttpException('not authorized', 400);
-    if (!isUserInRoom(room, otherUser))
-      throw new HttpException('user not in room', 400);
-    if (isMod(room, otherUser)) {
-      room.mods = room.mods.filter((u) => u !== otherUser.username);
-      this.modHandler(user, room, otherUser);
-    } else {
-      room.mods.push(otherUser.username);
-      this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
-    }
-
-    //reload room
-    room.users.map((u) => this.server.reloadRoom(u));
-    return userRoomModifyHandler(await this.roomRep.save(room), user);
-  }
-
   async banUser(user: User, room: Room, otherUser: User) {
     if (
       (isMod(room, otherUser) && user.username !== room.creator) ||
@@ -91,6 +73,22 @@ export class CommandsService {
       room.banList.push(otherUser.username);
       const notification = isRoomNotificationExist(room, otherUser);
       if (notification) await this.notificationRep.remove(notification);
+    }
+
+    return userRoomModifyHandler(await this.roomRep.save(room), user);
+  }
+
+  async modUser(user: User, room: Room, otherUser: User) {
+    if (user.username !== room.creator)
+      throw new HttpException('not authorized', 400);
+    if (!isUserInRoom(room, otherUser))
+      throw new HttpException('user not in room', 400);
+    if (isMod(room, otherUser)) {
+      room.mods = room.mods.filter((u) => u !== otherUser.username);
+      this.modHandler(user, room, otherUser);
+    } else {
+      room.mods.push(otherUser.username);
+      this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
     }
 
     //reload room

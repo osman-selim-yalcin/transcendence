@@ -42,7 +42,7 @@ export class tokenMiddleware implements NestMiddleware {
     } else if (path === '/notification' && getMethod) {
       relations = ['notifications', 'notifications.creator'];
     } else if (path === '/room' && postMethod) {
-      relations = ['rooms'];
+      relations = ['rooms', 'friends'];
     } else if (path === '/room/user-rooms') {
       relations = ['rooms', 'rooms.users', 'rooms.messages'];
     } else if (path === '/room/join') {
