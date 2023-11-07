@@ -2,7 +2,7 @@ import { PropsWithChildren, useContext, useEffect, useRef, useState } from "reac
 import { UserContext } from "../../context/UserContext"
 import "./Chat.scss"
 import { room, user, message, RoomRank, ContextMenuContentType, ContextContent, UserListType, MutedUser, userStatus } from "../../types"
-import { changeMod, changeMute, kickUser, leaveRoom, sendMessage } from "../../api/room"
+import { banUser, changeMod, changeMute, kickUser, leaveRoom, sendMessage } from "../../api/room"
 import LoadIndicator from "../LoadIndicator/LoadIndicator"
 import { useNavigate, useParams } from "react-router-dom"
 import { ContextMenuContext } from "../../context/ContextMenuContext"
@@ -361,6 +361,9 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
         <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
           await changeMute({ id: currentRoomId, user: { id: clickedUser.id } })
         }}>Mute</button>
+        <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
+          await banUser({ id: currentRoomId, user: { id: clickedUser.id } })
+        }}>Ban</button>
         <button className={(user.id === clickedUser.id ? "hidden" : "")} onClick={async () => {
           await changeBlock({ id: clickedUser.id })
         }}>{clickedUser.status === userStatus.BLOCKED ? <>Unblock</> : <>Block</>}</button>

@@ -110,6 +110,20 @@ export const kickUser = async (body: roomCommandBody) => {
     })
 }
 
+export const banUser = async (body: roomCommandBody) => {
+  return axios
+    .post("http://localhost:3000/api/room/command/ban", body, {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
+
 export const joinRoom = async (body: { id: number; password?: string }) => {
   return axios
     .post("http://localhost:3000/api/room/join", body, {
