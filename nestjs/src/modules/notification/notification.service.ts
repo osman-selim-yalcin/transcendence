@@ -49,9 +49,9 @@ export class NotificationService {
         creator: notification.user,
       });
     }
+    await this.notificationRep.remove(notification);
     this.server.reloadNotification(notification.creator);
     this.server.reloadNotification(notification.user);
-    await this.notificationRep.remove(notification);
     return { msg: 'success' };
   }
 }
