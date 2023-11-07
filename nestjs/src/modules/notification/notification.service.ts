@@ -20,7 +20,6 @@ export class NotificationService {
   ) {}
 
   async getNotifications(user: User) {
-    console.log(user);
     return user.notifications.map((n) => notificationModify(n));
   }
 

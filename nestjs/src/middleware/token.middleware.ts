@@ -18,7 +18,6 @@ export class tokenMiddleware implements NestMiddleware {
     let relations = [];
     let path: string = req.route.path.slice(4);
     if (path.endsWith('/')) path = path.slice(0, -1);
-    console.log(path);
     const getMethod = req.route.methods.get;
     const postMethod = req.route.methods.post;
     const deletMethod = req.route.methods.delete;
