@@ -259,6 +259,8 @@ export class RoomService {
       }
     }
 
+    this.server.leaveRoom(user.sessionID, room.id.toString());
+
     this.specialMsg(user.username + ' leave', room);
     await this.roomRep.save(room);
   }

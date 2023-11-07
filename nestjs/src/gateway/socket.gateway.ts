@@ -86,6 +86,10 @@ export class socketGateway implements OnModuleInit {
     this.server.in(sessionID).socketsJoin(roomID);
   }
 
+  leaveRoom(sessionID: string, roomID: string) {
+    this.server.in(sessionID).socketsLeave(roomID);
+  }
+
   async onPrivateMessage(payload: any) {
     this.server.to(payload.to).emit('private message', {
       ...payload.msg,

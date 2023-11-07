@@ -105,6 +105,7 @@ export class CommandsService {
     )
       throw new HttpException('not authorized', 400);
     let content = `${otherUser.username} will be muted for 10 min`;
+
     if (await this.roomService.isMuted(room, otherUser)) {
       content = `${otherUser.username} unmuted`;
       clearTimeout(
@@ -119,11 +120,10 @@ export class CommandsService {
         username: otherUser.username,
         time: timeoutID[Symbol.toPrimitive](),
       });
+      //reload room
+      room.users.map((u) => this.server.reloadRoom(u));
+      await this.roomRep.save(room);
     }
-    await this.roomRep.save(room);
-
-    //reload room
-    room.users.map((u) => this.server.reloadRoom(u));
     throw new HttpException(content, 200);
   }
 
@@ -222,12 +222,11 @@ export class CommandsService {
     );
   }
 
-  unMuteHandler(room: Room, otherUser: User) {
+  async unMuteHandler(room: Room, otherUser: User) {
     room.muteList = room.muteList.filter(
       (u) => u.username !== otherUser.username,
     );
-    this.server.server
-      .to(room.id.toString())
-      .emit('unmute', otherUser.username);
+    await this.roomRep.save(room);
+    room.users.map((u) => this.server.reloadRoom(u));
   }
 }
