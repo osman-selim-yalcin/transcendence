@@ -56,7 +56,7 @@ export async function getOpponent() {
 
 export async function sendGameInvite(data: { id: number }) {
   return axios
-    .post("http://localhost:3000/api/game/opponent", data, {
+    .post("http://localhost:3000/api/game/invite", data, {
       headers: {
         authorization:
           "Bearer " +
