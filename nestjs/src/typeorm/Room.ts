@@ -12,7 +12,7 @@ import { Message } from './Message';
 
 export type muteType = {
   username: string;
-  time: NodeJS.Timeout;
+  time: number;
 };
 
 @Entity({ name: 'rooms' })

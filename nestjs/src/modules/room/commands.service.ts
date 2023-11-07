@@ -117,7 +117,7 @@ export class CommandsService {
       }, 1000 * 60 * 10);
       room.muteList.push({
         username: otherUser.username,
-        time: timeoutID,
+        time: timeoutID[Symbol.toPrimitive](),
       });
     }
     await this.roomRep.save(room);
