@@ -114,16 +114,16 @@ function MessageIndex({ room }: { room: room }) {
           <img src={room.avatar} alt="room avatar" />
         </div>
       </div>
-      {lastMessage &&
-        <div className="chat-name">
-          <b>
-            {getRoomName(room)}
-          </b>
+      <div className="chat-name">
+        <b>
+          {getRoomName(room)}
+        </b>
+        {lastMessage &&
           <p>
             {lastMessage.length > 15 ? lastMessage.slice(0, 15) + "..." : lastMessage}
           </p>
-        </div>
-      }
+        }
+      </div>
     </>
   )
 }
