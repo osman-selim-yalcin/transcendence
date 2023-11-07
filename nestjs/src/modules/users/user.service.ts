@@ -10,7 +10,7 @@ import {
   isFriend,
   modifyBlockUser,
 } from 'src/functions/user';
-import { userDto, userStatus } from 'src/types/user.dto';
+import { userDto } from 'src/types/user.dto';
 import {
   notificationStatus,
   notificationTypes,
@@ -20,6 +20,7 @@ import { CloudinaryResponse } from './cloudinary/cloudinary-response';
 import * as speakeasy from 'speakeasy';
 import * as QRCode from 'qrcode';
 import { twoFactorDto } from 'src/types/2fa.dto';
+import { socketGateway } from 'src/gateway/socket.gateway';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +28,7 @@ export class UsersService {
     @InjectRepository(Notification)
     private notificationRep: Repository<Notification>,
     @InjectRepository(User) private userRep: Repository<User>,
+    private server: socketGateway,
   ) {}
 
   async allUsers(query: any, user: User) {
@@ -60,18 +62,18 @@ export class UsersService {
       user: otherUser,
       creator: user,
     });
-    // this.server.reloadFriend(user);
-    // this.server.reloadFriend(otherUser);
-    // this.server.reloadNotification(user);
-    // this.server.reloadNotification(otherUser);
+    this.server.reloadFriend(user);
+    this.server.reloadFriend(otherUser);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(otherUser);
     await this.notificationRep.remove(notification);
     return { msg: 'success' };
   }
 
   async deleteFriend(user: User, otherUser: User) {
     deleteFriendHelper(user, otherUser);
-    // this.server.reloadFriend(user);
-    // this.server.reloadFriend(otherUser);
+    this.server.reloadFriend(user);
+    this.server.reloadFriend(otherUser);
     await this.userRep.save(user);
     await this.userRep.save(otherUser);
     return { msg: 'success' };
@@ -104,31 +106,13 @@ export class UsersService {
     await this.userRep.save(otherUser);
 
     // //reload room
-    // this.server.reloadRoom(user);
-    // this.server.reloadRoom(otherUser);
+    this.server.reloadRoom(user);
+    this.server.reloadRoom(otherUser);
 
     return { msg: 'success' };
   }
 
   //ENDPOINT END HERE / UTILS START HERE
-
-  async handleStatusChange(user: User, status: number) {
-    user.status = status;
-    return this.userRep.save(user);
-  }
-
-  async handleUserDisconnect(user: User) {
-    user.status = userStatus.OFFLINE;
-    user.lastSeen = new Date().toISOString();
-    return this.userRep.save(user);
-  }
-
-  async findUserBySessionID(sessionID: string, relations?: string[]) {
-    return this.userRep.findOne({
-      where: { sessionID: sessionID },
-      relations,
-    });
-  }
 
   async notificationHandler(user: User, otherUser: User) {
     if (isFriend(user, otherUser))
@@ -183,8 +167,8 @@ export class UsersService {
     });
     notification.sibling = siblingNotificaiton;
     await this.notificationRep.save(notification);
-    // this.server.reloadNotification(user);
-    // this.server.reloadNotification(friendUser);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(friendUser);
     throw new HttpException('notification created succesfully', 200);
   }
 

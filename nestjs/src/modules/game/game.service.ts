@@ -5,7 +5,7 @@ import { socketGateway } from 'src/gateway/socket.gateway';
 import { Game } from 'src/typeorm/Game';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
-import { gameDto, typeGame } from 'src/types/game.dto';
+import { gameDto } from 'src/types/game.dto';
 import {
   notificationStatus,
   notificationTypes,
@@ -22,15 +22,6 @@ export class GameService {
     private notificationRep: Repository<Notification>,
     @Inject(forwardRef(() => socketGateway)) private server: socketGateway,
   ) {}
-
-  createGame(gameDetails: typeGame) {
-    const newGame = this.gameRep.create(gameDetails);
-    newGame.winner.elo += newGame.elo;
-    newGame.loser.elo -= newGame.elo;
-    this.gameRep.save(newGame);
-    this.userRep.save(newGame.winner);
-    this.userRep.save(newGame.loser);
-  }
 
   modifyGame(games: Game[], result: boolean) {
     return games.map((g) => {
