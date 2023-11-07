@@ -179,7 +179,7 @@ function ChatForm({ currentRoomID, roomMuteList, inputRef }: PropsWithChildren<{
     } else {
       setMuted(false)
     }
-  }, [currentRoomID])
+  }, [currentRoomID, roomMuteList])
 
   if (muted) {
     return (
