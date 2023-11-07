@@ -66,8 +66,8 @@ export default function Game() {
     const playerPaddle = new Paddle(document.getElementById("player"))
     const opponentPaddle = new Paddle(document.getElementById("opponent"))
     const ball = new Ball(document.getElementById("ball"))
-  if (gameState === GameState.PREQUEUE) {
-  } else if (gameState === GameState.IN_QUEUE) {
+    if (gameState === GameState.PREQUEUE) {
+    } else if (gameState === GameState.IN_QUEUE) {
       socket.on("pre-game", (data: player[]) => {
         console.log(data)
         data.forEach((player, index) => {
@@ -93,10 +93,10 @@ export default function Game() {
 
       if (myParam === "invite") {
         getOpponent()
-        .then((res: {user: user, index: number}) => {
-          setOpponent(res.user)
-          setSelfIndex(1 - res.index)
-        })
+          .then((res: { user: user, index: number }) => {
+            setOpponent(res.user)
+            setSelfIndex(1 - res.index)
+          })
       }
 
       socket.off("pre-game")
@@ -181,11 +181,13 @@ export default function Game() {
 
 function PreQueueContent({ gameStateHook: [gameState, setGameState] }: PropsWithChildren<{ gameStateHook: [GameState, Function] }>) {
   const { user } = useContext(UserContext)
+  const socket = useContext(SocketContext)
+  
   return (
     <>
       <p className={"game-title game-center"}>PONG</p>
       <div className="prequeue-content">
-        <button disabled={!user} onClick={() => {
+        <button disabled={!user || !socket.connected} onClick={() => {
           setGameState(GameState.IN_QUEUE)
         }}
         >Join Queue</button>
@@ -221,26 +223,31 @@ function UserFrames({ opponent }: PropsWithChildren<{ opponent: user }>) {
 
   return (
     <>
-      <div className={"info user-info"}>
-        <div className={"avatar"}>
-          <img src={user?.avatar} alt="user avatar" />
-        </div>
-        <div className={"body"}>
-          <p>
-            {user.displayName ? user.displayName.toUpperCase() : user.username.toUpperCase()}
-          </p>
-        </div>
-      </div>
-      <div className={"info opponent-info"}>
-        <div className={"body"}>
-          <p>
-            {opponent.displayName ? opponent.displayName.toUpperCase() : opponent.username.toUpperCase()}
-          </p>
-        </div>
-        <div className={"avatar"}>
-          <img src={opponent?.avatar} alt="opponent avatar" />
-        </div>
-      </div>
+      {
+        opponent &&
+        <>
+          <div className={"info user-info"}>
+            <div className={"avatar"}>
+              <img src={user?.avatar} alt="user avatar" />
+            </div>
+            <div className={"body"}>
+              <p>
+                {user.displayName ? user.displayName.toUpperCase() : user.username.toUpperCase()}
+              </p>
+            </div>
+          </div>
+          <div className={"info opponent-info"}>
+            <div className={"body"}>
+              <p>
+                {opponent.displayName ? opponent.displayName.toUpperCase() : opponent.username.toUpperCase()}
+              </p>
+            </div>
+            <div className={"avatar"}>
+              <img src={opponent?.avatar} alt="opponent avatar" />
+            </div>
+          </div>
+        </>
+      }
     </>
   )
 }
@@ -254,7 +261,7 @@ function CustomizeButtons({ gameStateHook: [gameState, setGameState], opponent, 
         <>
           <div className={"ready-state"}>
             <button
-              disabled={!opponent || !selfIndex}
+              disabled={!opponent || selfIndex === null}
               onClick={() => {
                 setGameState(GameState.PREGAME_READY)
               }}
