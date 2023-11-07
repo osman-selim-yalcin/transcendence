@@ -199,7 +199,7 @@ export class socketGateway implements OnModuleInit {
     const intervalID = setInterval(() => {
       game = gameUpdate(game, this.server);
       this.server.in(game.gameID).emit('game update', {
-        paddles: [game.users[0].paddle, game.users[1].paddle],
+        paddles: [game.users[1].paddle, game.users[0].paddle],
         ball: game.ball,
       });
       if (game.isOver) {
@@ -230,7 +230,7 @@ export class socketGateway implements OnModuleInit {
 
   async endGame(game: socketGame) {
     clearInterval(game.intervalID);
-    this.server.in(game.gameID).emit('game over', game.users);
+    this.server.in(game.gameID).emit('game over');
     this.server.in(game.gameID).socketsLeave(game.gameID);
     this.gameList.splice(this.gameList.indexOf(game), 1);
     const winner = await this.findUserBySessionID(

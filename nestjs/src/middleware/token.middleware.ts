@@ -21,6 +21,7 @@ export class tokenMiddleware implements NestMiddleware {
     const getMethod = req.route.methods.get;
     const postMethod = req.route.methods.post;
     const deletMethod = req.route.methods.delete;
+    console.log(path);
     if (path == '/user/info') {
       // relations = [
       //   'friends',
