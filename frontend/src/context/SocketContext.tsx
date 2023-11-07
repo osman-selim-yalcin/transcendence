@@ -2,7 +2,6 @@ import { PropsWithChildren, createContext, useContext, useEffect } from "react"
 import { Socket, io } from "socket.io-client"
 import { UserContext } from "./UserContext"
 import { message, room } from "../types";
-import { useNavigate } from "react-router-dom";
 
 export const SocketContext = createContext<Socket>(null)
 const socket = io("http://localhost:3000", { autoConnect: false });
@@ -29,23 +28,20 @@ export function SocketProvider({ children }: PropsWithChildren) {
       setUserRooms(updatedUserRooms)
       console.log("socket message:", message)
     })
-    socket.on("reload friends", () => {
-      reloadFriends()
-    })
-    socket.on("reload notification", () => {
-      reloadNotifications()
-    })
-    socket.on("reload userRooms", () => {
-      reloadUserRooms()
+    socket.on("reload", (data: string) => {
+      if (data === "friends")
+        reloadFriends()
+      else if (data === "notification")
+        reloadNotifications()
+      else if (data === "userRooms")
+        reloadUserRooms()
     })
     socket.on("game invite accepted", () => {
       window.location.href = `/game?ref=invite`
     })
     return (() => {
       socket.off("game invite accepted")
-      socket.off("reload userRooms")
-      socket.off("reload notification")
-      socket.off("reload friends")
+      socket.off("reload")
       socket.off("connection_error")
       socket.off("private message")
     })

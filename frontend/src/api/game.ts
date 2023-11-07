@@ -53,3 +53,20 @@ export async function getOpponent() {
       console.log(err)
     })
 }
+
+export async function sendGameInvite(data: { id: number }) {
+  return axios
+    .post("http://localhost:3000/api/game/opponent", data, {
+      headers: {
+        authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response.data
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}

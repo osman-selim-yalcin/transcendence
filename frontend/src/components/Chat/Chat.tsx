@@ -320,6 +320,9 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
         <button onClick={() => {
           navigate(`/profile/${found.username}`)
         }}>Profile</button>
+        <button>
+          Game Invite
+        </button>
         <button onClick={async () => {
           await changeBlock({ id: found.id })
         }}>Block</button>
@@ -342,6 +345,8 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
         <button onClick={() => {
           navigate(`/profile/${clickedUser.username}`)
         }}>Profile</button>
+        <button className={(user.id === clickedUser.id ? "hidden" : "")} onClick={async () => {
+        }}>Game Invite</button>
         {user.username === currentRoomCreator &&
           <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {
             await changeMod({ id: currentRoomId, user: { id: clickedUser.id } })
