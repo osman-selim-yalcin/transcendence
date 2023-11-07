@@ -28,7 +28,7 @@ export class socketGateway implements OnModuleInit {
     private gameService: GameService,
   ) {
     setInterval(() => {
-      console.log(this.queueList.length);
+      // console.log(this.queueList.length);
       // console.log(this.server);
       if (this.queueList.length > 1) {
         this.preGame([this.queueList[0], this.queueList[1]]);

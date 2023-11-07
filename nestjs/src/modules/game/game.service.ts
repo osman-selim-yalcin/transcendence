@@ -86,13 +86,13 @@ export class GameService {
 
   async invite(user: User, otherUser: User) {
     if (isBlock(user, otherUser)) throw new HttpException('blocked', 400);
-    if (
-      user.status === userStatus.INGAME ||
-      otherUser.status === userStatus.INGAME
-    )
-      throw new HttpException('already in game', 400);
-    if (user.status === userStatus.OFFLINE)
-      throw new HttpException('user is offline', 400);
+    // if (
+    //   user.status === userStatus.INGAME ||
+    //   otherUser.status === userStatus.INGAME
+    // )
+    //   throw new HttpException('already in game', 400);
+    // if (user.status === userStatus.OFFLINE)
+    //   throw new HttpException('user is offline', 400);
     const notification = await this.gameNotificationHandler(user, otherUser);
     this.server.preGame([user.sessionID, otherUser.sessionID]);
     this.server.gameInviteAccepted(user, otherUser);
