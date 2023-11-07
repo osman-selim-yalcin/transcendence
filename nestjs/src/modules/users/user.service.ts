@@ -33,7 +33,7 @@ export class UsersService {
     if (query.take > 50) throw new HttpException('too many users', 400);
     let users = await this.userRep.find({
       skip: query.skip ? query.skip : 0,
-      take: query.take ? query.take : '',
+      take: query.take ? query.take : 5,
       where: { username: Like((query.q ? query.q : '') + '%') },
     });
     users = users?.map((u) => {
@@ -57,8 +57,8 @@ export class UsersService {
       type: notification.type,
       content: `${user.username} accepted your friend request`,
       status: notificationStatus.ACCEPTED,
-      user: notification.creator,
-      creator: notification.user,
+      user: otherUser,
+      creator: user,
     });
     // this.server.reloadFriend(user);
     // this.server.reloadFriend(otherUser);

@@ -69,7 +69,7 @@ export function hashPassword(password: string) {
 export function checksForJoin(room: Room, loginUser: User, password: string) {
   if (isUserInRoom(room, loginUser))
     throw new HttpException('user already in room', 400);
-  checkInvite(room, loginUser);
+  checkInvite(room);
   checkBanned(room, loginUser);
   checkPassword(room, password);
 }
@@ -82,8 +82,8 @@ export function checkPassword(room: Room, password: string) {
   }
 }
 
-export function checkInvite(room: Room, loginUser: User) {
-  if (room.isInviteOnly && !isRoomNotificationExist(room, loginUser)) {
+export function checkInvite(room: Room) {
+  if (room.isInviteOnly) {
     throw new HttpException('not invited', 400);
   }
 }

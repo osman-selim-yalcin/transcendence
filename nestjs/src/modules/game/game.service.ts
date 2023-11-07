@@ -100,11 +100,11 @@ export class GameService {
       type: notification.type,
       content: `${user.username} accepted your game request`,
       status: notificationStatus.ACCEPTED,
-      user: notification.creator,
-      creator: notification.user,
+      user: otherUser,
+      creator: user,
     });
-    this.server.reloadNotification(notification.creator);
-    this.server.reloadNotification(notification.user);
+    this.server.reloadNotification(otherUser);
+    this.server.reloadNotification(user);
     await this.notificationRep.remove(notification);
   }
 
@@ -144,8 +144,8 @@ export class GameService {
     });
     notification.sibling = siblingNotificaiton;
     await this.notificationRep.save(notification);
-    this.server.reloadNotification(notification.creator);
-    this.server.reloadNotification(notification.user);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(otherUser);
     throw new HttpException('game notification created succesfully', 200);
   }
 
