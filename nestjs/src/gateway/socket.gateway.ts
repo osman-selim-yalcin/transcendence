@@ -112,11 +112,9 @@ export class socketGateway implements OnModuleInit {
   //GAME LOGIC
   @SubscribeMessage('join queue')
   async joinQueue(client: CustomSocket) {
-    if (
-      !this.queueList.includes(client.sessionID) ||
-      (await this.userService.findUserBySessionID(client.sessionID)).status !==
-        userStatus.INGAME
-    )
+    // (await this.userService.findUserBySessionID(client.sessionID)).status !==
+    // userStatus.INGAME
+    if (!this.queueList.includes(client.sessionID))
       this.queueList.push(client.sessionID);
   }
 
