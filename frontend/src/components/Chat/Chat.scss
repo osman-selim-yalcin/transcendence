@@ -122,6 +122,13 @@
       align-self: flex-start;
       padding: 0.8rem;
       border-radius: .5rem;
+      display: flex;
+      gap: 1rem;
+
+      i {
+        font-size: 10px;
+        align-self: flex-end;
+      }
     }
 
     li.main-user {
@@ -136,6 +143,10 @@
       padding: 0.2rem 0.8rem;
       font-size: smaller;
       color: rgb(87, 100, 110);
+
+      i {
+        display: none;
+      }
     }
   }
 

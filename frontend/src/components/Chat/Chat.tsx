@@ -10,6 +10,7 @@ import { Modal } from "../Modal/Modal"
 import UserList from "../UserList/UserList"
 import { changeBlock } from "../../api/user"
 import { sendGameInvite } from "../../api/game"
+import { getHourMinute } from "../../functions"
 
 export function Chat() {
   const [showDetail, setShowDetail] = useState(false)
@@ -45,6 +46,13 @@ function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrent
   const navigate = useNavigate()
   const [modal, setModal] = useState(false)
 
+
+  useEffect(() => {
+    console.log("change")
+
+  }, [userRooms])
+
+
   return (
     <div className="chatbar">
       <div className={"chatbar-header"}>
@@ -54,7 +62,13 @@ function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrent
         }}>New</button>
       </div>
       <ul className="noselect">
-        {userRooms && userRooms.map((room: room) => {
+        {userRooms && [].concat(userRooms).sort((a: room, b: room) => {
+          if (!a.messages.length)
+            return 1
+          else if (!b.messages.length)
+            return -1
+          return a.messages[a.messages.length - 1].createdAt > b.messages[b.messages.length - 1].createdAt ? -1 : 1
+        }).map((room: room) => {
           // if (room.messages.length)
           return (
             <li key={room.id}
@@ -77,7 +91,7 @@ function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrent
 }
 
 function MessageIndex({ room }: { room: room }) {
-  const [lastMessage, setLastMessage] = useState(null)
+  const [lastMessage, setLastMessage] = useState<string>(null)
   const { user } = useContext(UserContext)
 
   useEffect(() => {
@@ -100,14 +114,16 @@ function MessageIndex({ room }: { room: room }) {
           <img src={room.avatar} alt="room avatar" />
         </div>
       </div>
-      <div className="chat-name">
-        <b>
-          {getRoomName(room)}
-        </b>
-        <p>
-          {lastMessage}
-        </p>
-      </div>
+      {lastMessage &&
+        <div className="chat-name">
+          <b>
+            {getRoomName(room)}
+          </b>
+          <p>
+            {lastMessage.length > 15 ? lastMessage.slice(0, 15) + "..." : lastMessage}
+          </p>
+        </div>
+      }
     </>
   )
 }
@@ -125,7 +141,7 @@ function ChatContent({
   const inputRef = useRef(null)
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "instant", block: "start" })
+    scrollRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
     inputRef.current?.focus()
   }, [currentRoom])
 
@@ -150,6 +166,7 @@ function ChatContent({
                 {currentRoom.messages.map((message: message, index: number) => (
                   <li className={user.username === message.owner ? "main-user" : (message.owner === currentRoom.id.toString() ? "room-announcement" : "")} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
                     <p>{message.content}</p>
+                    <i>{getHourMinute(message.createdAt)}</i>
                   </li>
                 ))}
               </ul>
