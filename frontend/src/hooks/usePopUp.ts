@@ -4,10 +4,6 @@ import { PopUpIndex } from "../types"
 export const usePopUp = () => {
   const [popupQueue, setPopupQueue] = useState<PopUpIndex[]>([])
 
-  useEffect(() => {
-    console.log(popupQueue)
-  }, [popupQueue])
-
   function addPopUp(information: string) {
     const popup: PopUpIndex = { content: information, id: new Date().getTime() }
     setPopupQueue([...popupQueue, popup])

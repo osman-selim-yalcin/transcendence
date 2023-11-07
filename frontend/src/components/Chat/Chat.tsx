@@ -9,6 +9,7 @@ import { ContextMenuContext } from "../../context/ContextMenuContext"
 import { Modal } from "../Modal/Modal"
 import UserList from "../UserList/UserList"
 import { changeBlock } from "../../api/user"
+import { sendGameInvite } from "../../api/game"
 
 export function Chat() {
   const [showDetail, setShowDetail] = useState(false)
@@ -320,7 +321,9 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
         <button onClick={() => {
           navigate(`/profile/${found.username}`)
         }}>Profile</button>
-        <button>
+        <button onClick={async () => {
+          sendGameInvite({ id: found.id })
+        }}>
           Game Invite
         </button>
         <button onClick={async () => {
@@ -346,6 +349,7 @@ export function ContextMenuButtons({ clickedUser, clickedUserRank, currentRoomId
           navigate(`/profile/${clickedUser.username}`)
         }}>Profile</button>
         <button className={(user.id === clickedUser.id ? "hidden" : "")} onClick={async () => {
+          await sendGameInvite({ id: clickedUser.id })
         }}>Game Invite</button>
         {user.username === currentRoomCreator &&
           <button className={(!canBeControlled ? " hidden" : "")} onClick={async () => {

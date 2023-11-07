@@ -6,6 +6,8 @@ import { UserContext } from "../../context/UserContext"
 import { MouseEventHandler, PropsWithChildren, useContext } from "react"
 import { deleteNotification } from "../../api/notification"
 import { joinRoom } from "../../api/room"
+import { sendGameInvite } from "../../api/game"
+import { useNavigate } from "react-router-dom"
 
 export default function NotificationList() {
   const { notifications } = useContext(UserContext)
@@ -37,6 +39,7 @@ export default function NotificationList() {
 }
 
 function NotificationIndex({ notification }: { notification: notification }) {
+  const navigate = useNavigate()
   let statement = null
   if (notification.status === NotificationStatus.PENDING || notification.status === NotificationStatus.DECLINED) {
     statement = <ReadyContentSingleButtonNotification notification={notification} isPositive={false} />
@@ -50,6 +53,11 @@ function NotificationIndex({ notification }: { notification: notification }) {
     } else if (notification.type === NotificationType.ROOM) {
       statement = <DoubleButtonNotification notification={notification} onAccept={async () => {
         await joinRoom({ id: notification.roomID })
+      }} />
+    } else if (notification.type === NotificationType.GAME) {
+      statement = <DoubleButtonNotification notification={notification} onAccept={async () => {
+        await sendGameInvite({ id: notification.creator.id })
+        // navigate("/game?ref=invite")
       }} />
     }
   }
