@@ -88,7 +88,7 @@ export class GameService {
     // if (user.status === userStatus.OFFLINE)
     //   throw new HttpException('user is offline', 400);
     const notification = await this.gameNotificationHandler(user, otherUser);
-    this.server.preGame([user.sessionID, otherUser.sessionID]);
+    this.server.preGame([otherUser.sessionID, user.sessionID]);
     this.server.gameInviteAccepted(user, otherUser);
     await this.notificationRep.save({
       type: notification.type,

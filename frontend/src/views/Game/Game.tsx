@@ -112,6 +112,7 @@ export default function Game() {
     } else if (gameState === GameState.PREGAME_READY) {
       socket.emit("ready", playerPaddle.light === 100 ? "white" : playerPaddle.hue)
     } else if (gameState === GameState.IN_GAME) {
+			console.log(selfIndex)
       socket.off("game start")
       socket.on("game update", (data: currentPositions) => {
         playerPaddle.position = data.paddles[selfIndex].position.y

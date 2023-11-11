@@ -140,11 +140,11 @@ export class socketGateway implements OnModuleInit {
       setTimeout(() => {
         this.gameList[this.gameList.indexOf(game)] = this.startGame(game);
       }, 3000);
-      const right = await this.findUserBySessionID(game.users[0].sessionID);
-      const left = await this.findUserBySessionID(game.users[1].sessionID);
+      const right = await this.findUserBySessionID(game.users[1].sessionID);
+      const left = await this.findUserBySessionID(game.users[0].sessionID);
       this.server.in(game.gameID).emit('game start', [
-        { user: left, color: game.users[1].color },
-        { user: right, color: game.users[0].color },
+        { user: left, color: game.users[0].color },
+        { user: right, color: game.users[1].color },
       ]);
     } catch (e) {
       this.server.in(client.sessionID).emit('error', e);
@@ -181,7 +181,7 @@ export class socketGateway implements OnModuleInit {
           color: '',
           score: 0,
           sessionID: sessionID,
-          paddle: new Paddle(i && true),
+          paddle: new Paddle(!(i && true)),
         };
       }),
       ball: new Circle(),
@@ -189,8 +189,8 @@ export class socketGateway implements OnModuleInit {
       intervalID: null,
     };
     this.gameList.push(game);
-    const right = await this.findUserBySessionID(sessionIDS[0]);
-    const left = await this.findUserBySessionID(sessionIDS[1]);
+    const left = await this.findUserBySessionID(sessionIDS[0]);
+    const right = await this.findUserBySessionID(sessionIDS[1]);
     await this.handleStatusChange(right, userStatus.INGAME);
     await this.handleStatusChange(left, userStatus.INGAME);
     this.server.in(gameID).emit('pre-game', [
@@ -203,7 +203,7 @@ export class socketGateway implements OnModuleInit {
     const intervalID = setInterval(() => {
       game = gameUpdate(game, this.server);
       this.server.in(game.gameID).emit('game update', {
-        paddles: [game.users[1].paddle, game.users[0].paddle],
+        paddles: [game.users[0].paddle, game.users[1].paddle],
         ball: game.ball,
       });
       if (game.isOver) {
