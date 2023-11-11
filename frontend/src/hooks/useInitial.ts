@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
 import { getUser } from "../api/user"
-import { room, user } from "../types"
+import { room, user, userStatus } from "../types"
 import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
 import { getNotifications } from "../api/notification"
-
 
 const useInitial = () => {
   const [user, setUser] = useState<user>(null)
@@ -17,7 +16,9 @@ const useInitial = () => {
       getUser()
         .then((response: any) => {
           console.log("current user ", response, "but user is", user)
-          setUser(response)
+          if (response) {
+            setUser({ ...response, status: userStatus.ONLINE })
+          }
 
           if (response !== undefined) {
             getFriends()

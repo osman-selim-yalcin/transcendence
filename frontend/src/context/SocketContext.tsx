@@ -15,7 +15,7 @@ export function SocketProvider({ children }: PropsWithChildren) {
       console.error("Connection error:", error);
     })
     socket.on("private message", (message: message) => {
-      const updatedUserRooms = userRooms.map((room: room) => {
+      const updatedUserRooms = userRooms?.map((room: room) => {
         if (message.room !== room.id) {
           return room
         } else {
@@ -36,16 +36,13 @@ export function SocketProvider({ children }: PropsWithChildren) {
       else if (data === "userRooms")
         reloadUserRooms()
     })
-    socket.on("game invite accepted", () => {
-      window.location.href = `/game?ref=invite`
-    })
+
     return (() => {
-      socket.off("game invite accepted")
       socket.off("reload")
       socket.off("connection_error")
       socket.off("private message")
     })
-  }, [userRooms])
+  }, [])
 
   useEffect(() => {
     if (user) {

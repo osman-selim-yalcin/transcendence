@@ -122,12 +122,15 @@
       align-self: flex-start;
       padding: 0.8rem;
       border-radius: .5rem;
-      display: flex;
-      gap: 1rem;
 
-      i {
-        font-size: 10px;
-        align-self: flex-end;
+      .message {
+        display: flex;
+        gap: 1rem;
+        
+        i {
+          font-size: 10px;
+          align-self: flex-end;
+        }
       }
     }
 
@@ -135,6 +138,10 @@
       max-width: 40%;
       align-self: flex-end;
       background-color: rgb(224, 252, 215);
+
+      b {
+        display: none;
+      }
     }
 
     li.room-announcement {
@@ -144,7 +151,7 @@
       font-size: smaller;
       color: rgb(87, 100, 110);
 
-      i {
+      i, b {
         display: none;
       }
     }

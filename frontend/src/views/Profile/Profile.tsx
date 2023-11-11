@@ -2,15 +2,17 @@ import { PropsWithChildren, useContext, useEffect, useRef, useState } from "reac
 import { UserContext } from "../../context/UserContext.tsx"
 import { changeAvatar, changeNickname, getUsers } from "../../api/user.ts"
 import { useParams } from "react-router-dom"
-import { user } from "../../types/index.ts"
+import { user, userStatus } from "../../types/index.ts"
 import UserInfo from "../../components/UserInfo/UserInfo.tsx"
 import './Profile.scss'
+import { SocketContext } from "../../context/SocketContext.tsx"
 
 export default function Profile() {
   const [editView, setEditView] = useState(false)
   const [currentUser, setCurrentUser] = useState<user>(null);
   const { username } = useParams()
   const { user } = useContext(UserContext)
+  const socket = useContext(SocketContext)
 
   useEffect(() => {
     async function getUserInfo() {
@@ -29,6 +31,21 @@ export default function Profile() {
       getUserInfo()
     }
   }, [username, user])
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.on(currentUser.username, (data: userStatus) => {
+        setCurrentUser((current) => {
+          return { ...current, status: data }
+        })
+      })
+    }
+
+    return () => {
+      socket.off(currentUser.username)
+    }
+  }, [currentUser])
+
 
   if (currentUser === null) {
     return (
@@ -87,16 +104,16 @@ function ChangeNickname() {
           <input type="text" value={nickname} onChange={(e) => { setNickname(e.target.value) }} />
           <span className={nickname.length === 0 || nickname.length > 12 ? "not-valid" : ""}>{nickname.length}/12</span>
           <br />
-          <button 
-          disabled={nickname.length === 0 || nickname.length > 12}
-          onClick={async () => {
-            await changeNickname({
-              id: user.id,
-              displayName: nickname
-            })
-            setUser({...user, displayName: nickname})
-            setShowInput(false)
-          }}>Set</button>
+          <button
+            disabled={nickname.length === 0 || nickname.length > 12}
+            onClick={async () => {
+              await changeNickname({
+                id: user.id,
+                displayName: nickname
+              })
+              setUser({ ...user, displayName: nickname })
+              setShowInput(false)
+            }}>Set</button>
           <button onClick={() => {
             setNickname(user.displayName)
             setShowInput(false)

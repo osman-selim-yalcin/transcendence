@@ -165,8 +165,11 @@ function ChatContent({
               <ul className={"message-list"}>
                 {currentRoom.messages.map((message: message, index: number) => (
                   <li className={user.username === message.owner ? "main-user" : (message.owner === currentRoom.id.toString() ? "room-announcement" : "")} key={message.id} ref={index === currentRoom.messages.length - 1 ? scrollRef : null}>
-                    <p>{message.content}</p>
-                    <i>{getHourMinute(message.createdAt)}</i>
+                    <b>{message.owner}</b>
+                    <div className={"message"}>
+                      <p>{message.content}</p>
+                      <i>{getHourMinute(message.createdAt)}</i>
+                    </div>
                   </li>
                 ))}
               </ul>

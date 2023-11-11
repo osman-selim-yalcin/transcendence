@@ -94,6 +94,7 @@ export default function Game() {
       if (myParam === "invite") {
         getOpponent()
           .then((res: { user: user, index: number }) => {
+            console.log("hello", res)
             setOpponent(res.user)
             setSelfIndex(1 - res.index)
           })

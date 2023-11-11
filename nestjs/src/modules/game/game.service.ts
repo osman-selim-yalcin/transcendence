@@ -10,7 +10,6 @@ import {
   notificationStatus,
   notificationTypes,
 } from 'src/types/notification.dto';
-import { userStatus } from 'src/types/user.dto';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -42,15 +41,16 @@ export class GameService {
       // if (user.status !== userStatus.INGAME)
       //   throw new HttpException('user not in game', 400);
       const game = this.server.findGame(user.sessionID, this.server.gameList);
-      return game.users.find(async (u, i) => {
-        const userGame = u.sessionID !== user.sessionID;
-        if (userGame) {
-          const real = await this.userRep.find({
+      let i = 0;
+      for (const u of game.users) {
+        if (u.sessionID !== user.sessionID) {
+          const real = await this.userRep.findOne({
             where: { sessionID: u.sessionID },
           });
           return { user: real, index: i };
         }
-      });
+        i++;
+      }
     } catch (e) {
       throw new HttpException('user not in game', 400);
     }
