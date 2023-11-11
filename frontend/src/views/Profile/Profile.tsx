@@ -42,7 +42,9 @@ export default function Profile() {
     }
 
     return () => {
-      socket.off(currentUser.username)
+      if (currentUser) {
+        socket.off(currentUser.username)
+      }
     }
   }, [currentUser])
 
