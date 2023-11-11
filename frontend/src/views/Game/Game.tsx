@@ -48,8 +48,18 @@ export default function Game() {
       }
     }
 
-    if (myParam === "invite") {
-      setGameState(GameState.PREGAME_NOT_READY)
+    checkParams()
+
+    async function checkParams() {
+      if (myParam === "invite") {
+        await getOpponent()
+          .then((res: { user: user, index: number }) => {
+            console.log("hello", res)
+            setOpponent(res.user)
+            setSelfIndex(1 - res.index)
+          })
+        setGameState(GameState.PREGAME_NOT_READY)
+      }
     }
 
     return (() => {
@@ -90,15 +100,6 @@ export default function Game() {
       playerPaddle.position = 50
       playerPaddle.hue = 30
       playerPaddle.light = 100
-
-      if (myParam === "invite") {
-        getOpponent()
-          .then((res: { user: user, index: number }) => {
-            console.log("hello", res)
-            setOpponent(res.user)
-            setSelfIndex(1 - res.index)
-          })
-      }
 
       socket.off("pre-game")
       socket.on("game start", (data: player[]) => {
@@ -184,7 +185,7 @@ export default function Game() {
 function PreQueueContent({ gameStateHook: [gameState, setGameState] }: PropsWithChildren<{ gameStateHook: [GameState, Function] }>) {
   const { user } = useContext(UserContext)
   const socket = useContext(SocketContext)
-  
+
   return (
     <>
       <p className={"game-title game-center"}>PONG</p>
