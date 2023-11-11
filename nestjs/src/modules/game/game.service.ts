@@ -42,10 +42,13 @@ export class GameService {
       // if (user.status !== userStatus.INGAME)
       //   throw new HttpException('user not in game', 400);
       const game = this.server.findGame(user.sessionID, this.server.gameList);
-      return game.users.find((u, i) => {
+      return game.users.find(async (u, i) => {
         const userGame = u.sessionID !== user.sessionID;
         if (userGame) {
-          return { user: userGame, index: i };
+          const real = await this.userRep.find({
+            where: { sessionID: u.sessionID },
+          });
+          return { user: real, index: i };
         }
       });
     } catch (e) {
