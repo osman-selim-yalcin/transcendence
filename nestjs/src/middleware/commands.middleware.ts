@@ -15,12 +15,15 @@ export class commandsMiddleware implements NestMiddleware {
     checkAuth(req.room, req.user);
     if (!req.room.isGroup) throw new HttpException('not authorized', 400);
     if (!req.body.user) throw new HttpException('user is required', 400);
-    req.friendUser = await this.idToUser(req.body.user.id, [
-      'friends',
-      'notifications',
-      'notifications.user',
-      'notifications.creator',
-    ]);
+
+    let relations = [];
+    let path: string = req.route.path.slice(4);
+    if (path.endsWith('/')) path = path.slice(0, -1);
+    if (path === 'room/command/ban' || path === 'room/command/invite') {
+      relations = ['notifications', 'notifications.creator'];
+    }
+
+    req.friendUser = await this.idToUser(req.body.user.id, relations);
     if (req.friendUser.id === req.user.id)
       throw new HttpException('same user', 400);
     next();

@@ -161,9 +161,6 @@ export class RoomService {
       throw new HttpException('private room cannot be leaveable', 400);
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
-
-    //reload room
-    room.users.map((u) => this.server.reloadRoom(u));
     await this.leaveheadler(room, user);
     return { msg: 'user leaved' };
   }
@@ -242,11 +239,14 @@ export class RoomService {
   }
 
   async leaveheadler(room: Room, user: User) {
+    const oldUsers = room.users;
     room.users = room.users.filter((u) => u.id !== user.id);
     if (isMod(room, user))
       room.mods = room.mods.filter((u) => u !== user.username);
 
     if (room.users.length === 0) {
+      //reload room
+      oldUsers.map((u) => this.server.reloadRoom(u));
       await this.roomRep.remove(room);
       throw new HttpException('room deleted cause no user', 200);
     }
@@ -260,6 +260,10 @@ export class RoomService {
     }
 
     this.specialMsg(user.username + ' leave', room);
+
+    //reload room
+    oldUsers.map((u) => this.server.reloadRoom(u));
+    this.server.leaveRoom(user.sessionID, room.id.toString());
     await this.roomRep.save(room);
   }
 }

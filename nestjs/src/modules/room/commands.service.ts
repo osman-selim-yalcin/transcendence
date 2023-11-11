@@ -56,24 +56,6 @@ export class CommandsService {
     return userRoomModifyHandler(await this.roomRep.save(room), user);
   }
 
-  async modUser(user: User, room: Room, otherUser: User) {
-    if (user.username !== room.creator)
-      throw new HttpException('not authorized', 400);
-    if (!isUserInRoom(room, otherUser))
-      throw new HttpException('user not in room', 400);
-    if (isMod(room, otherUser)) {
-      room.mods = room.mods.filter((u) => u !== otherUser.username);
-      this.modHandler(user, room, otherUser);
-    } else {
-      room.mods.push(otherUser.username);
-      this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
-    }
-
-    //reload room
-    room.users.map((u) => this.server.reloadRoom(u));
-    return userRoomModifyHandler(await this.roomRep.save(room), user);
-  }
-
   async banUser(user: User, room: Room, otherUser: User) {
     if (
       (isMod(room, otherUser) && user.username !== room.creator) ||
@@ -93,6 +75,22 @@ export class CommandsService {
       if (notification) await this.notificationRep.remove(notification);
     }
 
+    return userRoomModifyHandler(await this.roomRep.save(room), user);
+  }
+
+  async modUser(user: User, room: Room, otherUser: User) {
+    if (user.username !== room.creator)
+      throw new HttpException('not authorized', 400);
+    if (!isUserInRoom(room, otherUser))
+      throw new HttpException('user not in room', 400);
+    if (isMod(room, otherUser)) {
+      room.mods = room.mods.filter((u) => u !== otherUser.username);
+      this.modHandler(user, room, otherUser);
+    } else {
+      room.mods.push(otherUser.username);
+      this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
+    }
+
     //reload room
     room.users.map((u) => this.server.reloadRoom(u));
     return userRoomModifyHandler(await this.roomRep.save(room), user);
@@ -105,6 +103,7 @@ export class CommandsService {
     )
       throw new HttpException('not authorized', 400);
     let content = `${otherUser.username} will be muted for 10 min`;
+
     if (await this.roomService.isMuted(room, otherUser)) {
       content = `${otherUser.username} unmuted`;
       clearTimeout(
@@ -119,11 +118,10 @@ export class CommandsService {
         username: otherUser.username,
         time: timeoutID[Symbol.toPrimitive](),
       });
+      //reload room
+      room.users.map((u) => this.server.reloadRoom(u));
+      await this.roomRep.save(room);
     }
-    await this.roomRep.save(room);
-
-    //reload room
-    room.users.map((u) => this.server.reloadRoom(u));
     throw new HttpException(content, 200);
   }
 
@@ -222,12 +220,11 @@ export class CommandsService {
     );
   }
 
-  unMuteHandler(room: Room, otherUser: User) {
+  async unMuteHandler(room: Room, otherUser: User) {
     room.muteList = room.muteList.filter(
       (u) => u.username !== otherUser.username,
     );
-    this.server.server
-      .to(room.id.toString())
-      .emit('unmute', otherUser.username);
+    await this.roomRep.save(room);
+    room.users.map((u) => this.server.reloadRoom(u));
   }
 }

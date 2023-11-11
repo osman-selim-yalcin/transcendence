@@ -1,12 +1,13 @@
 import { Global, Module } from '@nestjs/common';
 import { socketGateway } from './socket.gateway';
-import { UserModule } from 'src/modules/users/user.module';
-import { GameModule } from 'src/modules/game/game.module';
+import { Game } from 'src/typeorm/Game';
+import { User } from 'src/typeorm/User';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Global()
 @Module({
   providers: [socketGateway],
-  imports: [UserModule, GameModule],
+  imports: [TypeOrmModule.forFeature([Game, User])],
   exports: [socketGateway],
 })
 export class SocketClientModule {}

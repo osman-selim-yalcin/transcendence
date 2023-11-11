@@ -20,7 +20,6 @@ export class NotificationService {
   ) {}
 
   async getNotifications(user: User) {
-    console.log(user);
     return user.notifications.map((n) => notificationModify(n));
   }
 
@@ -50,9 +49,9 @@ export class NotificationService {
         creator: notification.user,
       });
     }
+    await this.notificationRep.remove(notification);
     this.server.reloadNotification(notification.creator);
     this.server.reloadNotification(notification.user);
-    await this.notificationRep.remove(notification);
     return { msg: 'success' };
   }
 }

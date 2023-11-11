@@ -18,10 +18,10 @@ export class tokenMiddleware implements NestMiddleware {
     let relations = [];
     let path: string = req.route.path.slice(4);
     if (path.endsWith('/')) path = path.slice(0, -1);
-    console.log(path);
     const getMethod = req.route.methods.get;
     const postMethod = req.route.methods.post;
     const deletMethod = req.route.methods.delete;
+    console.log(path);
     if (path == '/user/info') {
       // relations = [
       //   'friends',
@@ -42,7 +42,7 @@ export class tokenMiddleware implements NestMiddleware {
     } else if (path === '/notification' && getMethod) {
       relations = ['notifications', 'notifications.creator'];
     } else if (path === '/room' && postMethod) {
-      relations = ['rooms'];
+      relations = ['rooms', 'friends'];
     } else if (path === '/room/user-rooms') {
       relations = ['rooms', 'rooms.users', 'rooms.messages'];
     } else if (path === '/room/join') {

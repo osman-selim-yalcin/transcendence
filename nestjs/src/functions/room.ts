@@ -114,8 +114,7 @@ export function isRoomNotificationExist(room: Room, loginUser: User) {
     (n) =>
       n.type === notificationTypes.ROOM &&
       n.roomID === room.id &&
-      n.status === notificationStatus.QUESTION &&
-      n.user.id === loginUser.id,
+      n.status === notificationStatus.QUESTION,
   );
   return notification;
 }

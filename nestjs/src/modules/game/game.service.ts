@@ -5,7 +5,7 @@ import { socketGateway } from 'src/gateway/socket.gateway';
 import { Game } from 'src/typeorm/Game';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
-import { gameDto, typeGame } from 'src/types/game.dto';
+import { gameDto } from 'src/types/game.dto';
 import {
   notificationStatus,
   notificationTypes,
@@ -23,15 +23,6 @@ export class GameService {
     @Inject(forwardRef(() => socketGateway)) private server: socketGateway,
   ) {}
 
-  createGame(gameDetails: typeGame) {
-    const newGame = this.gameRep.create(gameDetails);
-    newGame.winner.elo += newGame.elo;
-    newGame.loser.elo -= newGame.elo;
-    this.gameRep.save(newGame);
-    this.userRep.save(newGame.winner);
-    this.userRep.save(newGame.loser);
-  }
-
   modifyGame(games: Game[], result: boolean) {
     return games.map((g) => {
       const opponent = result ? g.loser : g.winner;
@@ -46,15 +37,18 @@ export class GameService {
     });
   }
 
-  async getOppenent(user: User) {
+  async getOpponent(user: User) {
     try {
-      if (user.status !== userStatus.INGAME)
-        throw new HttpException('user not in game', 400);
+      // if (user.status !== userStatus.INGAME)
+      //   throw new HttpException('user not in game', 400);
       const game = this.server.findGame(user.sessionID, this.server.gameList);
-      return game.users.find((u, i) => {
+      return game.users.find(async (u, i) => {
         const userGame = u.sessionID !== user.sessionID;
         if (userGame) {
-          return { user: userGame, index: i };
+          const real = await this.userRep.find({
+            where: { sessionID: u.sessionID },
+          });
+          return { user: real, index: i };
         }
       });
     } catch (e) {
