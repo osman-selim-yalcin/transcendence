@@ -19,7 +19,6 @@ export class GameController {
   @Get('opponent')
   async opponent(@Req() req: any) {
     const rs = await this.gameService.getOpponent(req.user);
-    console.log('here', rs);
     return rs;
   }
 
