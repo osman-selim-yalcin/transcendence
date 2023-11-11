@@ -16,7 +16,9 @@ const useInitial = () => {
       getUser()
         .then((response: any) => {
           console.log("current user ", response, "but user is", user)
-          setUser({ ...response, status: userStatus.ONLINE })
+          if (response) {
+            setUser({ ...response, status: userStatus.ONLINE })
+          }
 
           if (response !== undefined) {
             getFriends()
