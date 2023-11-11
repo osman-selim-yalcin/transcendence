@@ -122,6 +122,7 @@
       align-self: flex-start;
       padding: 0.8rem;
       border-radius: .5rem;
+      max-width: 40%;
 
       .message {
         display: flex;
@@ -135,7 +136,6 @@
     }
 
     li.main-user {
-      max-width: 40%;
       align-self: flex-end;
       background-color: rgb(224, 252, 215);
 

@@ -2,9 +2,36 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow-y: scroll;
+  padding-left: 3rem;
 
   .edit {
     align-self: flex-start;
+  }
+
+  .edit-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    .two-factor {
+      
+      .qr-form {
+        display: flex;
+        gap: 3rem;
+
+        form {
+          align-self: center;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        form > * {
+          align-self: center;
+        }
+      }
+    }
   }
 }
 

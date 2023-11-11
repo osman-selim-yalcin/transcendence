@@ -98,3 +98,29 @@ export const changeNickname = async (body: any) => {
     return response.data
   })
 }
+
+export const generateQR = async () => {
+  return axios.post("http://localhost:3000/api/user/2fa", null, {
+    headers: {
+      "Authorization":
+        "Bearer " +
+        (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+    }
+  })
+  .then((response) => {
+    return response.data
+  })
+}
+export const verifyQR = async (body: {token: string}) => {
+  return axios.post("http://localhost:3000/api/user/2fa/verify", body, {
+    headers: {
+      "Authorization":
+        "Bearer " +
+        (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+    }
+  })
+  .then((response) => {
+    console.log(response)
+    return response.data
+  })
+}

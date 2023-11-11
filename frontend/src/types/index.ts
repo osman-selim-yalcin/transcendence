@@ -12,6 +12,7 @@ export type user = {
   lastSeen: string
   blockList: { blockedUser: string, blockingUser: string }[]
   elo: number
+  twoFactorEnabled: boolean
 }
 
 export interface userContext {

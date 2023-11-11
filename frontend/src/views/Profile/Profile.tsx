@@ -1,11 +1,12 @@
 import { PropsWithChildren, useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../../context/UserContext.tsx"
-import { changeAvatar, changeNickname, getUsers } from "../../api/user.ts"
+import { changeAvatar, changeNickname, generateQR, getUsers, verifyQR } from "../../api/user.ts"
 import { useParams } from "react-router-dom"
 import { user, userStatus } from "../../types/index.ts"
 import UserInfo from "../../components/UserInfo/UserInfo.tsx"
 import './Profile.scss'
 import { SocketContext } from "../../context/SocketContext.tsx"
+import LoadIndicator from "../../components/LoadIndicator/LoadIndicator.tsx"
 
 export default function Profile() {
   const [editView, setEditView] = useState(false)
@@ -74,8 +75,8 @@ function EditProfile() {
   return (
     <div className={"edit-profile"}>
       <ChangeNickname />
-      <br /><br />
       <UploadAndDisplayImage />
+      <TwoFactorAuth />
     </div>
   )
 }
@@ -86,7 +87,7 @@ function ChangeNickname() {
   const [showInput, setShowInput] = useState<boolean>(false)
 
   return (
-    <>
+    <div>
       <h2>Nickname</h2>
       <b>
         Nickname:
@@ -122,7 +123,7 @@ function ChangeNickname() {
           }}>Cancel</button>
         </>
       }
-    </>
+    </div>
   )
 }
 
@@ -210,6 +211,63 @@ function ImageSizeIndicator({ selectedImageState: [selectedImage, setSelectedIma
           await changeAvatar(formData)
           window.location.reload()
         }}>Update Avatar</button>
+      }
+    </>
+  )
+}
+
+function TwoFactorAuth() {
+  const { user } = useContext(UserContext)
+  return (
+    <div className="two-factor">
+      <h3>2FA</h3>
+      {!user.twoFactorEnabled &&
+        <EnableTwoFactor />
+      }
+    </div>
+  )
+}
+
+function EnableTwoFactor() {
+  const [enable, setEnable] = useState(false)
+  const [qrUrl, setQrUrl] = useState(null)
+  const [code, setCode] = useState("")
+
+  return (
+    <>
+      {enable ?
+        <>
+          {qrUrl ?
+            <div className="qr-form">
+              <img src={qrUrl} alt="QR Code" />
+              <form onSubmit={(e) => {
+                if (code.length) {
+                  e.preventDefault()
+                  verifyQR({ token: code })
+                  // window.location.reload()
+                }
+              }}>
+                <p>
+                  Scan the QR with an authentication app and enter the code to activate 2FA
+                </p>
+                <input type="text" value={code} onChange={(e) => {
+                  setCode(e.target.value)
+                }} />
+                <button>Confirm</button>
+              </form>
+            </div>
+            :
+            <LoadIndicator />
+          }
+        </>
+        :
+        <button onClick={() => {
+          setEnable(true)
+          generateQR().then((res) => {
+            setQrUrl(res.qrcode)
+          })
+        }}>Enable 2FA</button>
+
       }
     </>
   )
