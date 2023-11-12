@@ -21,7 +21,7 @@ interface CustomSocket extends Socket {
 
 @WebSocketGateway({
   cors: {
-    origin: [process.env.CLIENT_URL],
+    origin: [process.env.CLIENT_URL || 'http://localhost:5173'],
   },
 })
 export class socketGateway implements OnModuleInit {

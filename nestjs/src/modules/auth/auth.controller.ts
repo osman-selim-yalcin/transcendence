@@ -3,10 +3,9 @@ import {
   Controller,
   Get,
   HttpException,
-  Inject,
   Post,
-  Redirect,
   Req,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
@@ -26,8 +25,7 @@ interface reqWithModifiy extends Request {
 
 @Controller('auth')
 export class AuthController {
-  @Inject(AuthService)
-  public authService: AuthService;
+  constructor(private authService: AuthService) {}
 
   @Get('42/login')
   @UseGuards(FortyTwoStrategyGuard)
@@ -37,19 +35,16 @@ export class AuthController {
 
   @Get('42/redirect')
   @UseGuards(FortyTwoStrategyGuard)
-  @Redirect(process.env.CLIENT_URL)
-  handleRedirect() {
-    console.log('42 Redirect');
-    return { msg: '42 Redirect' };
+  handleRedirect(@Response() res: any) {
+    return res.redirect(process.env.CLIENT_URL);
   }
 
   @Get('logout')
-  @Redirect(process.env.CLIENT_URL)
-  handleLogout(@Req() req: reqWithModifiy) {
+  handleLogout(@Req() req: reqWithModifiy, @Response() res: any) {
     req.logout((err) => {
       console.log(err);
     });
-    return { msg: 'Logout' };
+    return res.redirect(process.env.CLIENT_URL);
   }
 
   @Get('user')

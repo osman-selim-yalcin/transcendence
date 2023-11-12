@@ -29,7 +29,7 @@ import { GameController } from './modules/game/game.controller';
     GameModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.SQL_URL || 'localhost',
+      host: process.env.SQL_URL,
       port: parseInt(process.env.SQL_PORT),
       username: process.env.SQL_USERNAME,
       password: process.env.SQL_PASSWORD,
