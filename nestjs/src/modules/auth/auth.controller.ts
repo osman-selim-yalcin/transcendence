@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpException,
+  Param,
   Post,
   Req,
   Response,
@@ -12,14 +13,10 @@ import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { createToken } from 'src/functions/token';
+import { User } from 'src/typeorm/User';
 
 interface reqWithModifiy extends Request {
-  user: {
-    username: string;
-    avatar: string;
-    id: number;
-    sessionID: string;
-  };
+  user: User;
   logout: (err: any) => void;
 }
 
@@ -35,7 +32,10 @@ export class AuthController {
 
   @Get('42/redirect')
   @UseGuards(FortyTwoStrategyGuard)
-  handleRedirect(@Response() res: any) {
+  handleRedirect(@Req() req: reqWithModifiy, @Response() res: any) {
+    console.log(req.user);
+    if (req.user.twoFactorEnabled)
+      return res.redirect(process.env.CLIENT_URL + '/2fa');
     return res.redirect(process.env.CLIENT_URL);
   }
 
@@ -47,29 +47,11 @@ export class AuthController {
     return res.redirect(process.env.CLIENT_URL);
   }
 
-  @Get('user')
-  async handleUser(@Req() request: reqWithModifiy, @Body() body: any) {
+  @Get('token')
+  async handleUser(@Req() request: reqWithModifiy, @Param() param: any) {
     if (!request.user) return null;
-    const user = await this.authService.findUserByUsername(
-      request.user.username,
-      [
-        'id',
-        'username',
-        'avatar',
-        'sessionID',
-        'displayName',
-        'createdAt',
-        'status',
-        'lastSeen',
-        'blockList',
-        'elo',
-        'twoFactorEnabled',
-        'twoFactorSecret',
-        'oldAvatar',
-      ],
-    );
-    if (user.twoFactorEnabled) {
-      if (!this.authService.verify2fa(user, body))
+    if (request.user.twoFactorEnabled) {
+      if (!this.authService.verify2fa(request.user, param))
         throw new HttpException('2fa code is wrong', 400);
     }
     return {
@@ -78,26 +60,25 @@ export class AuthController {
         id: request.user.id,
         sessionID: request.user.sessionID,
       }),
-      user: request.user,
     };
   }
 
-  @Post('tmp/create')
-  tmpCreate(@Body() body: any) {
-    const sessionID = Math.floor(
-      Math.random() * (1000000000 - 100000000) + 100000000,
-    ).toString(16);
-    if (!sessionID) return;
-    const details = {
-      sessionID,
-      username: body.username,
-    };
-    return this.authService.tmpCreate(details);
-  }
+  // @Post('tmp/create')
+  // tmpCreate(@Body() body: any) {
+  //   const sessionID = Math.floor(
+  //     Math.random() * (1000000000 - 100000000) + 100000000,
+  //   ).toString(16);
+  //   if (!sessionID) return;
+  //   const details = {
+  //     sessionID,
+  //     username: body.username,
+  //   };
+  //   return this.authService.tmpCreate(details);
+  // }
 
-  @Post('tmp/login')
-  tmpLogin(@Body() body: any) {
-    console.log(body);
-    return this.authService.tmpLogin(body);
-  }
+  // @Post('tmp/login')
+  // tmpLogin(@Body() body: any) {
+  //   console.log(body);
+  //   return this.authService.tmpLogin(body);
+  // }
 }
