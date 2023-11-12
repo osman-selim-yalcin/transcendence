@@ -44,7 +44,7 @@ export class AuthService {
     return user;
   }
 
-  async verify2fa(user: User, token: string) {
+  verify2fa(user: User, token: string) {
     const verified = speakeasy.totp.verify({
       secret: user.twoFactorSecret,
       encoding: 'base32',
