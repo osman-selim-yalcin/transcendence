@@ -50,10 +50,6 @@ export class AuthService {
       encoding: 'base32',
       token: details.token,
     });
-    if (verified && !user.twoFactorEnabled) {
-      user.twoFactorEnabled = true;
-      await this.userRep.save(user);
-    }
     return verified;
   }
 }

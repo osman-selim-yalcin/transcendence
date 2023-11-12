@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   HttpException,
-  Param,
+  Query,
   Req,
   Response,
   UseGuards,
@@ -31,7 +31,6 @@ export class AuthController {
   @Get('42/redirect')
   @UseGuards(FortyTwoStrategyGuard)
   handleRedirect(@Req() req: reqWithModifiy, @Response() res: any) {
-    console.log(req.user);
     if (req.user.twoFactorEnabled)
       return res.redirect(process.env.CLIENT_URL + '/2fa');
     return res.redirect(process.env.CLIENT_URL);
@@ -46,12 +45,17 @@ export class AuthController {
   }
 
   @Get('token')
-  async handleUser(@Req() request: reqWithModifiy, @Param() param: any) {
+  async handleUser(@Req() request: reqWithModifiy, @Query() query: any) {
     if (!request.user) return null;
+    console.log('query', query);
     if (request.user.twoFactorEnabled) {
-      if (!param || !param.code)
+      if (!query || !query.code)
         throw new HttpException('2fa code is missing', 400);
-      if (!this.authService.verify2fa(request.user, param.code))
+      console.log(
+        'true or false',
+        this.authService.verify2fa(request.user, query.code),
+      );
+      if (!this.authService.verify2fa(request.user, query.code))
         throw new HttpException('2fa code is wrong', 400);
     }
     return {
