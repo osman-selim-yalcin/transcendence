@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
 import { PopUpContext } from '../../../context/PopUpContext'
-import { verifyQR } from '../../../api/user'
+import { getToken, verifyQR } from '../../../api/user'
 import "./TwoFactorForm.scss"
 
 export default function TwoFactorForm() {
@@ -11,10 +11,9 @@ export default function TwoFactorForm() {
       <form onSubmit={async (e) => {
         e.preventDefault()
         if (code.length) {
-          const res = await verifyQR({token: code})
-          if (res === false) {
+          getToken({ code }).catch((e) => {
             addPopUp("Incorrect code")
-          }
+          })
         }
       }}>
         <label htmlFor="2fa-code">

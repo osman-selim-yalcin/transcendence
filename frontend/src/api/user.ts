@@ -12,13 +12,18 @@ export const getToken = async (params?: { code: string }) => {
     console.log(res)
     if (res.data.token) {
       localStorage.setItem("token", res.data.token)
-      window.location.reload()
+      if (!params) {
+        window.location.reload()
+      } else {
+        window.location.href = "/"
+      }
     } else {
       console.log("No token returned")
     }
   })
   .catch(err => {
     console.log(err)
+    throw err.response
   })
 }
 export const getUser = async () => {
