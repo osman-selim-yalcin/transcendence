@@ -37,14 +37,14 @@ export class AuthController {
 
   @Get('42/redirect')
   @UseGuards(FortyTwoStrategyGuard)
-  @Redirect('http://localhost:5173/')
+  @Redirect(process.env.CLIENT_URL)
   handleRedirect() {
     console.log('42 Redirect');
     return { msg: '42 Redirect' };
   }
 
   @Get('logout')
-  @Redirect('http://localhost:5173/')
+  @Redirect(process.env.CLIENT_URL)
   handleLogout(@Req() req: reqWithModifiy) {
     req.logout((err) => {
       console.log(err);

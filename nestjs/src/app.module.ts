@@ -20,6 +20,7 @@ import { GameModule } from './modules/game/game.module';
 import { GameController } from './modules/game/game.controller';
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
     AuthModule,
     RoomModule,
@@ -28,17 +29,16 @@ import { GameController } from './modules/game/game.controller';
     GameModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'test',
-      password: 'test',
-      database: 'osyalcin',
+      host: process.env.SQL_URL || 'localhost',
+      port: parseInt(process.env.SQL_PORT),
+      username: process.env.SQL_USERNAME,
+      password: process.env.SQL_PASSWORD,
+      database: process.env.SQL_DATABASE,
       entities: [User, Room, Message, Notification, Game],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User]),
     PassportModule.register({ session: true }),
-    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
   providers: [],

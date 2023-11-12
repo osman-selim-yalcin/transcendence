@@ -9,9 +9,9 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
 
   constructor() {
     super({
-      clientID: process.env.FortytwoClientID,
-      clientSecret: process.env.FortytwoClientSecret,
-      callbackURL: process.env.FortytwoCallbackUrl,
+      clientID: process.env.FORTY_TWO_CLIENT_ID,
+      clientSecret: process.env.FORTY_TWO_CLIENT_SECRET,
+      callbackURL: process.env.FORTY_TWO_CALLBACK,
       scope: ['public'],
     });
   }
