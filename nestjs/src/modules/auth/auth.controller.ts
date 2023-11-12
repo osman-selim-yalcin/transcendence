@@ -1,10 +1,8 @@
 import {
-  Body,
   Controller,
   Get,
   HttpException,
   Param,
-  Post,
   Req,
   Response,
   UseGuards,
@@ -41,7 +39,7 @@ export class AuthController {
 
   @Get('logout')
   handleLogout(@Req() req: reqWithModifiy, @Response() res: any) {
-    req.logout((err) => {
+    req.logout((err: any) => {
       console.log(err);
     });
     return res.redirect(process.env.CLIENT_URL);
@@ -51,7 +49,9 @@ export class AuthController {
   async handleUser(@Req() request: reqWithModifiy, @Param() param: any) {
     if (!request.user) return null;
     if (request.user.twoFactorEnabled) {
-      if (!this.authService.verify2fa(request.user, param))
+      if (!param || !param.code)
+        throw new HttpException('2fa code is missing', 400);
+      if (!this.authService.verify2fa(request.user, param.code))
         throw new HttpException('2fa code is wrong', 400);
     }
     return {
