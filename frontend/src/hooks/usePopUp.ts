@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { PopUpIndex } from "../types"
 
 export const usePopUp = () => {

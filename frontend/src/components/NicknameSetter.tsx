@@ -5,7 +5,7 @@ import { UserContext } from "../context/UserContext"
 export default function NicknameSetter({ setModal }: PropsWithChildren<{ setModal: Function }>) {
   const [nickname, setNickname] = useState("")
   const [inputActive, setInputActive] = useState(false)
-  const {user, setUser} = useContext(UserContext)
+  const { user, setUser } = useContext(UserContext)
 
   return (
     <>

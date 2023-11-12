@@ -1,8 +1,10 @@
 import axios from "axios"
+import { SERVER_URL } from "../serverUrl"
+
 
 export async function getLeaderboard() {
   return axios
-    .get("http://localhost:3000/api/game/leaderboard", {
+    .get(SERVER_URL + "/api/game/leaderboard", {
       headers: {
         authorization:
           "Bearer " +
@@ -19,7 +21,7 @@ export async function getLeaderboard() {
 
 export async function getGameHistory(id: number) {
   return axios
-    .get("http://localhost:3000/api/game", {
+    .get(SERVER_URL + "/api/game", {
       headers: {
         authorization:
           "Bearer " +
@@ -39,7 +41,7 @@ export async function getGameHistory(id: number) {
 
 export async function getOpponent() {
   return axios
-    .get("http://localhost:3000/api/game/opponent", {
+    .get(SERVER_URL + "/api/game/opponent", {
       headers: {
         authorization:
           "Bearer " +
@@ -56,7 +58,7 @@ export async function getOpponent() {
 
 export async function sendGameInvite(data: { id: number }) {
   return axios
-    .post("http://localhost:3000/api/game/invite", data, {
+    .post(SERVER_URL + "/api/game/invite", data, {
       headers: {
         authorization:
           "Bearer " +

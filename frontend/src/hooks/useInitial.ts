@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getUser } from "../api/user"
+import { getToken, getUser } from "../api/user"
 import { room, user, userStatus } from "../types"
 import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
@@ -51,7 +51,12 @@ const useInitial = () => {
         })
     }
 
-    getInitialData()
+    if (localStorage.getItem("token")) {
+      getInitialData()
+    } else {
+      getToken()
+    }
+
   }, [])
 
   return {

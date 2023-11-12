@@ -1,11 +1,11 @@
 import axios from "axios"
 import { roomCommandBody, roomPayload } from "../types"
+import { SERVER_URL } from "../serverUrl"
 
-// <---------------- REFACTOR ----------------->
 
 export const getUserRooms = async () => {
   return axios
-    .get("http://localhost:3000/api/room/user-rooms", {
+    .get(SERVER_URL + "/api/room/user-rooms", {
       headers: {
         Authorization:
           "Bearer " +
@@ -21,7 +21,7 @@ export const getUserRooms = async () => {
 }
 export const getRooms = async (queryString: string) => {
   return axios
-    .get("http://localhost:3000/api/room", {
+    .get(SERVER_URL + "/api/room", {
       headers: {
         Authorization:
           "Bearer " +
@@ -42,7 +42,7 @@ export const getRooms = async (queryString: string) => {
 
 export const createRoom = async (body: roomPayload) => {
   return axios
-    .post("http://localhost:3000/api/room", body, {
+    .post(SERVER_URL + "/api/room", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -58,7 +58,7 @@ export const createRoom = async (body: roomPayload) => {
 }
 
 export const deleteRoom = async (body: roomPayload) => {
-  return axios.delete("http://localhost:3000/api/room", {
+  return axios.delete(SERVER_URL + "/api/room", {
     headers: {
       Authorization:
         "Bearer " +
@@ -70,7 +70,7 @@ export const deleteRoom = async (body: roomPayload) => {
 
 export const sendMessage = async (body: { content: string; id: number }) => {
   return axios
-    .post("http://localhost:3000/api/room/message", body, {
+    .post(SERVER_URL + "/api/room/message", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -84,7 +84,7 @@ export const sendMessage = async (body: { content: string; id: number }) => {
 
 export const leaveRoom = async (body: roomPayload) => {
   return axios
-    .post("http://localhost:3000/api/room/leave", body, {
+    .post(SERVER_URL + "/api/room/leave", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -98,7 +98,7 @@ export const leaveRoom = async (body: roomPayload) => {
 
 export const kickUser = async (body: roomCommandBody) => {
   return axios
-    .post("http://localhost:3000/api/room/command/kick", body, {
+    .post(SERVER_URL + "/api/room/command/kick", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -112,7 +112,7 @@ export const kickUser = async (body: roomCommandBody) => {
 
 export const banUser = async (body: roomCommandBody) => {
   return axios
-    .post("http://localhost:3000/api/room/command/ban", body, {
+    .post(SERVER_URL + "/api/room/command/ban", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -126,7 +126,7 @@ export const banUser = async (body: roomCommandBody) => {
 
 export const joinRoom = async (body: { id: number; password?: string }) => {
   return axios
-    .post("http://localhost:3000/api/room/join", body, {
+    .post(SERVER_URL + "/api/room/join", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -141,7 +141,7 @@ export const joinRoom = async (body: { id: number; password?: string }) => {
 
 export const sendInvite = async (body: roomCommandBody) => {
   return axios
-    .post("http://localhost:3000/api/room/command/invite", body, {
+    .post(SERVER_URL + "/api/room/command/invite", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -155,7 +155,7 @@ export const sendInvite = async (body: roomCommandBody) => {
 
 export const changeMod = async (body: roomCommandBody) => {
   return axios
-    .post("http://localhost:3000/api/room/command/mod", body, {
+    .post(SERVER_URL + "/api/room/command/mod", body, {
       headers: {
         Authorization:
           "Bearer " +
@@ -169,7 +169,7 @@ export const changeMod = async (body: roomCommandBody) => {
 
 export const changeMute = async (body: roomCommandBody) => {
   return axios
-    .post("http://localhost:3000/api/room/command/mute", body, {
+    .post(SERVER_URL + "/api/room/command/mute", body, {
       headers: {
         Authorization:
           "Bearer " +

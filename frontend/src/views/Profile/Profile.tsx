@@ -224,6 +224,9 @@ function TwoFactorAuth() {
       {!user.twoFactorEnabled &&
         <EnableTwoFactor />
       }
+      {user.twoFactorEnabled &&
+        <p>2FA is enabled</p>
+      }
     </div>
   )
 }
