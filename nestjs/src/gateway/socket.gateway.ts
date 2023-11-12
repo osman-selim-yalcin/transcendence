@@ -74,7 +74,6 @@ export class socketGateway implements OnModuleInit {
           this.leaveQueue([socket.sessionID]);
           if (socketUser.status === userStatus.INGAME)
             this.handleGameDisconnect(socketUser);
-          this.server.emit('user disconnected', socket.sessionID);
           this.handleUserDisconnect(socketUser);
           console.log('user', socketUser.username, 'disconnected');
         }
@@ -284,12 +283,14 @@ export class socketGateway implements OnModuleInit {
   }
 
   async handleStatusChange(user: User, status: number) {
+    this.server.emit(user.username, status);
     user.status = status;
     return this.userRep.save(user);
   }
 
   async handleUserDisconnect(user: User) {
     user.status = userStatus.OFFLINE;
+    this.server.emit(user.username, userStatus.OFFLINE);
     user.lastSeen = new Date().toISOString();
     return this.userRep.save(user);
   }
