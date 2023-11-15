@@ -9,4 +9,4 @@ WORKDIR /app/osman
 COPY ./package.json .
 COPY ./src ./src
 RUN npm install
-ENTRYPOINT [ "npm", "run", "start:dev" ]
+ENTRYPOINT [ "npm", "run", "dev" ]
