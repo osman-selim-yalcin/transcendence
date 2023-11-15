@@ -1,6 +1,4 @@
-import { IsEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Notification } from 'src/typeorm/Notification';
-import { Room } from 'src/typeorm/Room';
+import { IsNumber, IsString } from 'class-validator';
 
 export enum userStatus {
   ONLINE,
@@ -13,36 +11,7 @@ export enum userStatus {
 
 export class userDto {
   @IsString()
-  @IsOptional()
-  avatar: string;
-
-  @IsOptional()
-  @IsNumber()
-  id: number;
-
-  @IsEmpty()
-  sessionID: string;
-
-  @IsEmpty()
-  username: string;
-
-  @IsEmpty()
-  lastSeen: string;
-
-  @IsEmpty()
-  status: number;
-
-  @IsEmpty()
-  friends: userDto[];
-
-  @IsEmpty()
-  rooms: Room[];
-
-  @IsEmpty()
-  notifications: Notification[];
-
-  @IsEmpty()
-  blocked: userDto[];
+  displayName: string;
 }
 
 export class userRoomDto {

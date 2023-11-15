@@ -1,8 +1,11 @@
 import axios from "axios"
+import { SERVER_URL } from "../serverUrl"
+
+
 
 export async function getFriends() {
   return axios
-    .get("http://localhost:3000/api/user/friends", {
+    .get(SERVER_URL + "/api/user/friends", {
       headers: {
         authorization:
           "Bearer " +
@@ -19,7 +22,7 @@ export async function getFriends() {
 
 export async function addFriend(data: { id: number }) {
   return axios
-    .post("http://localhost:3000/api/user", 
+    .post(SERVER_URL + "/api/user", 
     data,
     {
       headers: {
@@ -38,7 +41,7 @@ export async function addFriend(data: { id: number }) {
 
 export async function deleteFriend(data: { id: number }) {
   return axios
-    .delete("http://localhost:3000/api/user",
+    .delete(SERVER_URL + "/api/user",
     {
       headers: {
         authorization:
@@ -67,7 +70,7 @@ export const deprecatedAddFriend = (
 ) => {
   return axios
     .post(
-      "http://localhost:3000/api/user/addFriend",
+      SERVER_URL + "/api/user/addFriend",
       {
         username: username
       },
@@ -93,7 +96,7 @@ export const deprecatedAddFriend = (
 export const removeFriend = (username: string) => {
   axios
     .post(
-      "http://localhost:3000/api/user/removeFriend",
+      SERVER_URL + "/api/user/removeFriend",
       {
         username: username
       },
@@ -115,7 +118,7 @@ export const removeFriend = (username: string) => {
 
 export const getAllFriends = async (setFriends: Function) => {
   return await axios
-    .get("http://localhost:3000/api/user/allFriends", {
+    .get(SERVER_URL + "/api/user/allFriends", {
       headers: {
         authorization:
           "Bearer " +
@@ -133,7 +136,7 @@ export const getAllFriends = async (setFriends: Function) => {
 
 export const isFriend = async (username: string) => {
   return await axios
-    .get("http://localhost:3000/api/user/isFriend", {
+    .get(SERVER_URL + "/api/user/isFriend", {
       headers: {
         authorization:
           "Bearer " +

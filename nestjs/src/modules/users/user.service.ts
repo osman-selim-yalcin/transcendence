@@ -6,6 +6,7 @@ import {
   addFriendHelper,
   blockUserHelper,
   deleteFriendHelper,
+  isBlock,
   isFriend,
   modifyBlockUser,
 } from 'src/functions/user';
@@ -15,23 +16,30 @@ import {
   notificationTypes,
 } from 'src/types/notification.dto';
 import { Notification } from 'src/typeorm/Notification';
+import { CloudinaryResponse } from './cloudinary/cloudinary-response';
+import * as speakeasy from 'speakeasy';
+import * as QRCode from 'qrcode';
+import { twoFactorDto } from 'src/types/2fa.dto';
+import { socketGateway } from 'src/gateway/socket.gateway';
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Notification)
     private notificationRep: Repository<Notification>,
     @InjectRepository(User) private userRep: Repository<User>,
+    private server: socketGateway,
   ) {}
 
   async allUsers(query: any, user: User) {
     if (query.take > 50) throw new HttpException('too many users', 400);
     let users = await this.userRep.find({
       skip: query.skip ? query.skip : 0,
-      take: query.take ? query.take : '',
+      take: query.take ? query.take : 5,
       where: { username: Like((query.q ? query.q : '') + '%') },
     });
     users = users?.map((u) => {
-      if (user.blocked.find((f) => f.id === u.id)) return modifyBlockUser(u);
+      if (isBlock(user, u)) return modifyBlockUser(u);
       else return u;
     });
     return users;
@@ -42,6 +50,7 @@ export class UsersService {
   }
 
   async addFriend(user: User, otherUser: User) {
+    if (isBlock(user, otherUser)) throw new HttpException('blocked', 400);
     const notification = await this.notificationHandler(user, otherUser);
     addFriendHelper(user, otherUser);
     await this.userRep.save(user);
@@ -50,25 +59,40 @@ export class UsersService {
       type: notification.type,
       content: `${user.username} accepted your friend request`,
       status: notificationStatus.ACCEPTED,
-      user: notification.creator,
-      creator: notification.user,
+      user: otherUser,
+      creator: user,
     });
+    this.server.reloadFriend(user);
+    this.server.reloadFriend(otherUser);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(otherUser);
     await this.notificationRep.remove(notification);
     return { msg: 'success' };
   }
 
   async deleteFriend(user: User, otherUser: User) {
     deleteFriendHelper(user, otherUser);
+    this.server.reloadFriend(user);
+    this.server.reloadFriend(otherUser);
     await this.userRep.save(user);
     await this.userRep.save(otherUser);
     return { msg: 'success' };
   }
 
   async updateUser(user: User, userDetails: userDto) {
-    if (userDetails.id !== user.id)
-      throw new HttpException('id cannot be changed', 401);
+    if (userDetails.displayName.length > 12)
+      throw new HttpException('display name too long', 400);
 
-    await this.userRep.save({ ...user, ...userDetails });
+    userDetails.displayName = userDetails.displayName.trim();
+
+    try {
+      await this.userRep.save({
+        ...user,
+        displayName: userDetails.displayName,
+      });
+    } catch (e) {
+      throw new HttpException('display name already exists', 400);
+    }
     return { msg: 'success' };
   }
 
@@ -80,25 +104,15 @@ export class UsersService {
     blockUserHelper(user, otherUser);
     await this.userRep.save(user);
     await this.userRep.save(otherUser);
+
+    // //reload room
+    this.server.reloadRoom(user);
+    this.server.reloadRoom(otherUser);
+
     return { msg: 'success' };
   }
 
   //ENDPOINT END HERE / UTILS START HERE
-
-  async handleStatusChange(user: User, status: number) {
-    user = await this.userRep.findOne({
-      where: { id: user.id },
-    });
-    user.status = status;
-    return this.userRep.save(user);
-  }
-
-  async findUserBySessionID(sessionID: string) {
-    return this.userRep.findOne({
-      where: { sessionID: sessionID },
-      relations: ['rooms'],
-    });
-  }
 
   async notificationHandler(user: User, otherUser: User) {
     if (isFriend(user, otherUser))
@@ -153,6 +167,45 @@ export class UsersService {
     });
     notification.sibling = siblingNotificaiton;
     await this.notificationRep.save(notification);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(friendUser);
     throw new HttpException('notification created succesfully', 200);
+  }
+
+  async updateAvatar(user: User, cloudinaryResponse: CloudinaryResponse) {
+    user.avatar = cloudinaryResponse.secure_url;
+    user.oldAvatar = cloudinaryResponse.public_id;
+    await this.userRep.save(user);
+    throw new HttpException('avatar updated succesfully', 200);
+  }
+
+  async createQR(user: User) {
+    if (user.twoFactorEnabled)
+      throw new HttpException('2fa already enabled', 400);
+    else {
+      const secret = speakeasy.generateSecret({
+        name: 'Transcendence: osyalcin && bmat',
+      });
+
+      const qrcode = await QRCode.toDataURL(secret.otpauth_url).then((data) => {
+        return data;
+      });
+      user.twoFactorSecret = secret.base32;
+      await this.userRep.save(user);
+      return { qrcode };
+    }
+  }
+
+  async verify2fa(user: User, details: twoFactorDto) {
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token: details.token,
+    });
+    if (verified && !user.twoFactorEnabled) {
+      user.twoFactorEnabled = true;
+      await this.userRep.save(user);
+    }
+    return verified;
   }
 }

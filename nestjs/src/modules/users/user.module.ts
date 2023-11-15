@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/User';
 import { Notification } from 'src/typeorm/Notification';
 import { idToUser } from 'src/middleware/user.middleware';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Notification])],
+  imports: [TypeOrmModule.forFeature([User, Notification]), CloudinaryModule],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

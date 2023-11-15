@@ -6,33 +6,50 @@ import {
   JoinColumn,
   JoinTable,
   OneToMany,
+  CreateDateColumn,
 } from 'typeorm';
 import { Room } from './Room';
 import { Notification } from './Notification';
 import { userStatus } from 'src/types/user.dto';
-// import { Game } from './Game';
+import { Game } from './Game';
 
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   username: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
+  displayName: string;
+
+  @Column({ nullable: false })
   sessionID: string;
 
-  @Column({ default: 'https://source.unsplash.com/featured/300x202' })
+  @Column({ nullable: true, select: false })
+  twoFactorSecret: string;
+
+  @Column({ nullable: true, select: false })
+  twoFactorEnabled: boolean;
+
+  @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: string;
+
+  @Column({
+    default:
+      'https://res.cloudinary.com/dzhczcggz/image/upload/v1698681962/transcendence/mbmjyryi4wceu2xjehj9.jpg',
+  })
   avatar: string;
+
+  @Column({ nullable: true, select: false })
+  oldAvatar: string;
 
   @Column({ type: 'enum', enum: userStatus, default: userStatus.OFFLINE })
   status: number;
 
-  @Column({
-    default: new Date().toLocaleString('tr-TR', {
-      timeZone: 'Europe/Istanbul',
-    }),
+  @CreateDateColumn({
+    default: () => 'CURRENT_TIMESTAMP',
   })
   lastSeen: string;
 
@@ -40,11 +57,10 @@ export class User {
   @JoinTable()
   friends: User[];
 
-  @ManyToMany(() => User, (user) => user.blocked)
-  @JoinTable()
-  blocked: User[];
+  @Column('jsonb', { array: false, nullable: false, default: [] })
+  blockList: { blockingUser: string; blockedUser: string }[];
 
-  @ManyToMany(() => Room, (room) => room.users)
+  @ManyToMany(() => Room, (room) => room.users, { cascade: true })
   @JoinTable()
   rooms: Room[];
 
@@ -52,14 +68,12 @@ export class User {
   @JoinColumn()
   notifications: Notification[];
 
-  // @Column()
-  // stats: {
-  //   wins: number;
-  //   losses: number;
-  //   rating: number;
-  //   achiments: string[];
-  // };
+  @Column({ default: 1500 })
+  elo: number;
 
-  // @OneToMany((type) => Game, (game) => game.user)
-  // games: Game[];
+  @OneToMany(() => Game, (game) => game.winner)
+  won: Game[];
+
+  @OneToMany(() => Game, (game) => game.loser)
+  lost: Game[];
 }

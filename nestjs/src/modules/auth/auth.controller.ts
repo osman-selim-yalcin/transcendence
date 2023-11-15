@@ -1,32 +1,26 @@
 import {
-  Body,
   Controller,
   Get,
-  Inject,
-  Post,
-  Redirect,
+  HttpException,
+  Query,
   Req,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { createToken } from 'src/functions/token';
+import { User } from 'src/typeorm/User';
 
 interface reqWithModifiy extends Request {
-  user: {
-    username: string;
-    avatar: string;
-    id: number;
-    sessionID: string;
-  };
-  logout: (any) => void;
+  user: User;
+  logout: (err: any) => void;
 }
 
 @Controller('auth')
 export class AuthController {
-  @Inject(AuthService)
-  public authService: AuthService;
+  constructor(private authService: AuthService) {}
 
   @Get('42/login')
   @UseGuards(FortyTwoStrategyGuard)
@@ -36,50 +30,59 @@ export class AuthController {
 
   @Get('42/redirect')
   @UseGuards(FortyTwoStrategyGuard)
-  @Redirect('http://localhost:5173/')
-  handleRedirect() {
-    console.log('42 Redirect');
-    return { msg: '42 Redirect' };
+  handleRedirect(@Req() req: reqWithModifiy, @Response() res: any) {
+    if (req.user.twoFactorEnabled)
+      return res.redirect(process.env.CLIENT_URL + '/2fa');
+    return res.redirect(process.env.CLIENT_URL);
   }
 
   @Get('logout')
-  @Redirect('http://localhost:5173/')
-  handleLogout(@Req() req: reqWithModifiy) {
-    req.logout((err) => {
+  handleLogout(@Req() req: reqWithModifiy, @Response() res: any) {
+    req.logout((err: any) => {
       console.log(err);
     });
-    return { msg: 'Logout' };
+    return res.redirect(process.env.CLIENT_URL);
   }
 
-  @Get('user')
-  handleUser(@Req() request: reqWithModifiy) {
+  @Get('token')
+  async handleUser(@Req() request: reqWithModifiy, @Query() query: any) {
     if (!request.user) return null;
+    console.log('query', query);
+    if (request.user.twoFactorEnabled) {
+      if (!query || !query.code)
+        throw new HttpException('2fa code is missing', 400);
+      console.log(
+        'true or false',
+        this.authService.verify2fa(request.user, query.code),
+      );
+      if (!this.authService.verify2fa(request.user, query.code))
+        throw new HttpException('2fa code is wrong', 400);
+    }
     return {
       token: createToken({
         username: request.user.username,
         id: request.user.id,
         sessionID: request.user.sessionID,
       }),
-      user: request.user,
     };
   }
 
-  @Post('tmp/create')
-  tmpCreate(@Body() body: any) {
-    const sessionID = Math.floor(
-      Math.random() * (1000000000 - 100000000) + 100000000,
-    ).toString(16);
-    if (!sessionID) return;
-    const details = {
-      ...body,
-      sessionID,
-    };
-    return this.authService.tmpCreate(details);
-  }
+  // @Post('tmp/create')
+  // tmpCreate(@Body() body: any) {
+  //   const sessionID = Math.floor(
+  //     Math.random() * (1000000000 - 100000000) + 100000000,
+  //   ).toString(16);
+  //   if (!sessionID) return;
+  //   const details = {
+  //     sessionID,
+  //     username: body.username,
+  //   };
+  //   return this.authService.tmpCreate(details);
+  // }
 
-  @Post('tmp/login')
-  tmpLogin(@Body() body: any) {
-    console.log(body);
-    return this.authService.tmpLogin(body);
-  }
+  // @Post('tmp/login')
+  // tmpLogin(@Body() body: any) {
+  //   console.log(body);
+  //   return this.authService.tmpLogin(body);
+  // }
 }

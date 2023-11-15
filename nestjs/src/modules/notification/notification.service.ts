@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { notificationModify } from 'src/functions/Notification';
+import { socketGateway } from 'src/gateway/socket.gateway';
 import { Notification } from 'src/typeorm/Notification';
 import { User } from 'src/typeorm/User';
 import {
@@ -13,15 +14,13 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class NotificationService {
   constructor(
+    private server: socketGateway,
     @InjectRepository(Notification)
     private notificationRep: Repository<Notification>,
   ) {}
 
   async getNotifications(user: User) {
     return user.notifications.map((n) => notificationModify(n));
-    return this.notificationRep.find({
-      relations: ['user', 'creator'],
-    });
   }
 
   async deleteNotification(user: User, notificationDetails: notificationDto) {
@@ -38,6 +37,8 @@ export class NotificationService {
         content = 'Friend request declined by ' + notification.user.username;
       } else if (notification.type === notificationTypes.ROOM) {
         content = 'Room invitation declined by ' + notification.user.username;
+      } else if (notification.type === notificationTypes.GAME) {
+        content = 'Game invitation declined by ' + notification.user.username;
       }
 
       await this.notificationRep.save({
@@ -49,6 +50,8 @@ export class NotificationService {
       });
     }
     await this.notificationRep.remove(notification);
+    this.server.reloadNotification(notification.creator);
+    this.server.reloadNotification(notification.user);
     return { msg: 'success' };
   }
 }

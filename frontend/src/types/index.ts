@@ -5,10 +5,14 @@
 export type user = {
   id: number
   username: string
+  displayName: string
   sessionID: string
-  status: string
+  status: userStatus
   avatar: string
   lastSeen: string
+  blockList: { blockedUser: string, blockingUser: string }[]
+  elo: number
+  twoFactorEnabled: boolean
 }
 
 export interface userContext {
@@ -29,6 +33,7 @@ export enum userStatus {
   INGAME,
   AWAY,
   BUSY,
+  BLOCKED
 }
 
 /**
@@ -44,6 +49,7 @@ export type room = {
   creator: string
   mods: string[]
   banList: string[]
+  muteList: MutedUser[]
   inviteList: string[]
   isGroup: boolean
   isInviteOnly: boolean
@@ -59,7 +65,7 @@ export interface roomPayload {
   password?: string
 }
 
-export type roomKickBody = {
+export type roomCommandBody = {
   id: number,
   user: {
     id: number
@@ -122,7 +128,7 @@ export enum SocialView {
   USERS
 }
 
-export type ContextContent = { clickedUser: user, currentRoomId: number, canBeControlled: boolean } | null
+export type ContextContent = { clickedUser: user, clickedUserRank: RoomRank, currentRoomId: number, currentRoomCreator: string, canBeControlled: boolean } | null
 
 export interface NonModalContext {
   nonModalActive: boolean
@@ -155,34 +161,68 @@ export enum UserListType {
   NEW_MESSAGE
 }
 
-// export type socketPayload = {}
+export type MutedUser = {
+  username: string
+  time: number
+}
 
-// export type typeMsg = {
-  //   content: string
-  //   createdAt: string
-  //   owner: string
-  // }
-  
-  // export type typeAllMsg = {
-    //   roomID: number
-    //   messages: typeMsg[]
-    // }
-    
-    // export type typeRoom = {
-      //   roomID: number
-      //   name: string
-//   avatar: string
-// }
+/**
+ ******************** GAME *********************
+ */
 
-// export type typeAllRooms = {
-//   messages: typeMsg[]
-//   room: typeRoom
-// }
+export type player = {
+  user: user,
+  color: number | string
+}
 
-// export type typeNotification = {
-//   id: number
-//   content: string
-//   createdAt: string
-//   owner: string
-//   type: string
-// }
+export type gameScore = {
+  scores: number[]
+}
+
+export type currentPositions = {
+  ball: {
+    position: {
+      x: number
+      y: number
+    }
+  }
+  paddles: [
+    {
+      position: {
+        y: number
+      }
+    },
+    {
+      position: {
+        y: number
+      }
+    }
+  ]
+}
+
+export enum GameState {
+  PREQUEUE,
+  IN_QUEUE,
+  PREGAME_NOT_READY,
+  PREGAME_READY,
+  IN_GAME,
+  POST_GAME
+}
+
+export type GameInfo = {
+    id: number
+    score: number[]
+    elo: number
+    createdAt: string
+    result: boolean
+    opponent: user
+}
+
+/**
+ ******************** POP-UP *********************
+ */
+
+export type PopUpIndex = {
+  id: number
+  content: string
+}

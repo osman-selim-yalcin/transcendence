@@ -100,7 +100,8 @@
     }
   }
 
-  #placeholder {
+
+  .placeholder {
     margin: auto;
   }
 
@@ -112,6 +113,7 @@
     list-style: none;
     padding-right: 8rem;
     padding-left: 3rem;
+    padding-bottom: 1rem;
     box-sizing: border-box;
 
     li {
@@ -120,15 +122,46 @@
       align-self: flex-start;
       padding: 0.8rem;
       border-radius: .5rem;
+      max-width: 40%;
+
+      .message {
+        display: flex;
+        gap: 1rem;
+        
+        i {
+          font-size: 10px;
+          align-self: flex-end;
+        }
+      }
     }
 
     li.main-user {
-      max-width: 40%;
       align-self: flex-end;
       background-color: rgb(224, 252, 215);
+
+      b {
+        display: none;
+      }
+    }
+
+    li.room-announcement {
+      align-self: center;
+      background-color: rgb(240, 242, 245);
+      padding: 0.2rem 0.8rem;
+      font-size: smaller;
+      color: rgb(87, 100, 110);
+
+      i, b {
+        display: none;
+      }
     }
   }
 
+  .muted {
+    padding: 1rem;
+    background-color: rgb(240, 242, 245);
+    text-align: center;
+  }
 
   form {
     display: flex;
@@ -177,6 +210,7 @@
     img {
       aspect-ratio: 1 / 1;
       background-color: grey;
+      min-width: 80%;
       max-width: 80%;
       border-radius: 50%;
     }

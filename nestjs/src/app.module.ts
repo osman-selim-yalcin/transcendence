@@ -15,26 +15,30 @@ import { NotificationController } from './modules/notification/notification.cont
 import { NotificationModule } from './modules/notification/notification.module';
 import { tokenMiddleware } from './middleware/token.middleware';
 import { SocketClientModule } from './gateway/socket.module';
+import { Game } from './typeorm/Game';
+import { GameModule } from './modules/game/game.module';
+import { GameController } from './modules/game/game.controller';
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
     AuthModule,
     RoomModule,
     SocketClientModule,
     NotificationModule,
+    GameModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'postgresDB', //postgresDB
-      port: 5432,
-      username: 'test',
-      password: 'test',
-      database: 'osyalcin',
-      entities: [User, Room, Message, Notification],
+      host: process.env.SQL_URL,
+      port: parseInt(process.env.SQL_PORT),
+      username: process.env.SQL_USERNAME,
+      password: process.env.SQL_PASSWORD,
+      database: process.env.SQL_DATABASE,
+      entities: [User, Room, Message, Notification, Game],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User]),
     PassportModule.register({ session: true }),
-    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
   providers: [],
@@ -43,6 +47,11 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(tokenMiddleware)
-      .forRoutes(UsersController, RoomController, NotificationController);
+      .forRoutes(
+        UsersController,
+        RoomController,
+        NotificationController,
+        GameController,
+      );
   }
 }

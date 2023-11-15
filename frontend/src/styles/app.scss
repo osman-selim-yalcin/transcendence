@@ -88,3 +88,12 @@ footer {
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
+
+dialog, button:focus{
+  outline: none !important;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}

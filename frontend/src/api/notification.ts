@@ -1,8 +1,10 @@
 import axios from "axios"
+import { SERVER_URL } from "../serverUrl"
+
 
 export const getNotifications = async () => {
   return axios
-    .get("http://localhost:3000/api/notification", {
+    .get(SERVER_URL + "/api/notification", {
       headers: {
         Authorization:
           "Bearer " +
@@ -19,7 +21,7 @@ export const getNotifications = async () => {
 
 export const deleteNotification = async (body: { id: number }) => {
   return axios
-    .delete("http://localhost:3000/api/notification", 
+    .delete(SERVER_URL + "/api/notification", 
     {
       headers: {
         authorization:

@@ -6,29 +6,39 @@ import {
   notificationStatus,
   notificationTypes,
 } from 'src/types/notification.dto';
+import { isBlock } from './user';
+import { userStatus } from 'src/types/user.dto';
 
-export function userModify(user: User) {
+export function userRoomModify(otherUser: User, user: User): User {
   return {
-    id: user.id,
-    username: user.username,
-    sessionID: user.sessionID,
-    status: user.status,
-    avatar: user.avatar,
-    lastSeen: user.lastSeen,
+    id: otherUser.id,
+    username: otherUser.username,
+    sessionID: otherUser.sessionID,
+    status: isBlock(user, otherUser) ? userStatus.BLOCKED : otherUser?.status,
+    avatar: otherUser.avatar,
+    lastSeen: otherUser.lastSeen,
+    elo: otherUser.elo,
+    displayName: otherUser.displayName,
+    createdAt: otherUser.createdAt,
+    twoFactorEnabled: null,
+    twoFactorSecret: null,
+    blockList: null,
     friends: null,
     rooms: null,
     notifications: null,
-    blocked: null,
+    oldAvatar: null,
+    won: null,
+    lost: null,
   };
 }
 
-export function userRoomModify(room: Room) {
-  room.users = room.users.map((u) => userModify(u));
+export function userRoomModifyHandler(room: Room, user: User) {
+  room.users = room.users.map((u) => userRoomModify(u, user));
   if (room.password) return { ...room, password: true };
   return { ...room, password: false };
 }
 
-export function roomModify(room: Room) {
+export function roomModifyHandler(room: Room) {
   if (room.password) return { ...room, password: true };
   return { ...room, password: false };
 }
@@ -46,33 +56,34 @@ export function privateHandler(users: User[], loginUser: User) {
   }
 }
 
-export function hashPassword(room: Room) {
-  if (room.password) {
-    room.password = room.password.toString();
+export function hashPassword(password: string) {
+  if (password) {
+    password = password.toString();
     const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(room.password, salt);
-    room.password = hash;
+    const hash = bcrypt.hashSync(password, salt);
+    return hash;
   }
+  return null;
 }
 
 export function checksForJoin(room: Room, loginUser: User, password: string) {
   if (isUserInRoom(room, loginUser))
     throw new HttpException('user already in room', 400);
-  checkInvite(room, loginUser);
+  checkInvite(room);
   checkBanned(room, loginUser);
   checkPassword(room, password);
 }
 
 export function checkPassword(room: Room, password: string) {
   if (room.password) {
-    if (!bcrypt.compareSync(password, room.password)) {
+    if (!password || !bcrypt.compareSync(password, room.password)) {
       throw new HttpException('password uncorrect', 400);
     }
   }
 }
 
-export function checkInvite(room: Room, loginUser: User) {
-  if (room.isInviteOnly && !isRoomNotificationExist(room, loginUser)) {
+export function checkInvite(room: Room) {
+  if (room.isInviteOnly) {
     throw new HttpException('not invited', 400);
   }
 }
@@ -103,8 +114,7 @@ export function isRoomNotificationExist(room: Room, loginUser: User) {
     (n) =>
       n.type === notificationTypes.ROOM &&
       n.roomID === room.id &&
-      n.status === notificationStatus.QUESTION &&
-      n.user.id === loginUser.id,
+      n.status === notificationStatus.QUESTION,
   );
   return notification;
 }

@@ -10,6 +10,11 @@ import {
 import { User } from './User';
 import { Message } from './Message';
 
+export type muteType = {
+  username: string;
+  time: number;
+};
+
 @Entity({ name: 'rooms' })
 export class Room {
   @PrimaryGeneratedColumn()
@@ -19,7 +24,7 @@ export class Room {
   @JoinColumn()
   users: User[];
 
-  @OneToMany(() => Message, (message) => message.room, { onDelete: 'CASCADE' })
+  @OneToMany(() => Message, (message) => message.room, { cascade: true })
   @JoinColumn()
   messages: Message[];
 
@@ -32,7 +37,10 @@ export class Room {
   @Column()
   name: string;
 
-  @Column({ default: 'https://source.unsplash.com/featured/300x202' })
+  @Column({
+    default:
+      'https://res.cloudinary.com/dzhczcggz/image/upload/v1698681962/transcendence/mbmjyryi4wceu2xjehj9.jpg',
+  })
   avatar: string;
 
   @Column({ nullable: true })
@@ -44,8 +52,8 @@ export class Room {
   @Column('text', { array: true, nullable: true, default: [] })
   banList: string[];
 
-  @Column('jsonb', { array: false, nullable: true, default: [] })
-  muteList: { username: string; time: number }[];
+  @Column('jsonb', { array: false, nullable: false, default: [] })
+  muteList: muteType[];
 
   @Column({ default: false })
   isGroup: boolean;

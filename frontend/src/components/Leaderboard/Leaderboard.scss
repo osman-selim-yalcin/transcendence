@@ -1,0 +1,41 @@
+.leaderboard {
+  width: 60%;
+  max-height: 40%;
+  min-height: 30%;
+  display: flex;
+  flex-direction: column;
+  
+  h2 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  
+  .list {
+    overflow-y: scroll;
+    flex-grow: 1;
+    border-bottom: 1px solid rgb(168, 168, 168);
+    border-top: 1px solid rgb(168, 168, 168);
+    margin: 0 4rem;
+    
+    ul {
+      padding: 0;
+      list-style: none;
+      text-align: center;
+      
+      
+      li {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        font-size: 25px;
+        font-weight: 500;
+        border-bottom: 1px solid rgb(168, 168, 168);
+      }
+      
+      li:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}

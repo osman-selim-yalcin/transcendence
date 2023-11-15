@@ -7,11 +7,12 @@ import {
   checksForJoin,
   hashPassword,
   privateHandler,
-  roomModify,
+  roomModifyHandler,
   isUserInRoom,
   isCreator,
   isRoomNotificationExist,
   isMod,
+  userRoomModifyHandler,
 } from 'src/functions/room';
 import { roomDto } from 'src/types/room.dto';
 import { Message } from 'src/typeorm/Message';
@@ -43,13 +44,14 @@ export class RoomService {
     });
 
     const newAllRooms = [];
-    for (const room of rooms) newAllRooms.push(roomModify(room));
+    for (const room of rooms) newAllRooms.push(roomModifyHandler(room));
     return newAllRooms;
   }
 
   async getUserRooms(user: User) {
     const userRooms = [];
-    for (const room of user.rooms) userRooms.push(roomModify(room));
+    for (const room of user.rooms)
+      userRooms.push(userRoomModifyHandler(room, user));
     return userRooms;
   }
 
@@ -61,34 +63,70 @@ export class RoomService {
         ? (roomDetails.name = 'default name')
         : (roomDetails.name = users[0].username + ' & ' + users[1].username);
     const room = await this.roomRep.save({
-      ...roomDetails,
+      name: roomDetails.name,
+      isGroup: roomDetails.isGroup,
+      isInviteOnly: roomDetails.isInviteOnly,
+      password: roomDetails.password,
       users: users,
       creator: user.username,
       mods: [user.username],
     });
-    hashPassword(room);
+    room.password = hashPassword(roomDetails.password);
     for (const u of room.users)
       this.server.joinRoom(u.sessionID, room.id.toString());
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     return await this.roomRep.save(room);
-    return { msg: 'room created' };
   }
 
   async deleteRoom(user: User, room: Room) {
     if (!room.isGroup || (room.isGroup && !isCreator(room, user)))
       throw new HttpException('not authorized', 400);
+    (await this.notificationRep.find()).map((n) => {
+      if (n.roomID === room.id) this.notificationRep.remove(n);
+    });
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     await this.roomRep.remove(room);
     return { msg: 'room deleted' };
   }
 
-  async updateRoom(user: User, room: Room, roomDetails: roomDto) {
+  async changePassword(user: User, room: Room, roomDetails: roomDto) {
     if (!room.isGroup || !isCreator(room, user))
       throw new HttpException('not authorized', 400);
-    hashPassword(roomDetails);
-    roomDetails.id = room.id;
-    roomDetails.users = room.users;
-    roomDetails.isGroup = room.isGroup;
+    room.password = hashPassword(roomDetails.password);
     this.specialMsg('room updated', room);
-    await this.roomRep.save({ ...room, ...roomDetails });
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
+
+    await this.roomRep.save({ ...room });
+    return { msg: 'room updated' };
+  }
+
+  async changeIsInviteOnly(user: User, room: Room) {
+    if (!room.isGroup || !isCreator(room, user))
+      throw new HttpException('not authorized', 400);
+    room.isInviteOnly = !room.isInviteOnly;
+    this.specialMsg('room updated', room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
+    await this.roomRep.save({ ...room });
+    return { msg: 'room updated' };
+  }
+
+  async changeName(user: User, room: Room, roomDetails: roomDto) {
+    if (!room.isGroup || !isCreator(room, user))
+      throw new HttpException('not authorized', 400);
+    room.name = roomDetails.name;
+    this.specialMsg('room updated', room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
+    await this.roomRep.save({ ...room });
     return { msg: 'room updated' };
   }
 
@@ -104,10 +142,16 @@ export class RoomService {
         user: notification.creator,
         creator: notification.user,
       });
+      this.server.reloadNotification(notification.user);
+      this.server.reloadNotification(notification.creator);
       await this.notificationRep.remove(notification);
     } else checksForJoin(room, user, roomDetails.password);
     room.users.push(user);
+    this.server.joinRoom(user.sessionID, room.id.toString());
     this.specialMsg(user.username + ' joined', room);
+
+    //reload room
+    room.users.map((u) => this.server.reloadRoom(u));
     await this.roomRep.save(room);
     return { msg: 'user join the room' };
   }
@@ -170,11 +214,6 @@ export class RoomService {
   }
 
   async isMuted(room: Room, user: User) {
-    const muted = room.muteList.find((u) => u.username === user.username);
-    if (muted?.time < Date.now()) {
-      room.muteList = room.muteList.filter((u) => u.username !== user.username);
-      await this.roomRep.save(room);
-    }
     return room.muteList.find((u) => u.username === user.username);
   }
 
@@ -200,11 +239,14 @@ export class RoomService {
   }
 
   async leaveheadler(room: Room, user: User) {
+    const oldUsers = room.users;
     room.users = room.users.filter((u) => u.id !== user.id);
     if (isMod(room, user))
       room.mods = room.mods.filter((u) => u !== user.username);
 
     if (room.users.length === 0) {
+      //reload room
+      oldUsers.map((u) => this.server.reloadRoom(u));
       await this.roomRep.remove(room);
       throw new HttpException('room deleted cause no user', 200);
     }
@@ -218,6 +260,10 @@ export class RoomService {
     }
 
     this.specialMsg(user.username + ' leave', room);
+
+    //reload room
+    oldUsers.map((u) => this.server.reloadRoom(u));
+    this.server.leaveRoom(user.sessionID, room.id.toString());
     await this.roomRep.save(room);
   }
 }

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
-import { getUser } from "../api/user"
-import { room, user } from "../types"
+import { getToken, getUser } from "../api/user"
+import { room, user, userStatus } from "../types"
 import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
 import { getNotifications } from "../api/notification"
-
 
 const useInitial = () => {
   const [user, setUser] = useState<user>(null)
@@ -13,15 +12,13 @@ const useInitial = () => {
   const [notifications, setNotifications] = useState(null)
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      console.log("there is TOKEN")
-    }
-
     async function getInitialData() {
       getUser()
         .then((response: any) => {
-          // console.log("current user ", response, "but user is", user)
-          setUser(response)
+          console.log("current user ", response, "but user is", user)
+          if (response) {
+            setUser({ ...response, status: userStatus.ONLINE })
+          }
 
           if (response !== undefined) {
             getFriends()
@@ -54,7 +51,12 @@ const useInitial = () => {
         })
     }
 
-    getInitialData()
+    if (localStorage.getItem("token")) {
+      getInitialData()
+    } else {
+      getToken()
+    }
+
   }, [])
 
   return {

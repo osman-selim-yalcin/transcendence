@@ -67,7 +67,7 @@ function UserListConsumer({ users, userListType, room, setModal }: PropsWithChil
         <li key={singleUser.id}>
           <p>
             <b>
-              {singleUser.username} - {singleUser.id}
+              {singleUser.displayName || singleUser.username} - {singleUser.id}
             </b>
           </p>
           {userListType === UserListType.ADD_FRIEND && <AddFriendIndexContent userId={singleUser.id} />}
@@ -80,7 +80,7 @@ function UserListConsumer({ users, userListType, room, setModal }: PropsWithChil
 }
 
 function AddFriendIndexContent({ userId }: PropsWithChildren<{ userId: number }>) {
-  const { friends, reloadNotifications, notifications, reloadFriends } = useContext(UserContext)
+  const { friends, notifications } = useContext(UserContext)
 
   function isFriendId(id: number) {
     const found = friends?.find((friend) => friend.id === id)
@@ -110,8 +110,6 @@ function AddFriendIndexContent({ userId }: PropsWithChildren<{ userId: number }>
     return (
       <button onClick={async () => {
         await addFriend({ id: userId })
-        reloadFriends()
-        reloadNotifications()
       }}>Add friend</button>
     )
   }
@@ -124,7 +122,7 @@ enum inviteState {
 }
 
 function InviteUserIndexContext({ userId, room }: PropsWithChildren<{ userId: number, room: room }>) {
-  const { notifications, reloadNotifications } = useContext(UserContext)
+  const { notifications } = useContext(UserContext)
   const [inviteStatus, setInviteStatus] = useState(inviteState.INVITE)
 
   useEffect(() => {
@@ -167,9 +165,6 @@ function InviteUserIndexContext({ userId, room }: PropsWithChildren<{ userId: nu
     return (
       <button onClick={async () => {
         await sendInvite({ id: room.id, user: { id: userId } })
-        setTimeout(() => {
-          reloadNotifications()
-        }, 1000);
       }}>
         Invite
       </button>

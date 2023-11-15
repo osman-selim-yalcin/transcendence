@@ -40,7 +40,7 @@ export default function Sidebar() {
     <button className='bar-button' onClick={(e) => {
       e.stopPropagation()
       setBarActive(!barActive)
-    }}><span className={"arrow" + (barActive ? " active" : "")}>&#8678;</span></button> {/* &equiv; */}
+    }}><span className={"arrow" + (barActive ? " active" : "")}>&#8680;</span></button> {/* &equiv; */}
     <div className={"sidebar" + (barActive ? " active" : "")} ref={sidebarRef}>
       <h2>Sidebar</h2>
       <div className={"buttons"}>

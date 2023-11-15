@@ -1,8 +1,10 @@
 import axios from "axios"
+import { SERVER_URL } from "../serverUrl"
+
 
 export const login = (username: string, setUser: any, navigate: Function) => {
   axios
-    .post("http://localhost:3000/api/auth/tmp/login", {
+    .post(SERVER_URL + "/api/auth/tmp/login", {
       username: username
     })
     .then(res => {

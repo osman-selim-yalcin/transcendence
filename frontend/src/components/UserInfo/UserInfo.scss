@@ -1,0 +1,34 @@
+.table {
+  overflow-y: scroll;
+
+  li {
+    border-bottom: 1px solid gray;
+  }
+
+  li:last-child {
+    border-bottom: 0;
+  }
+
+  
+  .win {
+    background-color: rgb(157, 230 , 164);
+  }
+  
+  .lose {
+    background-color: rgb(200, 111, 119);
+  }
+  
+  .placeholder {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.player-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  font-size: 30px;
+}
