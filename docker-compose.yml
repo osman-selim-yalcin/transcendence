@@ -8,8 +8,6 @@ services:
       - POSTGRES_DB=osyalcin
     volumes:
       - postgres-volume:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
   backend:
     build: ./nestjs
     depends_on:
