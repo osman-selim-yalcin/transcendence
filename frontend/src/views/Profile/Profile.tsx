@@ -128,7 +128,7 @@ function ChangeNickname() {
 }
 
 const UploadAndDisplayImage = () => {
-  const [selectedImage, setSelectedImage] = useState<Blob>(null);
+  const [selectedImage, setSelectedImage] = useState<File>(null);
   const [showInput, setShowInput] = useState<boolean>(false)
   const fileInput = useRef(null)
   const { user } = useContext(UserContext)
@@ -197,7 +197,7 @@ const UploadAndDisplayImage = () => {
   );
 };
 
-function ImageSizeIndicator({ selectedImageState: [selectedImage, setSelectedImage] }: PropsWithChildren<{ selectedImageState: [Blob, Function] }>) {
+function ImageSizeIndicator({ selectedImageState: [selectedImage, setSelectedImage] }: PropsWithChildren<{ selectedImageState: [File, Function] }>) {
   const sizeInKilobytes = (selectedImage.size / 1000).toFixed()
   return (
     <>

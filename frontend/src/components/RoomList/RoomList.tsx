@@ -1,13 +1,12 @@
 import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../context/UserContext'
-import { room, roomPayload, user } from '../../types'
+import { room } from '../../types'
 import { Modal } from '../Modal/Modal'
 import GroupCreation from '../forms/GroupCreation'
-import { deleteRoom, getRooms, joinRoom } from '../../api/room'
+import { getRooms } from '../../api/room'
 import "./RoomList.scss"
 import LoadIndicator from '../LoadIndicator/LoadIndicator'
 import GroupJoin from '../forms/GroupJoin'
-import { useNavigate } from 'react-router-dom'
 
 export default function UserRoomList() {
   const { user, userRooms } = useContext(UserContext)

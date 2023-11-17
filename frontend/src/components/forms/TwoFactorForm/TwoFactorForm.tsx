@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react'
 import { PopUpContext } from '../../../context/PopUpContext'
-import { getToken, verifyQR } from '../../../api/user'
+import { getToken } from '../../../api/user'
 import "./TwoFactorForm.scss"
 
 export default function TwoFactorForm() {

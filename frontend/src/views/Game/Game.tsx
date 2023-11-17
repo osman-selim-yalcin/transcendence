@@ -17,7 +17,7 @@ export default function Game() {
   const [gameState, setGameState] = useState<GameState>(GameState.PREQUEUE)
   const [opponent, setOpponent] = useState<user>(null)
   const [selfIndex, setSelfIndex] = useState<number>(null)
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, _setSearchParams] = useSearchParams();
   const myParam = searchParams.get('ref');
 
   const keys = useRef({

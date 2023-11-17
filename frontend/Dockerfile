@@ -2,4 +2,5 @@ FROM node:latest
 WORKDIR /app
 COPY . .
 RUN npm install
-ENTRYPOINT [ "npm", "run", "dev" ]
+RUN npm run build
+ENTRYPOINT [ "npm", "run", "preview" ]

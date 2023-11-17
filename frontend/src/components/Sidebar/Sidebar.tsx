@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import FriendList from '../FriendList/FriendList'
 import UserList from '../UserList/UserList'
 import UserRoomList from '../RoomList/RoomList'
@@ -16,21 +16,13 @@ export default function Sidebar() {
     } else {
       document.removeEventListener('click', handleClickOutside);
     }
-    // document.addEventListener("keydown", handleEscapeKey)
     return () => {
       document.removeEventListener('click', handleClickOutside);
-      // document.removeEventListener("keydown", handleEscapeKey)
     }
   }, [barActive])
 
   function handleClickOutside(event: any) {
     if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-      setBarActive(false)
-    }
-  }
-
-  function handleEscapeKey(event: any) {
-    if (event.key === "Escape") {
       setBarActive(false)
     }
   }
