@@ -42,6 +42,9 @@ export class User {
   })
   avatar: string;
 
+  @Column({ nullable: true, select: true })
+  avatar42: string;
+
   @Column({ nullable: true, select: false })
   oldAvatar: string;
 

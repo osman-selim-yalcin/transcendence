@@ -172,6 +172,14 @@ export class UsersService {
     throw new HttpException('notification created succesfully', 200);
   }
 
+  async file42(user: User) {
+    this.userRep.save({
+      ...user,
+      oldAvatar: null,
+      avatar: user.avatar42,
+    });
+  }
+
   async updateAvatar(user: User, cloudinaryResponse: CloudinaryResponse) {
     user.avatar = cloudinaryResponse.secure_url;
     user.oldAvatar = cloudinaryResponse.public_id;
@@ -207,5 +215,10 @@ export class UsersService {
       await this.userRep.save(user);
     }
     return verified;
+  }
+
+  async disable2fa(user: User) {
+    user.twoFactorEnabled = false;
+    await this.userRep.save(user);
   }
 }

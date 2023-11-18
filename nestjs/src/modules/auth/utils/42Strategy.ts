@@ -20,6 +20,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService?.validateUser({
       username: profile.username,
       avatar: profile._json.image.link,
+      avatar42: profile._json.image.link,
       sessionID: Math.floor(
         Math.random() * (1000000000 - 100000000) + 100000000,
       ).toString(16),

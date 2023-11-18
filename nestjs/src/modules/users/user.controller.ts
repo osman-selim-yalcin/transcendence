@@ -59,7 +59,7 @@ export class UsersController {
   }
 
   @Post('2fa')
-  async enable2fa(@Req() req: any) {
+  async createQR(@Req() req: any) {
     return this.usersService.createQR(req.user);
   }
 
@@ -67,6 +67,19 @@ export class UsersController {
   async verify2fa(@Req() req: any, @Body() body: twoFactorDto) {
     return this.usersService.verify2fa(req.user, body);
   }
+
+  @Post('2fa/disable')
+  async disable2fa(@Req() req: any) {
+    return this.usersService.disable2fa(req.user);
+  }
+
+  @Post('file42')
+  async file42(@Req() req: any) {
+    if (req.user.oldAvatar)
+      await this.cloudinaryService.deleteFile(req.user.oldAvatar);
+    return this.usersService.file42(req.user);
+  }
+
 
   @Post('file')
   @UseInterceptors(
@@ -92,4 +105,5 @@ export class UsersController {
       await this.cloudinaryService.deleteFile(req.user.oldAvatar);
     return this.usersService.updateAvatar(req.user, cloudinaryResponse);
   }
+
 }
