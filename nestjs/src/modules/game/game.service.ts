@@ -10,6 +10,7 @@ import {
   notificationStatus,
   notificationTypes,
 } from 'src/types/notification.dto';
+import { userStatus } from 'src/types/user.dto';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -38,8 +39,8 @@ export class GameService {
 
   async getOpponent(user: User) {
     try {
-      // if (user.status !== userStatus.INGAME)
-      //   throw new HttpException('user not in game', 400);
+      if (user.status !== userStatus.INGAME)
+        throw new HttpException('user not in game', 400);
       const game = this.server.findGame(user.sessionID, this.server.gameList);
       let i = 0;
       for (const u of game.users) {
@@ -80,13 +81,13 @@ export class GameService {
 
   async invite(user: User, otherUser: User) {
     if (isBlock(user, otherUser)) throw new HttpException('blocked', 400);
-    // if (
-    //   user.status === userStatus.INGAME ||
-    //   otherUser.status === userStatus.INGAME
-    // )
-    //   throw new HttpException('already in game', 400);
-    // if (user.status === userStatus.OFFLINE)
-    //   throw new HttpException('user is offline', 400);
+    if (
+      user.status === userStatus.INGAME ||
+      otherUser.status === userStatus.INGAME
+    )
+      throw new HttpException('already in game', 400);
+    if (user.status === userStatus.OFFLINE)
+      throw new HttpException('user is offline', 400);
     const notification = await this.gameNotificationHandler(user, otherUser);
     this.server.preGame([otherUser.sessionID, user.sessionID]);
     this.server.gameInviteAccepted(user, otherUser);

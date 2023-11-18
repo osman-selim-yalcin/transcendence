@@ -14,6 +14,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/typeorm/Game';
 import { Repository } from 'typeorm';
 import { typeGame } from 'src/types/game.dto';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 interface CustomSocket extends Socket {
   sessionID: string;
@@ -96,7 +98,7 @@ export class socketGateway implements OnModuleInit {
   }
 
   async reloadFriend(user: User) {
-    this.server.in(user.sessionID).emit('reload', 'friend');
+    this.server.in(user.sessionID).emit('reload', 'friends');
   }
 
   async reloadNotification(user: User) {
