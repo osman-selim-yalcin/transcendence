@@ -37,11 +37,11 @@ export const getUser = async () => {
       }
     })
     .then(res => {
-      // console.log("user from 42", res.data)
       return res.data
     })
     .catch(err => {
       console.log(err)
+      throw err
     })
 }
 

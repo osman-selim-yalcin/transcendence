@@ -47,7 +47,10 @@ const useInitial = () => {
           }
         })
         .catch((err: any) => {
-          console.log("Error occurred while getting user information:", err)
+          if (err.response.status === 401) {
+            localStorage.removeItem("token")
+            return getToken()
+          }
         })
     }
 

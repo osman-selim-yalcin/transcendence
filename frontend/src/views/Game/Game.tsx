@@ -159,23 +159,6 @@ export default function Game() {
           {gameState === GameState.POST_GAME && <button onClick={() => {
             setGameState(GameState.PREQUEUE)
           }} className={"end-game-button"}>Main Menu</button>}
-
-          <div className={"center hidden"}></div>
-          <div className="temp">
-            <button onClick={() => {
-              if (gameState !== 0) {
-                setGameState(gameState - 1)
-              }
-            }}>prev</button>
-            <button onClick={() => {
-              if (gameState !== 5) {
-                setGameState(gameState + 1)
-              }
-            }}>next</button>
-            <button onClick={() => {
-              setGameState(GameState.POST_GAME)
-            }}>End</button>
-          </div>
         </div>
       </div>
     </div>
@@ -194,8 +177,6 @@ function PreQueueContent({ gameStateHook: [gameState, setGameState] }: PropsWith
           setGameState(GameState.IN_QUEUE)
         }}
         >Join Queue</button>
-        <button disabled onClick={() => {
-        }}>Invite a Player</button>
       </div>
     </>
   )
