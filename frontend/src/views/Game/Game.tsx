@@ -168,12 +168,22 @@ export default function Game() {
 function PreQueueContent({ gameStateHook: [gameState, setGameState] }: PropsWithChildren<{ gameStateHook: [GameState, Function] }>) {
   const { user } = useContext(UserContext)
   const socket = useContext(SocketContext)
+  const [queueDisable, setQueueDisable] = useState(true)
 
+  useEffect(() => {
+    if (user && socket.connected) {
+      setQueueDisable(false)
+    } else {
+      setQueueDisable(true)
+    }
+  }, [user, socket.connected])
+  
+  // !user || !socket.connected
   return (
     <>
       <p className={"game-title game-center"}>PONG</p>
       <div className="prequeue-content">
-        <button disabled={!user || !socket.connected} onClick={() => {
+        <button disabled={queueDisable} onClick={() => {
           setGameState(GameState.IN_QUEUE)
         }}
         >Join Queue</button>
@@ -187,13 +197,6 @@ function QueueContent({ gameStateHook: [gameState, setGameState] }: PropsWithChi
     <div className="queue-content">
       <LoadIndicator />
       <div className="in-queue-buttons">
-        <button
-          onClick={() => {
-            setGameState(gameState + 1)
-          }}
-        >
-          Skip
-        </button> {/*temp*/}
         <button className={"cancel-button" + (gameState !== GameState.IN_QUEUE ? " hidden" : "")} onClick={() => {
           setGameState(GameState.PREQUEUE)
         }}>Cancel</button>
