@@ -60,10 +60,6 @@ export class tokenMiddleware implements NestMiddleware {
     ) {
       relations = ['friends'];
     }
-    // else if (path === '/user/') {
-    //   relations = ['notifications'];
-    // }
-
     const user = await this.tokenToUser(token, relations);
     req.user = user;
     next();
@@ -71,6 +67,20 @@ export class tokenMiddleware implements NestMiddleware {
 
   async tokenToUser(token: string, relations: string[]) {
     const loginUserInfo = verifyToken(token);
+    if (relations.includes('rooms.messages')) {
+      const user = await this.userRep
+        .createQueryBuilder('users')
+        .leftJoinAndSelect('users.rooms', 'rooms')
+        .leftJoinAndSelect('rooms.messages', 'messages')
+        .leftJoinAndSelect('rooms.users', 'roomsUsers')
+        .orderBy({ 'messages.id': 'DESC' })
+        .where('users.id = :id', {
+          id: loginUserInfo.id,
+        })
+        .getOne();
+      if (!user) throw new HttpException('user not found', 400);
+      return user;
+    }
     const user = await this.userRep.findOne({
       where: { id: loginUserInfo.id },
       select: [
