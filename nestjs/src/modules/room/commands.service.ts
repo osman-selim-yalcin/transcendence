@@ -118,10 +118,10 @@ export class CommandsService {
         username: otherUser.username,
         time: timeoutID[Symbol.toPrimitive](),
       });
+      await this.roomRep.save(room);
 
       //reload room
       room.users.map((u) => this.server.reloadRoom(u));
-      await this.roomRep.save(room);
     }
     throw new HttpException(content, 200);
   }

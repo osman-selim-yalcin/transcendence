@@ -86,11 +86,12 @@ export class RoomService {
     (await this.notificationRep.find()).map(async (n) => {
       if (n.roomID === room.id) await this.notificationRep.remove(n);
     });
+    const oldUsers = room.users;
     await this.roomRep.remove(room);
 
     //reload room
-    room.users.map((u) => this.server.reloadNotification(u));
-    room.users.map((u) => this.server.reloadRoom(u));
+    oldUsers.map((u) => this.server.reloadNotification(u));
+    oldUsers.map((u) => this.server.reloadRoom(u));
     return { msg: 'room deleted' };
   }
 
@@ -246,9 +247,9 @@ export class RoomService {
       room.mods = room.mods.filter((u) => u !== user.username);
 
     if (room.users.length === 0) {
+      await this.roomRep.remove(room);
       //reload room
       oldUsers.map((u) => this.server.reloadRoom(u));
-      await this.roomRep.remove(room);
       throw new HttpException('room deleted cause no user', 200);
     }
 
@@ -261,10 +262,10 @@ export class RoomService {
     }
 
     this.specialMsg(user.username + ' leave', room);
+    await this.roomRep.save(room);
 
     //reload room
     oldUsers.map((u) => this.server.reloadRoom(u));
     this.server.leaveRoom(user.sessionID, room.id.toString());
-    await this.roomRep.save(room);
   }
 }
