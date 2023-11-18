@@ -62,6 +62,11 @@ export default function Game() {
       }
     }
 
+    socket.on("game over", () => {
+      clearInterval(interval.current)
+      setGameState(GameState.POST_GAME)
+    })
+
     return (() => {
       document.removeEventListener("keydown", handleKeyDown)
       document.removeEventListener("keyup", handleKeyUp)
@@ -120,10 +125,6 @@ export default function Game() {
         opponentPaddle.position = data.paddles[1 - selfIndex].position.y
         ball.x = !selfIndex ? data.ball.position.x : 100 - data.ball.position.x
         ball.y = data.ball.position.y
-      })
-      socket.on("game over", () => {
-        clearInterval(interval.current)
-        setGameState(GameState.POST_GAME)
       })
       interval.current = setInterval(() => {
         // console.log(0)
