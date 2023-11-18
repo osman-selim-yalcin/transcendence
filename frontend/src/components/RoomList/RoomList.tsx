@@ -96,7 +96,7 @@ function RoomFilter() {
         <p>Type something to search</p>
       }
       <Modal isActive={[modal, setModal]} removable={true}>
-        <GroupJoin room={clickedRoom} setModal={setModal} />
+        <GroupJoin room={clickedRoom} setModal={setModal} setSearch={setSearch} />
       </Modal>
     </>
   )

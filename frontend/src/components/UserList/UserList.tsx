@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom"
 
 export default function UserList({ userListType, room, setModal }: PropsWithChildren<{ userListType: UserListType, room?: room, setModal?: Function }>) {
   const [search, setSearch] = useState("")
-  // const [searchParams, setSearchParams] = useSearchParams()
   const [users, setUsers] = useState(null)
   const { user } = useContext(UserContext)
 

@@ -5,7 +5,7 @@ import { UserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { PopUpContext } from "../../context/PopUpContext";
 
-export default function GroupJoin({ room, setModal }: PropsWithChildren<{ room: room, setModal: Function }>) {
+export default function GroupJoin({ room, setModal, setSearch }: PropsWithChildren<{ room: room, setModal: Function, setSearch: Function }>) {
   const [password, setPassword] = useState("")
   const { user, userRooms, reloadUserRooms } = useContext(UserContext)
   const { addPopUp } = useContext(PopUpContext)
@@ -18,7 +18,7 @@ export default function GroupJoin({ room, setModal }: PropsWithChildren<{ room: 
       name: room.name,
       isGroup: room.isGroup
     }
-    await deleteRoom(payload)
+    return deleteRoom(payload)
       .then((response) => {
         console.log("delete response:", response)
       })
@@ -54,8 +54,10 @@ export default function GroupJoin({ room, setModal }: PropsWithChildren<{ room: 
                 </>
               }
               {room.creator === user.username &&
-                <button onClick={() => {
-                  handleDelete(room)
+                <button onClick={async () => {
+                  await handleDelete(room)
+                  setSearch("")
+                  setModal(false)
                 }}>Delete Room</button>
               }
             </>}
