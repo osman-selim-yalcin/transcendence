@@ -141,7 +141,7 @@ const UploadAndDisplayImage = () => {
 
 
   return (
-    <div>
+    <div className="edit-avatar">
       <h2>Avatar</h2>
       {!showInput ?
         <>
