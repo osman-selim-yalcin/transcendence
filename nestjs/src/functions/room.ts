@@ -20,6 +20,7 @@ export function userRoomModify(otherUser: User, user: User): User {
     elo: otherUser.elo,
     displayName: otherUser.displayName,
     createdAt: otherUser.createdAt,
+    avatar42: null,
     twoFactorEnabled: null,
     twoFactorSecret: null,
     blockList: null,

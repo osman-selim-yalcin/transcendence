@@ -80,7 +80,6 @@ export class UsersController {
     return this.usersService.file42(req.user);
   }
 
-
   @Post('file')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -105,5 +104,4 @@ export class UsersController {
       await this.cloudinaryService.deleteFile(req.user.oldAvatar);
     return this.usersService.updateAvatar(req.user, cloudinaryResponse);
   }
-
 }

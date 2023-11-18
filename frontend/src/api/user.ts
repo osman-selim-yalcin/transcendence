@@ -138,3 +138,31 @@ export const verifyQR = async (body: { token: string }) => {
       return response.data
     })
 }
+
+export const disable2fa = async () => {
+  return axios
+    .post(SERVER_URL + "/api/user/2fa/disable", null, {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response.data
+    })
+}
+
+export const defaultAvatar = async () => {
+  return axios
+    .post(SERVER_URL + "/api/user/file42", null, {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (localStorage.getItem("token") ? localStorage.getItem("token") : "")
+      }
+    })
+    .then(response => {
+      return response.data
+    })
+}

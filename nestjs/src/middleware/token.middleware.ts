@@ -84,6 +84,7 @@ export class tokenMiddleware implements NestMiddleware {
         'lastSeen',
         'blockList',
         'elo',
+        'avatar42',
         'twoFactorEnabled',
         'twoFactorSecret',
         'oldAvatar',

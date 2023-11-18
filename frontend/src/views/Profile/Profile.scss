@@ -36,6 +36,7 @@
     .edit-avatar {
       img {
         max-width: 300px;
+				max-height: 300px;
       }
     }
   }
@@ -55,24 +56,29 @@
   .avatar {
     display: flex;
     justify-content: center;
+		min-height: 0;
 
     --thickness: 10px;
-    img {
-      width: 20%;
-      aspect-ratio: 1 / 1;
-      border-radius: 50%;
-      padding: var(--thickness);
-    }
-    img.online {
+		.avatar-frame {
+			width: 20%;
+			aspect-ratio: 1 / 1;
+			border-radius: 50%;
+			overflow: hidden;
+			display: flex;
+			justify-content: center;				
+			img {
+			}
+		}
+    .avatar-frame.online {
       border: var(--thickness) solid rgb(80, 163, 97);
     }
-    img.offline {
+    .avatar-frame.offline {
       border: var(--thickness) solid rgb(129, 132, 141);
     }
-    img.busy {
+    .avatar-frame.busy {
       border: var(--thickness) solid rgb(231, 181, 78);
     }
-    img.in-game {
+    .avatar-frame.in-game {
       border: var(--thickness) solid rgb(54, 121, 229);
     }
   }

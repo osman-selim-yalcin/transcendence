@@ -10,37 +10,25 @@ export default function UserInfo({ user }: PropsWithChildren<{ user: user }>) {
   const [leaderboard, setLeaderboard] = useState<user[]>([])
 
   useEffect(() => {
-
-    if (user.status === userStatus.ONLINE)
-      setStatus("online")
-    else if (user.status === userStatus.OFFLINE)
-      setStatus("offline")
-    else if (user.status === userStatus.INGAME)
-      setStatus("in-game")
-    else if (user.status === userStatus.BUSY)
-      setStatus("busy")
-
+    if (user.status === userStatus.ONLINE) setStatus("online")
+    else if (user.status === userStatus.OFFLINE) setStatus("offline")
+    else if (user.status === userStatus.INGAME) setStatus("in-game")
+    else if (user.status === userStatus.BUSY) setStatus("busy")
   }, [])
 
   useEffect(() => {
     if (user) {
-      getGameHistory(user.id)
-        .then((res) => {
-          setGameHistory(res)
-        })
-      getLeaderboard()
-        .then((res) => {
-          setLeaderboard(res)
-        })
+      getGameHistory(user.id).then(res => {
+        setGameHistory(res)
+      })
+      getLeaderboard().then(res => {
+        setLeaderboard(res)
+      })
     }
   }, [user])
 
-
-
   if (!user) {
-    return (
-      <LoadIndicator />
-    )
+    return <LoadIndicator />
   } else if (user.status === userStatus.BLOCKED) {
     return (
       <div className="blocked-profile">
@@ -55,10 +43,9 @@ export default function UserInfo({ user }: PropsWithChildren<{ user: user }>) {
   }
 
   function getWinStreak() {
-    let streak = 0;
+    let streak = 0
     for (const game of gameHistory) {
-      if (!game.result)
-        return streak
+      if (!game.result) return streak
       ++streak
     }
     return streak
@@ -67,37 +54,67 @@ export default function UserInfo({ user }: PropsWithChildren<{ user: user }>) {
   return (
     <div className="user-profile">
       <div className="avatar">
-        <img className={status} src={user.avatar} alt="user avatar" />
+        <div className={"avatar-frame " + status}>
+            <img src={user.avatar} alt="user avatar" />
+        </div>
       </div>
       <Nameplate user={user} />
       <div className="tables">
         <div className="table player-stats">
-          <p><b>Total game:</b> {gameHistory.length}</p>
-          <p><b>Win rate:</b> {gameHistory.length ? (gameHistory.filter((game) => (game.result)).length / gameHistory.length * 100).toFixed(2) : 0}%</p>
-          <p><b>Current win streak:</b> {getWinStreak()}</p>
-          <p><b>Rank point:</b> {user.elo}</p>
-          <p><b>Placement:</b> {leaderboard.findIndex((player) => (player.id === user.id)) + 1}</p>
+          <p>
+            <b>Total game:</b> {gameHistory.length}
+          </p>
+          <p>
+            <b>Win rate:</b>{" "}
+            {gameHistory.length
+              ? (
+                  (gameHistory.filter(game => game.result).length /
+                    gameHistory.length) *
+                  100
+                ).toFixed(2)
+              : 0}
+            %
+          </p>
+          <p>
+            <b>Current win streak:</b> {getWinStreak()}
+          </p>
+          <p>
+            <b>Rank point:</b> {user.elo}
+          </p>
+          <p>
+            <b>Placement:</b>{" "}
+            {leaderboard.findIndex(player => player.id === user.id) + 1}
+          </p>
         </div>
         <div className="table game-table">
-          {gameHistory.length ?
+          {gameHistory.length ? (
             <ul>
               {gameHistory.map((game, i) => (
                 <li className={game.result ? "win" : "lose"} key={game.id}>
                   <div>
-                    <b>{user.displayName || user.username} vs. {game.opponent.displayName || game.opponent.username}</b>
+                    <b>
+                      {user.displayName || user.username} vs.{" "}
+                      {game.opponent.displayName || game.opponent.username}
+                    </b>
                   </div>
                   <div className="score">
-                    <p>{game.result ? game.score[0] : game.score[1]} - {game.result ? game.score[1] : game.score[0]}</p>
-                    <p>{game.result ? "+" : "-"}{game.elo}</p>
+                    <p>
+                      {game.result ? game.score[0] : game.score[1]} -{" "}
+                      {game.result ? game.score[1] : game.score[0]}
+                    </p>
+                    <p>
+                      {game.result ? "+" : "-"}
+                      {game.elo}
+                    </p>
                   </div>
                 </li>
               ))}
             </ul>
-            :
+          ) : (
             <div className="placeholder">
               <p>No game found</p>
             </div>
-          }
+          )}
         </div>
       </div>
     </div>
@@ -106,6 +123,11 @@ export default function UserInfo({ user }: PropsWithChildren<{ user: user }>) {
 
 function Nameplate({ user }: PropsWithChildren<{ user: user }>) {
   return (
-    <p className="name-plate"><span className="username">{user.displayName || user.username}</span><br />#{user.username}<br />{user.id}</p>
+    <p className="name-plate">
+      <span className="username">{user.displayName || user.username}</span>
+      <br />#{user.username}
+      <br />
+      {user.id}
+    </p>
   )
 }
