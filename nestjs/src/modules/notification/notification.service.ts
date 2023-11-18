@@ -30,7 +30,7 @@ export class NotificationService {
     });
     if (!notification) throw new HttpException('not found', 404);
     if (notification.user.id !== user.id)
-      throw new HttpException('not authorized', 401);
+      throw new HttpException('not authorized', 400);
     if (notification.status === notificationStatus.QUESTION) {
       let content = '';
       if (notification.type === notificationTypes.FRIEND) {
