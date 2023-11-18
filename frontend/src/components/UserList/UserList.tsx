@@ -78,7 +78,7 @@ function UserListConsumer({ users, userListType, room, setModal }: PropsWithChil
   )
 }
 
-function AddFriendIndexContent({ userId }: PropsWithChildren<{ userId: number }>) {
+export function AddFriendIndexContent({ userId }: PropsWithChildren<{ userId: number }>) {
   const { friends, notifications } = useContext(UserContext)
 
   function isFriendId(id: number) {

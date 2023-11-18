@@ -7,10 +7,11 @@ import LoadIndicator from "../LoadIndicator/LoadIndicator"
 import { useNavigate, useParams } from "react-router-dom"
 import { ContextMenuContext } from "../../context/ContextMenuContext"
 import { Modal } from "../Modal/Modal"
-import UserList from "../UserList/UserList"
+import UserList, { AddFriendIndexContent } from "../UserList/UserList"
 import { changeBlock } from "../../api/user"
 import { sendGameInvite } from "../../api/game"
 import { getHourMinute } from "../../functions"
+import { addFriend } from "../../api/friend"
 
 export function Chat() {
   const [showDetail, setShowDetail] = useState(false)
@@ -338,6 +339,8 @@ function DetailContent({ currentRoom, setShowDetail }: { currentRoom: room, setS
     const found = currentRoom.users.find((singleUser) => (user.id !== singleUser.id))
     return (
       <>
+        <AddFriendIndexContent userId={found.id} />
+        <br />
         <button onClick={() => {
           navigate(`/profile/${found.username}`)
         }}>Profile</button>
