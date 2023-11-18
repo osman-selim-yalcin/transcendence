@@ -11,7 +11,6 @@ import UserList, { AddFriendIndexContent } from "../UserList/UserList"
 import { changeBlock } from "../../api/user"
 import { sendGameInvite } from "../../api/game"
 import { getHourMinute } from "../../functions"
-import { addFriend } from "../../api/friend"
 
 export function Chat() {
   const [showDetail, setShowDetail] = useState(false)
