@@ -111,7 +111,7 @@ function MessageIndex({ room }: { room: room }) {
     <>
       <div className="chat-avatar-frame">
         <div className="chat-avatar">
-          <img src={room.avatar} alt="room avatar" />
+          <img src={room.isGroup ? room.avatar : room.users.find((singleUser) => (user.id !== singleUser.id)).avatar} alt="room avatar" />
         </div>
       </div>
       <div className="chat-name">

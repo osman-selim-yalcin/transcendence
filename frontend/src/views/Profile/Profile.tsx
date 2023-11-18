@@ -322,15 +322,13 @@ function EnableTwoFactor() {
           {qrUrl ? (
             <div className="qr-form">
               <img src={qrUrl} alt="QR Code" />
-              <form
-                onSubmit={e => {
-                  if (code.length) {
-                    e.preventDefault()
-                    verifyQR({ token: code })
-                    // window.location.reload()
-                  }
-                }}
-              >
+              <form onSubmit={async (e) => {
+                if (code.length) {
+                  e.preventDefault()
+                  await verifyQR({ token: code })
+                  window.location.reload()
+                }
+              }}>
                 <p>
                   Scan the QR with an authentication app and enter the code to
                   activate 2FA
