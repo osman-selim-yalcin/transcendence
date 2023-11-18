@@ -99,7 +99,7 @@ export function AddFriendIndexContent({ userId }: PropsWithChildren<{ userId: nu
         You are friends
       </p>
     )
-  } else if (isFriendRequestPending(userId)) {
+  } else if (notifications && isFriendRequestPending(userId)) {
     return (
       <p>
         Your request is pending...
