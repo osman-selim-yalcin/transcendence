@@ -73,7 +73,7 @@ export class tokenMiddleware implements NestMiddleware {
         .leftJoinAndSelect('users.rooms', 'rooms')
         .leftJoinAndSelect('rooms.messages', 'messages')
         .leftJoinAndSelect('rooms.users', 'roomsUsers')
-        .orderBy({ 'messages.id': 'DESC' })
+        .orderBy({ 'messages.id': 'ASC' })
         .where('users.id = :id', {
           id: loginUserInfo.id,
         })
