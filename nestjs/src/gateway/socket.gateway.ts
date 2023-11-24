@@ -215,23 +215,32 @@ export class socketGateway implements OnModuleInit {
     return game;
   }
 
+  @SubscribeMessage('leave game')
+  async tabSwitch(client: CustomSocket) {
+    this.handleGameDisconnect(await this.findUserBySessionID(client.sessionID));
+  }
+
   async handleGameDisconnect(socketUser: User) {
-    const game = this.findGame(socketUser.sessionID, this.gameList);
-    if (game.intervalID) clearInterval(game.intervalID);
-    const otherUser = await this.findUserBySessionID(
-      game.users.find((u) => u.sessionID !== socketUser.sessionID).sessionID,
-    );
-    this.server.in(game.gameID).emit('game over', game.users);
-    this.server.in(game.gameID).socketsLeave(game.gameID);
-    this.gameList.splice(this.gameList.indexOf(game), 1);
-    this.handleStatusChange(otherUser, userStatus.ONLINE);
-    this.handleStatusChange(socketUser, userStatus.ONLINE);
-    this.createGame({
-      score: [maxScore, 0],
-      elo: 10,
-      winner: otherUser,
-      loser: socketUser,
-    });
+    try {
+      const game = this.findGame(socketUser.sessionID, this.gameList);
+      if (game.intervalID) clearInterval(game.intervalID);
+      const otherUser = await this.findUserBySessionID(
+        game.users.find((u) => u.sessionID !== socketUser.sessionID).sessionID,
+      );
+      this.server.in(game.gameID).emit('game over', game.users);
+      this.server.in(game.gameID).socketsLeave(game.gameID);
+      this.gameList.splice(this.gameList.indexOf(game), 1);
+      this.handleStatusChange(otherUser, userStatus.ONLINE);
+      this.handleStatusChange(socketUser, userStatus.ONLINE);
+      this.createGame({
+        score: [maxScore, 0],
+        elo: 10,
+        winner: otherUser,
+        loser: socketUser,
+      });
+    } catch (e) {
+      // console.log('game not found');
+    }
   }
 
   async endGame(game: socketGame) {
