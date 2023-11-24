@@ -152,9 +152,11 @@ export class RoomService {
     this.server.joinRoom(user.sessionID, room.id.toString());
     this.specialMsg(user.username + ' joined', room);
 
-    //reload room
-    room.users.map((u) => this.server.reloadRoom(u));
+    const newUsers = room.users;
     await this.roomRep.save(room);
+
+    //reload room
+    newUsers.map((u) => this.server.reloadRoom(u));
     return { msg: 'user join the room' };
   }
 
