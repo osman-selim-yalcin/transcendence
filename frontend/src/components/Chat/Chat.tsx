@@ -228,6 +228,7 @@ function ChatForm({ currentRoomID, roomMuteList, inputRef }: PropsWithChildren<{
 // CHAT DETAILS
 
 function ChatDetails({ showDetailState: [showDetail, setShowDetail], currentRoom }: { showDetailState: [boolean, Function], currentRoom: room }) {
+  const { user } = useContext(UserContext)
 
   return (
     <div className={"chat-details" + (showDetail ? " active" : "")}>
@@ -235,7 +236,7 @@ function ChatDetails({ showDetailState: [showDetail, setShowDetail], currentRoom
       {currentRoom ?
         <>
           <div className="img-container">
-            <img src={currentRoom?.avatar} alt="chat avatar" />
+            <img src={currentRoom.isGroup ? currentRoom?.avatar : currentRoom.users.find((singleUser) => (user.id !== singleUser.id)).avatar} alt="chat avatar" />
             {/*change detail avatar to friend avatar for isGroup false */}
           </div>
           <DetailHeader currentRoom={currentRoom} />
