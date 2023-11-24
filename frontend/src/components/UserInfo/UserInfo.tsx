@@ -24,6 +24,11 @@ export default function UserInfo({ user }: PropsWithChildren<{ user: user }>) {
       getLeaderboard().then(res => {
         setLeaderboard(res)
       })
+
+      if (user.status === userStatus.ONLINE) setStatus("online")
+      else if (user.status === userStatus.OFFLINE) setStatus("offline")
+      else if (user.status === userStatus.INGAME) setStatus("in-game")
+      else if (user.status === userStatus.BUSY) setStatus("busy")
     }
   }, [user])
 
