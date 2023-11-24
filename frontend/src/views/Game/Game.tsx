@@ -74,6 +74,7 @@ export default function Game() {
       socket.off("game start")
       socket.off("game update")
       socket.off("game over")
+      socket.emit("leave game")
     })
   }, [])
 
