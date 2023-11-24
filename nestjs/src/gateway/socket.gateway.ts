@@ -64,7 +64,7 @@ export class socketGateway implements OnModuleInit {
       for (const room of socketUser.rooms) socket.join(room.id.toString());
       socket.join(socket.sessionID);
 
-      console.log('user', socketUser.username, 'connected');
+      // console.log('user', socketUser.username, 'connected');
       this.handleStatusChange(socketUser, userStatus.ONLINE);
       socket.on('disconnect', async () => {
         socketUser = await this.findUserBySessionID(socket.sessionID, [
@@ -75,9 +75,9 @@ export class socketGateway implements OnModuleInit {
         ) {
           this.leaveQueue([socket.sessionID]);
           if (socketUser.status === userStatus.INGAME)
-            this.handleGameDisconnect(socketUser);
-          this.handleUserDisconnect(socketUser);
-          console.log('user', socketUser.username, 'disconnected');
+            await this.handleGameDisconnect(socketUser);
+          await this.handleUserDisconnect(socketUser);
+          // console.log('user', socketUser.username, 'disconnected');
         }
       });
     });
@@ -225,6 +225,7 @@ export class socketGateway implements OnModuleInit {
     this.server.in(game.gameID).socketsLeave(game.gameID);
     this.gameList.splice(this.gameList.indexOf(game), 1);
     this.handleStatusChange(otherUser, userStatus.ONLINE);
+    this.handleStatusChange(socketUser, userStatus.ONLINE);
     this.createGame({
       score: [maxScore, 0],
       elo: 10,

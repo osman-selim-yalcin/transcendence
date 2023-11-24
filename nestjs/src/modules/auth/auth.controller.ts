@@ -47,14 +47,9 @@ export class AuthController {
   @Get('token')
   async handleUser(@Req() request: reqWithModifiy, @Query() query: any) {
     if (!request.user) return null;
-    console.log('query', query);
     if (request.user.twoFactorEnabled) {
       if (!query || !query.code)
         throw new HttpException('2fa code is missing', 400);
-      console.log(
-        'true or false',
-        this.authService.verify2fa(request.user, query.code),
-      );
       if (!this.authService.verify2fa(request.user, query.code))
         throw new HttpException('2fa code is wrong', 400);
     }
