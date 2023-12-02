@@ -5,7 +5,22 @@
   padding: 1rem;
 	&_left{
 		display: flex;
-		gap: 5rem;
+		gap: 3rem;
+
+    a {
+      padding: 0.5rem 1rem;
+      color: inherit;
+      text-decoration: none;
+      border-radius: 0.5rem;
+    }
+
+    a:hover {
+      background-color: rgb(245, 246, 246);
+    }
+    
+    a.current {
+      background-color: rgb(226, 228, 230);
+    }
 	}
 
 	&_right{

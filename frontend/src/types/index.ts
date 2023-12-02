@@ -166,6 +166,14 @@ export type MutedUser = {
   time: number
 }
 
+export enum LocationPathName {
+  ROOT,
+  PROFILE,
+  CHAT,
+  GAME,
+  UNKNOWN
+}
+
 /**
  ******************** GAME *********************
  */
