@@ -8,7 +8,6 @@ import { UserContext } from "../../context/UserContext"
 import LoadIndicator from "../../components/LoadIndicator/LoadIndicator"
 import { getOpponent } from "../../api/game"
 import { useSearchParams } from "react-router-dom"
-// import { game_start } from "../game/index.js"
 
 export default function Game() {
   const socket = useContext(SocketContext)
@@ -18,7 +17,6 @@ export default function Game() {
   const [opponent, setOpponent] = useState<user>(null)
   const [selfIndex, setSelfIndex] = useState<number>(null)
   const [searchParams, _setSearchParams] = useSearchParams();
-  const myParam = searchParams.get('ref');
 
   const keys = useRef({
     w: {
@@ -48,25 +46,11 @@ export default function Game() {
       }
     }
 
-    checkParams()
-
-    async function checkParams() {
-      if (myParam === "invite") {
-        await getOpponent()
-          .then((res: { user: user, index: number }) => {
-            console.log("hello", res)
-            setOpponent(res.user)
-            setSelfIndex(1 - res.index)
-          })
-        setGameState(GameState.PREGAME_NOT_READY)
-      }
-    }
-
     socket.on("game over", () => {
       clearInterval(interval.current)
       setGameState(GameState.POST_GAME)
     })
-
+    
     return (() => {
       document.removeEventListener("keydown", handleKeyDown)
       document.removeEventListener("keyup", handleKeyUp)
@@ -77,6 +61,25 @@ export default function Game() {
       socket.emit("leave game")
     })
   }, [])
+  
+  useEffect(() => {
+    const myParam = searchParams.get('ref');
+
+    async function checkParams() {
+      if (myParam === "invite") {
+        await getOpponent()
+        .then((res: { user: user, index: number }) => {
+          console.log("hello", res)
+          setOpponent(res.user)
+          setSelfIndex(1 - res.index)
+        })
+        setGameState(GameState.PREGAME_NOT_READY)
+      }
+    }
+
+    checkParams()
+
+  }, [searchParams])
 
   useEffect(() => {
     const playerPaddle = new Paddle(document.getElementById("player"))
@@ -180,7 +183,6 @@ function PreQueueContent({ gameStateHook: [gameState, setGameState] }: PropsWith
     }
   }, [user, socket.connected])
   
-  // !user || !socket.connected
   return (
     <>
       <p className={"game-title game-center"}>PONG</p>
