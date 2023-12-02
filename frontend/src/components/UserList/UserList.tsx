@@ -87,7 +87,7 @@ export function AddFriendIndexContent({ userId }: PropsWithChildren<{ userId: nu
   }
 
   function isFriendRequestPending(id: number) {
-    const found = notifications.find((notification) => (notification.creator.id === id &&
+    const found = notifications?.find((notification) => (notification.creator.id === id &&
       notification.type === NotificationType.FRIEND &&
       notification.status === NotificationStatus.PENDING))
     return found === undefined ? false : true
