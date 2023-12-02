@@ -122,11 +122,16 @@
       align-self: flex-start;
       padding: 0.8rem;
       border-radius: .5rem;
-      max-width: 40%;
+      max-width: 55%;
 
       .message {
         display: flex;
         gap: 1rem;
+
+        p {
+          overflow-wrap: break-word;
+          min-width: 0;
+        }
         
         i {
           font-size: 10px;
