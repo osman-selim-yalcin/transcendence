@@ -6,6 +6,7 @@ import Game from "../views/Game/Game"
 import { Chat } from "../components/Chat/Chat"
 import LoadIndicator from "../components/LoadIndicator/LoadIndicator"
 import TwoFactorForm from "../components/forms/TwoFactorForm/TwoFactorForm"
+import ErrorLanding from "../components/404/404"
 
 export const router = createBrowserRouter([
   {
@@ -41,7 +42,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <LoadIndicator />
+        element: <ErrorLanding />
       }
     ]
   }
