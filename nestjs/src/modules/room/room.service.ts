@@ -166,7 +166,7 @@ export class RoomService {
     if (!isUserInRoom(room, user))
       throw new HttpException('user not in room', 400);
     await this.leaveheadler(room, user);
-    return { msg: 'user leaved' };
+    return { msg: 'user left' };
   }
 
   async createMsg(user: User, room: Room, details: messageDto) {
@@ -263,7 +263,7 @@ export class RoomService {
       }
     }
 
-    this.specialMsg(user.username + ' leave', room);
+    this.specialMsg(user.username + ' left', room);
     await this.roomRep.save(room);
 
     //reload room
