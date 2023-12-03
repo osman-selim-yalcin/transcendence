@@ -88,6 +88,7 @@ export default function GroupCreation({ setModal }: any) {
           name="password"
           id="password"
           placeholder="optional"
+          value={password}
           onChange={(e) => { setPassword(e.target.value) }}
         />
         <img
