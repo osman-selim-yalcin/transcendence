@@ -36,9 +36,9 @@ export default function Sidebar() {
     <div className={"sidebar" + (barActive ? " active" : "")} ref={sidebarRef}>
       <h2>Sidebar</h2>
       <div className={"buttons"}>
-        <button onClick={() => {setView(SocialView.FRIENDS)}}>&#9786;</button>
-        <button onClick={() => {setView(SocialView.ROOMS)}}>&#9750;</button>
-        <button onClick={() => {setView(SocialView.USERS)}}>&#x2B;</button>
+        <button onClick={() => {setView(SocialView.FRIENDS)}}>Friends</button>
+        <button onClick={() => {setView(SocialView.ROOMS)}}>Rooms</button>
+        <button onClick={() => {setView(SocialView.USERS)}}>Add Friend</button>
       </div>
       <div className="sidebar-content" style={{
         "transform": `translate(-${view * 350}px)`
