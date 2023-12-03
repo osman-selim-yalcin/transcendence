@@ -51,7 +51,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (currentUser) {
-      if (user.status !== userStatus.BLOCKED) {
+      if (currentUser.status !== userStatus.BLOCKED) {
         socket.on(currentUser.username, (data: userStatus) => {
           setCurrentUser(current => {
             return { ...current, status: data }
