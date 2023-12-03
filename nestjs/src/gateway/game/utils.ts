@@ -8,7 +8,7 @@ export function isBallCollidingWithLeft(ball: Circle, paddle: Paddle) {
     ball.position.y - ball.radius <= paddle.position.y + paddle.height / 2
   ) {
     let zeroHandler = Math.abs(ball.position.x - paddle.position.x);
-    if (zeroHandler === 0) zeroHandler = 0.001;
+    if (zeroHandler === 0) zeroHandler = 1;
     const slope = (ball.position.y - paddle.position.y) / zeroHandler;
     ball.velocity.y = 0.5 * slope;
     return true;
