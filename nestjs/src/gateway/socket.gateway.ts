@@ -65,7 +65,7 @@ export class socketGateway implements OnModuleInit {
       socket.join(socket.sessionID);
 
       // console.log('user', socketUser.username, 'connected');
-      this.handleStatusChange(socketUser, userStatus.ONLINE);
+      await this.handleStatusChange(socketUser, userStatus.ONLINE);
       socket.on('disconnect', async () => {
         socketUser = await this.findUserBySessionID(socket.sessionID, [
           'rooms',
@@ -230,8 +230,8 @@ export class socketGateway implements OnModuleInit {
       this.server.in(game.gameID).emit('game over', game.users);
       this.server.in(game.gameID).socketsLeave(game.gameID);
       this.gameList.splice(this.gameList.indexOf(game), 1);
-      this.handleStatusChange(otherUser, userStatus.ONLINE);
-      this.handleStatusChange(socketUser, userStatus.ONLINE);
+      await this.handleStatusChange(otherUser, userStatus.ONLINE);
+      await this.handleStatusChange(socketUser, userStatus.ONLINE);
       this.createGame({
         score: [maxScore, 0],
         elo: 10,

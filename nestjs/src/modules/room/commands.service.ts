@@ -4,7 +4,6 @@ import { User } from 'src/typeorm/User';
 import { Room } from 'src/typeorm/Room';
 import { Repository } from 'typeorm';
 import {
-  userRoomModifyHandler,
   isMod,
   isUserInRoom,
   isBanned,
@@ -37,7 +36,8 @@ export class CommandsService {
     this.createInviteNotifcations(user, room, otherUser);
     if (room.banList.includes(otherUser.username))
       room.banList = room.banList.filter((u) => u !== otherUser.username);
-    return userRoomModifyHandler(await this.roomRep.save(room), user);
+    await this.roomRep.save(room);
+    return { msg: 'user invited' };
   }
 
   async kickUser(user: User, room: Room, otherUser: User) {
@@ -53,7 +53,10 @@ export class CommandsService {
 
     //reload room
     room.users.map((u) => this.server.reloadRoom(u));
-    return userRoomModifyHandler(await this.roomRep.save(room), user);
+    await this.roomRep.save(room);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(otherUser);
+    return { msg: 'user kicked' };
   }
 
   async banUser(user: User, room: Room, otherUser: User) {
@@ -73,9 +76,11 @@ export class CommandsService {
       room.banList.push(otherUser.username);
       const notification = isRoomNotificationExist(room, otherUser);
       if (notification) await this.notificationRep.remove(notification);
+      this.server.reloadNotification(user);
+      this.server.reloadNotification(otherUser);
     }
-
-    return userRoomModifyHandler(await this.roomRep.save(room), user);
+    await this.roomRep.save(room);
+    return { msg: 'user modded' };
   }
 
   async modUser(user: User, room: Room, otherUser: User) {
@@ -91,9 +96,12 @@ export class CommandsService {
       await this.modHandler(user, room, otherUser, notificationStatus.ACCEPTED);
     }
 
+    await this.roomRep.save(room);
+    this.server.reloadNotification(user);
+    this.server.reloadNotification(otherUser);
     //reload room
     room.users.map((u) => this.server.reloadRoom(u));
-    return userRoomModifyHandler(await this.roomRep.save(room), user);
+    return { msg: 'user modded' };
   }
 
   async muteUser(user: User, room: Room, otherUser: User) {
@@ -146,9 +154,9 @@ export class CommandsService {
       sibling: notification,
     });
     notification.sibling = siblingNotificaiton;
+    await this.notificationRep.save(notification);
     this.server.reloadNotification(user);
     this.server.reloadNotification(friendUser);
-    await this.notificationRep.save(notification);
   }
 
   async createCommandNotifcation(
