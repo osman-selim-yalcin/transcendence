@@ -8,7 +8,7 @@ export class GameController {
 
   @Get()
   allGames(@Req() req: any, @Query() query: gameDto) {
-    return this.gameService.allGames(query);
+    return this.gameService.allGames(req.user, query);
   }
 
   @Post('invite')
@@ -23,7 +23,7 @@ export class GameController {
   }
 
   @Get('leaderboard')
-  leaderboard() {
-    return this.gameService.leaderboard();
+  leaderboard(@Req() req: any) {
+    return this.gameService.leaderboard(req.user);
   }
 }

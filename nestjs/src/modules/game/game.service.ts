@@ -1,6 +1,6 @@
 import { HttpException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { isBlock } from 'src/functions/user';
+import { isBlock, modifyBlockUser } from 'src/functions/user';
 import { socketGateway } from 'src/gateway/socket.gateway';
 import { Game } from 'src/typeorm/Game';
 import { Notification } from 'src/typeorm/Notification';
@@ -57,15 +57,16 @@ export class GameService {
     }
   }
 
-  async allGames(query: gameDto) {
-    const user = await this.idToUser(Number(query.id), [
+  async allGames(user: User, query: gameDto) {
+    const otherUser = await this.idToUser(Number(query.id), [
       'won',
       'won.loser',
       'lost',
       'lost.winner',
     ]);
-    const wons = this.modifyGame(user.won, true);
-    const losts = this.modifyGame(user.lost, false);
+    if (isBlock(user, otherUser)) throw new HttpException('blocked', 400);
+    const wons = this.modifyGame(otherUser.won, true);
+    const losts = this.modifyGame(otherUser.lost, false);
     const allGames = [...wons, ...losts];
     const history = allGames.sort((a, b) => {
       if (a.createdAt > b.createdAt) return -1;
@@ -75,8 +76,13 @@ export class GameService {
     return history;
   }
 
-  leaderboard() {
-    return this.userRep.find({ order: { elo: 'DESC' } });
+  async leaderboard(user: User) {
+    const users = await this.userRep.find({ order: { elo: 'DESC' } });
+    const retUsers = users?.map((u) => {
+      if (isBlock(user, u)) return modifyBlockUser(u);
+      else return u;
+    });
+    return retUsers;
   }
 
   async invite(user: User, otherUser: User) {
