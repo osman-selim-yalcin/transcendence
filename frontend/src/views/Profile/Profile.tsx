@@ -51,11 +51,13 @@ export default function Profile() {
 
   useEffect(() => {
     if (currentUser) {
-      socket.on(currentUser.username, (data: userStatus) => {
-        setCurrentUser(current => {
-          return { ...current, status: data }
+      if (user.status !== userStatus.BLOCKED) {
+        socket.on(currentUser.username, (data: userStatus) => {
+          setCurrentUser(current => {
+            return { ...current, status: data }
+          })
         })
-      })
+      }
     }
 
     return () => {
@@ -231,10 +233,10 @@ const UploadAndDisplayImage = () => {
               >
                 Cancel
               </button>
-							<button onClick={async () => {
-								await defaultAvatar()
-								window.location.reload()
-							}}>Set to default avatar</button>
+              <button onClick={async () => {
+                await defaultAvatar()
+                window.location.reload()
+              }}>Set to default avatar</button>
               <br />
               <input
                 ref={fileInput}
