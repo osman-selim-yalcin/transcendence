@@ -40,6 +40,7 @@ export class socketGateway implements OnModuleInit {
     }, 3000);
   }
 
+  promise: Promise<User>;
   queueList: string[] = [];
   gameList: socketGame[] = [];
 
@@ -64,8 +65,11 @@ export class socketGateway implements OnModuleInit {
       for (const room of socketUser.rooms) socket.join(room.id.toString());
       socket.join(socket.sessionID);
 
-      // console.log('user', socketUser.username, 'connected');
-      await this.handleStatusChange(socketUser, userStatus.ONLINE);
+      if (this.promise)
+        this.promise?.then(async (u) => {
+          await this.handleStatusChange(u, userStatus.ONLINE);
+        });
+      else await this.handleStatusChange(socketUser, userStatus.ONLINE);
       socket.on('disconnect', async () => {
         socketUser = await this.findUserBySessionID(socket.sessionID, [
           'rooms',
@@ -76,7 +80,7 @@ export class socketGateway implements OnModuleInit {
           this.leaveQueue([socket.sessionID]);
           if (socketUser.status === userStatus.INGAME)
             await this.handleGameDisconnect(socketUser);
-          await this.handleUserDisconnect(socketUser);
+          this.promise = this.handleUserDisconnect(socketUser);
           // console.log('user', socketUser.username, 'disconnected');
         }
       });
