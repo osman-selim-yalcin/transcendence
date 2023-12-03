@@ -18,6 +18,13 @@
       color: white;
       background-color: rgb(85, 202, 85);
       animation: popup 9s ease-out;
+      display: flex;
+      align-items: center;
+
+      p {
+        margin-left: 1rem;
+        font-weight: 600;
+      }
 
       @keyframes popup {
         0% {

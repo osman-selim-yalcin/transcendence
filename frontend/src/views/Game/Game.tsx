@@ -8,6 +8,7 @@ import { UserContext } from "../../context/UserContext"
 import LoadIndicator from "../../components/LoadIndicator/LoadIndicator"
 import { getOpponent } from "../../api/game"
 import { useSearchParams } from "react-router-dom"
+import { PopUpContext } from "../../context/PopUpContext"
 
 export default function Game() {
   const socket = useContext(SocketContext)
@@ -17,6 +18,7 @@ export default function Game() {
   const [opponent, setOpponent] = useState<user>(null)
   const [selfIndex, setSelfIndex] = useState<number>(null)
   const [searchParams, _setSearchParams] = useSearchParams();
+  const { addPopUp } = useContext(PopUpContext)
 
   const keys = useRef({
     w: {
@@ -70,10 +72,14 @@ export default function Game() {
         await getOpponent()
         .then((res: { user: user, index: number }) => {
           console.log("hello", res)
-          setOpponent(res.user)
-          setSelfIndex(1 - res.index)
+          if (res === undefined) {
+            addPopUp("Unable to find opponent")
+          } else {
+            setOpponent(res.user)
+            setSelfIndex(1 - res.index)
+            setGameState(GameState.PREGAME_NOT_READY)
+          }
         })
-        setGameState(GameState.PREGAME_NOT_READY)
       }
     }
 

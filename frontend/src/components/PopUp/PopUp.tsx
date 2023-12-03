@@ -10,7 +10,9 @@ export default function PopUp() {
       <ul>
       {popupQueue.map((popup) => (
         <li key={popup.id}>
-          {popup.content}
+          <p>
+            {popup.content}
+          </p>
           <div className={"progress-bar"}></div>
         </li>
       ))}  
