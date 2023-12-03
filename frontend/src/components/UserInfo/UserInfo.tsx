@@ -60,68 +60,69 @@ export default function UserInfo({ user }: PropsWithChildren<{ user: user }>) {
     <div className="user-profile">
       <div className="avatar">
         <div className={"avatar-frame " + status}>
-            <img src={user.avatar} alt="user avatar" />
+          <img src={user.avatar} alt="user avatar" />
         </div>
       </div>
       <Nameplate user={user} />
-      <div className="tables">
-        <div className="table player-stats">
-          <p>
-            <b>Total game:</b> {gameHistory.length}
-          </p>
-          <p>
-            <b>Win rate:</b>{" "}
-            {gameHistory.length
-              ? (
+      {gameHistory &&
+        <div className="tables">
+          <div className="table player-stats">
+            <p>
+              <b>Total game:</b> {gameHistory.length}
+            </p>
+            <p>
+              <b>Win rate:</b>{" "}
+              {gameHistory.length
+                ? (
                   (gameHistory.filter(game => game.result).length /
                     gameHistory.length) *
                   100
                 ).toFixed(2)
-              : 0}
-            %
-          </p>
-          <p>
-            <b>Current win streak:</b> {getWinStreak()}
-          </p>
-          <p>
-            <b>Rank point:</b> {user.elo}
-          </p>
-          <p>
-            <b>Placement:</b>{" "}
-            {leaderboard.findIndex(player => player.id === user.id) + 1}
-          </p>
-        </div>
-        <div className="table game-table">
-          {gameHistory.length ? (
-            <ul>
-              {gameHistory.map((game, i) => (
-                <li className={game.result ? "win" : "lose"} key={game.id}>
-                  <div>
-                    <b>
-                      {user.displayName || user.username} vs.{" "}
-                      {game.opponent.displayName || game.opponent.username}
-                    </b>
-                  </div>
-                  <div className="score">
-                    <p>
-                      {game.result ? game.score[0] : game.score[1]} -{" "}
-                      {game.result ? game.score[1] : game.score[0]}
-                    </p>
-                    <p>
-                      {game.result ? "+" : "-"}
-                      {game.elo}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="placeholder">
-              <p>No game found</p>
-            </div>
-          )}
-        </div>
-      </div>
+                : 0}
+              %
+            </p>
+            <p>
+              <b>Current win streak:</b> {getWinStreak()}
+            </p>
+            <p>
+              <b>Rank point:</b> {user.elo}
+            </p>
+            <p>
+              <b>Placement:</b>{" "}
+              {leaderboard.findIndex(player => player.id === user.id) + 1}
+            </p>
+          </div>
+          <div className="table game-table">
+            {gameHistory.length ? (
+              <ul>
+                {gameHistory.map((game, i) => (
+                  <li className={game.result ? "win" : "lose"} key={game.id}>
+                    <div>
+                      <b>
+                        {user.displayName || user.username} vs.{" "}
+                        {game.opponent.displayName || game.opponent.username}
+                      </b>
+                    </div>
+                    <div className="score">
+                      <p>
+                        {game.result ? game.score[0] : game.score[1]} -{" "}
+                        {game.result ? game.score[1] : game.score[0]}
+                      </p>
+                      <p>
+                        {game.result ? "+" : "-"}
+                        {game.elo}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="placeholder">
+                <p>No game found</p>
+              </div>
+            )}
+          </div>
+        </div>}
     </div>
   )
 }
