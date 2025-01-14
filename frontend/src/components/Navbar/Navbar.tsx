@@ -6,6 +6,7 @@ import NotificationList from "../Notification/Notification.tsx"
 import "./Navbar.scss"
 import { SERVER_URL } from "../../serverUrl.ts"
 import { LocationPathName } from "../../types/index.ts"
+import ThemeController from "../ThemeController.tsx"
 
 export default function Navbar({ page }: PropsWithChildren<{ page: LocationPathName }>) {
   const { user } = useContext(UserContext)
@@ -27,6 +28,7 @@ export default function Navbar({ page }: PropsWithChildren<{ page: LocationPathN
         </div>
       </div>
       <div className="navbar_right">
+        <ThemeController />
         {!user ? (
           <button
             onClick={() =>

@@ -54,7 +54,7 @@ function Chatbar({ setCurrentRoom: [currentRoom, setCurrentRoom] }: { setCurrent
 
 
   return (
-    <div className="chatbar">
+    <div className="chatbar dark:bg-slate-800">
       <div className={"chatbar-header"}>
         <h2>Chatbar</h2>
         <button onClick={() => {
@@ -146,8 +146,8 @@ function ChatContent({
   }, [currentRoom])
 
   return (
-    <div className={"chat-content" + (showDetail ? " shrink" : "")}>
-      <div className="chat-content-header">
+    <div className={"chat-content bg-[#efebe5] dark:bg-slate-600" + (showDetail ? " shrink" : "")}>
+      <div className="chat-content-header bg-[#f0f2f5] dark:bg-slate-800">
         <h2>Chat Content</h2>
         <button
           className={currentRoom ? "" : "hidden"}

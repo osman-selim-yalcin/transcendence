@@ -1,3 +1,7 @@
+// @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
 	margin: 0;
   box-sizing: border-box;
@@ -65,7 +69,7 @@ main {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background-color: rgb(224, 224, 221);
+  // background-color: #e0e0dd;
 }
 
 footer {

@@ -64,7 +64,7 @@ export default function RootLayout() {
 
 
   return (
-    <div className='root-layout'>
+    <div className='root-layout bg-[#e0e0dd] text-black dark:bg-slate-700 dark:text-white'>
       <Navbar page={page}/>
       <Sidebar />
       <main>

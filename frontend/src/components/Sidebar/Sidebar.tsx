@@ -33,7 +33,7 @@ export default function Sidebar() {
       e.stopPropagation()
       setBarActive(!barActive)
     }}><span className={"arrow" + (barActive ? " active" : "")}>&#8680;</span></button> {/* &equiv; */}
-    <div className={"sidebar" + (barActive ? " active" : "")} ref={sidebarRef}>
+    <div className={"sidebar bg-[#e2e2e2] dark:bg-slate-900" + (barActive ? " active" : "")} ref={sidebarRef}>
       <h2>Sidebar</h2>
       <div className={"buttons"}>
         <button onClick={() => {setView(SocialView.FRIENDS)}}>Friends</button>

@@ -153,7 +153,7 @@ export default function Game() {
 
   return (
     <div className={"game-frame"}>
-      <div className="game-container">
+      <div className="game-container bg-[#e0e0dd] dark:bg-slate-700">
         <div className="game">
           {gameState === GameState.PREQUEUE &&
             <PreQueueContent gameStateHook={[gameState, setGameState]} />
