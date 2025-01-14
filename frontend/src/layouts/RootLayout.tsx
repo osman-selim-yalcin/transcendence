@@ -1,14 +1,14 @@
-import Navbar from '../components/Navbar/Navbar'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import Sidebar from '../components/Sidebar/Sidebar'
-import "../styles/app.scss"
-import NonModal from '../components/NonModal/NonModal'
 import { useContext, useEffect, useRef, useState } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Modal } from '../components/Modal/Modal'
-import { UserContext } from '../context/UserContext'
+import Navbar from '../components/Navbar/Navbar'
 import NicknameSetter from '../components/NicknameSetter'
+import NonModal from '../components/NonModal/NonModal'
 import PopUp from '../components/PopUp/PopUp'
+import Sidebar from '../components/Sidebar/Sidebar'
 import { SocketContext } from '../context/SocketContext'
+import { UserContext } from '../context/UserContext'
+import "../styles/app.scss"
 import { LocationPathName } from '../types'
 
 export default function RootLayout() {
