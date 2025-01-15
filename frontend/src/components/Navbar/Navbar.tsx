@@ -1,30 +1,52 @@
-import { Link } from "react-router-dom"
-import Logout from "../auth/Logout.tsx"
 import { PropsWithChildren, useContext } from "react"
+import { Link } from "react-router-dom"
 import { UserContext } from "../../context/UserContext.tsx"
-import NotificationList from "../Notification/Notification.tsx"
-import "./Navbar.scss"
 import { SERVER_URL } from "../../serverUrl.ts"
 import { LocationPathName } from "../../types/index.ts"
+import Logout from "../auth/Logout.tsx"
+import NotificationList from "../Notification/Notification.tsx"
 import ThemeController from "../ThemeController.tsx"
+import "./Navbar.scss"
 
-export default function Navbar({ page }: PropsWithChildren<{ page: LocationPathName }>) {
+export default function Navbar({
+  page
+}: PropsWithChildren<{ page: LocationPathName }>) {
   const { user } = useContext(UserContext)
 
   return (
     <div className="navbar">
       <div className="navbar_left">
         <div className="">
-          <Link to={"/"} className={page === LocationPathName.ROOT ? "current" : ""}>Home</Link>
+          <Link
+            to={"/"}
+            className={page === LocationPathName.ROOT ? "current" : ""}
+          >
+            Home
+          </Link>
         </div>
         <div className="">
-          <Link to={"/profile"} className={page === LocationPathName.PROFILE ? "current" : ""}>Profile</Link>
+          <Link
+            to={"/profile"}
+            className={page === LocationPathName.PROFILE ? "current" : ""}
+          >
+            Profile
+          </Link>
         </div>
         <div className="">
-          <Link to={"/chat"} className={page === LocationPathName.CHAT ? "current" : ""}>Chat</Link>
+          <Link
+            to={"/chat"}
+            className={page === LocationPathName.CHAT ? "current" : ""}
+          >
+            Chat
+          </Link>
         </div>
         <div className="">
-          <Link to={"/game"} className={page === LocationPathName.GAME ? "current" : ""}>Game</Link>
+          <Link
+            to={"/game"}
+            className={page === LocationPathName.GAME ? "current" : ""}
+          >
+            Game
+          </Link>
         </div>
       </div>
       <div className="navbar_right">
@@ -39,7 +61,9 @@ export default function Navbar({ page }: PropsWithChildren<{ page: LocationPathN
           </button>
         ) : (
           <>
-            <p style={{ alignSelf: "center" }}>{user.displayName || user.username}</p>
+            <p style={{ alignSelf: "center" }}>
+              {user.displayName || user.username}
+            </p>
             <Logout />
             <NotificationList />
           </>

@@ -7,11 +7,11 @@ import {
   Response,
   UseGuards,
 } from '@nestjs/common';
-import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
-import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { createToken } from 'src/functions/token';
 import { User } from 'src/typeorm/User';
+import { AuthService } from './auth.service';
+import { FortyTwoStrategyGuard } from './utils/42StrategyGuard';
 
 interface reqWithModifiy extends Request {
   user: User;
@@ -53,6 +53,7 @@ export class AuthController {
       if (!this.authService.verify2fa(request.user, query.code))
         throw new HttpException('2fa code is wrong', 400);
     }
+    console.log('-------------------', request.user);
     return {
       token: createToken({
         username: request.user.username,
