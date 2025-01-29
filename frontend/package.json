@@ -11,6 +11,7 @@
   "dependencies": {
     "@emailjs/browser": "^3.11.0",
     "axios": "^1.4.0",
+    "clsx": "^2.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
@@ -26,6 +27,7 @@
     "@types/react-helmet": "^6.1.6",
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.23",
     "postcss": "^8.5.1",
     "react-error-overlay": "6.0.9",
     "tailwindcss": "^3.4.17",

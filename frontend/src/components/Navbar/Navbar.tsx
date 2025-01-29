@@ -1,70 +1,62 @@
-import { PropsWithChildren, useContext } from "react"
-import { Link } from "react-router-dom"
+import clsx from "clsx"
+import { useContext } from "react"
+import { Link, useLocation } from "react-router-dom"
 import { UserContext } from "../../context/UserContext.tsx"
 import { SERVER_URL } from "../../serverUrl.ts"
-import { LocationPathName } from "../../types/index.ts"
 import Logout from "../auth/Logout.tsx"
 import NotificationList from "../Notification/Notification.tsx"
-import ThemeController from "../ThemeController.tsx"
-import "./Navbar.scss"
 
-export default function Navbar({
-  page
-}: PropsWithChildren<{ page: LocationPathName }>) {
+export default function Navbar() {
   const { user } = useContext(UserContext)
+  const location = useLocation()
+  const navigation = [
+    { name: "Home", path: "/" },
+    { name: "Profile", path: "/profile" },
+    { name: "Chat", path: "/chat" },
+    { name: "Game", path: "/game" }
+  ]
 
   return (
-    <div className="navbar">
-      <div className="navbar_left">
-        <div className="">
+    <div className="flex justify-evenly mt-2">
+      <div className="flex gap-5 text-center">
+        {navigation.map(nav => (
           <Link
-            to={"/"}
-            className={page === LocationPathName.ROOT ? "current" : ""}
+            key={nav.name}
+            to={nav.path}
+            className={clsx(
+              location.pathname === nav.path && "bg-blue-700",
+              "w-1/4 hover:bg-blue-700 text-center my-auto rounded-lg"
+            )}
           >
-            Home
+            {nav.name}
           </Link>
-        </div>
-        <div className="">
-          <Link
-            to={"/profile"}
-            className={page === LocationPathName.PROFILE ? "current" : ""}
-          >
-            Profile
-          </Link>
-        </div>
-        <div className="">
-          <Link
-            to={"/chat"}
-            className={page === LocationPathName.CHAT ? "current" : ""}
-          >
-            Chat
-          </Link>
-        </div>
-        <div className="">
-          <Link
-            to={"/game"}
-            className={page === LocationPathName.GAME ? "current" : ""}
-          >
-            Game
-          </Link>
-        </div>
+        ))}
       </div>
-      <div className="navbar_right">
-        <ThemeController />
+      <div className="flex">
+        {/* <ThemeController />
+        <Toggle
+          size="md"
+          checkedChildren={<CheckIcon />}
+          unCheckedChildren={<CloseIcon />}
+          defaultChecked
+        /> */}
+        <button className="btn btn-primary">Button</button>
         {!user ? (
           <button
             onClick={() =>
               window.open(SERVER_URL + "/api/auth/42/login", "_self")
             }
           >
-            42 Login
+            Login
           </button>
         ) : (
           <>
-            <p style={{ alignSelf: "center" }}>
-              {user.displayName || user.username}
-            </p>
+            <i className="fa-solid fa-user text-lg  "></i>
             <Logout />
+            <div className="indicator">
+              <span className="indicator-item bg-error size-2 rounded-full"></span>
+              <span className="icon-[tabler--bell] text-base-content size-[1.375rem]"></span>
+            </div>
             <NotificationList />
           </>
         )}
