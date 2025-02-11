@@ -46,13 +46,13 @@ export default function Navbar() {
           <>
             <Link
               to="/chat"
-              className="btn btn-sm bg-purple-700 hover:bg-purple-600 text-white"
+              className="btn  btn-ghost btn-sm bg-purple-700 hover:bg-purple-600 text-white"
             >
               Chat
             </Link>
             <Link
               to="/game"
-              className="btn btn-sm bg-purple-700 hover:bg-purple-600 text-white"
+              className="btn  btn-ghost btn-sm bg-purple-700 hover:bg-purple-600 text-white"
             >
               Game
             </Link>
@@ -70,7 +70,7 @@ export default function Navbar() {
               <summary
                 tabIndex={0}
                 role="button"
-                className="btn btn-circle bg-purple-700 hover:bg-purple-600"
+                className="btn  btn-ghost btn-circle bg-purple-700 hover:bg-purple-600"
               >
                 <div className="indicator">
                   <svg
@@ -101,7 +101,7 @@ export default function Navbar() {
               <summary
                 tabIndex={0}
                 role="button"
-                className="btn btn-circle bg-purple-700 hover:bg-purple-600"
+                className="btn  btn-ghost btn-circle bg-purple-700 hover:bg-purple-600"
               >
                 <div className="avatar online">
                   <div className="w-10 rounded-full">
