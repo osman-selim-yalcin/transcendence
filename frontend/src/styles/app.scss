@@ -22,24 +22,26 @@
 html {
   padding: 0;
   box-sizing: border-box;
-  height: 100vh;
+  // height: 100vh;
   scroll-behavior: smooth;
 }
 
 body {
-  height: 100vh;
+  // height: 100vh;
   display: flex;
   min-width: 0;
-  overflow: hidden;
+  // overflow: hidden;
+  background-color: #1a0536;
+
 }
 
-#root {
-  height: 100vh;
-  width: 100vw;
-}
+// #root {
+//   height: 100vh;
+//   width: 100vw;
+// }
 
 .root-layout {
-  height: 100vh;
+  // height: 100vh;
   display: flex;
   flex-direction: column;
 }

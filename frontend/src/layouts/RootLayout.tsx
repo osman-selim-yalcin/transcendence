@@ -48,7 +48,7 @@ export default function RootLayout() {
       <main>
         <Outlet />
       </main>
-      <footer>Transcedence &copy;</footer>
+      {/* <footer>Transcedence &copy;</footer> */}
 
       <PopUp />
       <Modal isActive={[modal, setModal]} removable={false}>

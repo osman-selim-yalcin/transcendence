@@ -5,26 +5,21 @@ import { SERVER_URL } from "../../serverUrl.ts"
 import NotificationList from "../NotificationList/NotificationList.tsx"
 
 export default function Navbar() {
-  const { user } = useContext(UserContext)
+  const { user, notifications } = useContext(UserContext)
   const location = useLocation()
-  const { notifications } = useContext(UserContext)
 
-  // Bildirim ve Profil Dropdown'ları için ayrı ref'ler
   const notificationDropdownRef = useRef<HTMLDetailsElement | null>(null)
   const profileDropdownRef = useRef<HTMLDetailsElement | null>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       const target = event.target as Node
-
-      // Eğer tıklanan element dropdown'ların içinde değilse hepsini kapat
       if (
         notificationDropdownRef.current &&
         !notificationDropdownRef.current.contains(target)
       ) {
         notificationDropdownRef.current.removeAttribute("open")
       }
-
       if (
         profileDropdownRef.current &&
         !profileDropdownRef.current.contains(target)
@@ -38,27 +33,36 @@ export default function Navbar() {
   }, [])
 
   return (
-    <div className="navbar bg-base-300">
-      <div className="navbar-start">
-        <Link to="/" className="btn btn-ghost">
-          Home
+    <div className="navbar text-white bg-gradient-to-r from-purple-900 to-purple-800 shadow-lg p-4">
+      <div className="navbar-start flex items-center gap-4">
+        <Link
+          to="/"
+          className="text-2xl font-bold text-white hover:text-purple-300 transition-all"
+        >
+          CodeCapital
         </Link>
-        <Link to="/chat" className="btn btn-ghost">
-          Chat
-        </Link>
-        <Link to="/game" className="btn btn-ghost">
-          Game
-        </Link>
+
+        {user && (
+          <>
+            <Link
+              to="/chat"
+              className="btn btn-sm bg-purple-700 hover:bg-purple-600 text-white"
+            >
+              Chat
+            </Link>
+            <Link
+              to="/game"
+              className="btn btn-sm bg-purple-700 hover:bg-purple-600 text-white"
+            >
+              Game
+            </Link>
+          </>
+        )}
       </div>
 
-      {/* <div className="navbar-center">
-        <a className="btn btn-ghost text-xl">daisyUI</a>
-      </div> */}
-
-      <div className="navbar-end">
+      <div className="navbar-end flex items-center gap-4">
         {user ? (
           <>
-            {/* Bildirim Dropdown */}
             <details
               className="dropdown dropdown-end"
               ref={notificationDropdownRef}
@@ -66,12 +70,12 @@ export default function Navbar() {
               <summary
                 tabIndex={0}
                 role="button"
-                className="btn btn-ghost btn-circle"
+                className="btn btn-circle bg-purple-700 hover:bg-purple-600"
               >
                 <div className="indicator">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
+                    className="h-6 w-6"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -84,24 +88,20 @@ export default function Navbar() {
                     />
                   </svg>
                   {notifications?.length ? (
-                    <span className="badge badge-xs badge-primary indicator-item"></span>
+                    <span className="badge badge-xs bg-purple-500 indicator-item"></span>
                   ) : null}
                 </div>
               </summary>
-              <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow-lg"
-              >
+              <ul className="menu menu-sm dropdown-content bg-purple-900 text-white rounded-box z-10 mt-3 w-52 p-2 shadow-lg">
                 <NotificationList />
               </ul>
             </details>
 
-            {/* Profil Dropdown */}
             <details className="dropdown dropdown-end" ref={profileDropdownRef}>
               <summary
                 tabIndex={0}
                 role="button"
-                className="btn btn-ghost btn-circle"
+                className="btn btn-circle bg-purple-700 hover:bg-purple-600"
               >
                 <div className="avatar online">
                   <div className="w-10 rounded-full">
@@ -109,18 +109,15 @@ export default function Navbar() {
                   </div>
                 </div>
               </summary>
-              <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-24 p-2 shadow-lg"
-              >
+              <ul className="menu menu-sm dropdown-content bg-purple-900 text-white rounded-box z-10 mt-3 w-24 p-2 shadow-lg">
                 <li>
-                  <Link to="/profile" className="btn btn-ghost">
+                  <Link to="/profile" className="hover:text-purple-300">
                     Profile
                   </Link>
                 </li>
                 <li>
                   <button
-                    className="btn btn-ghost"
+                    className="hover:text-purple-300"
                     onClick={() => {
                       localStorage.clear()
                       window.open(SERVER_URL + "/api/auth/logout", "_self")
@@ -134,12 +131,12 @@ export default function Navbar() {
           </>
         ) : (
           <button
-            className="btn btn-ghost"
+            className="btn btn-ghost bg-purple-700 hover:bg-purple-600 text-white"
             onClick={() =>
               window.open(SERVER_URL + "/api/auth/42/login", "_self")
             }
           >
-            Login
+            Login with 42
           </button>
         )}
       </div>

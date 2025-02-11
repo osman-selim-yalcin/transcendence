@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom"
-import Home from "../views/Home"
+import Home from "../views/Home/Home"
 import Profile from "../views/Profile/Profile"
 import RootLayout from "../layouts/RootLayout"
 import Game from "../views/Game/Game"
