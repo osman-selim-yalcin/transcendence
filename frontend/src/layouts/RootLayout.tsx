@@ -5,7 +5,6 @@ import Navbar from "../components/Navbar/Navbar"
 import NicknameSetter from "../components/NicknameSetter"
 import NonModal from "../components/NonModal/NonModal"
 import PopUp from "../components/PopUp/PopUp"
-import Sidebar from "../components/Sidebar/Sidebar"
 import { SocketContext } from "../context/SocketContext"
 import { UserContext } from "../context/UserContext"
 import "../styles/app.scss"
@@ -43,13 +42,14 @@ export default function RootLayout() {
   }, [user])
 
   return (
-    <div className="root-layout bg-[#e0e0dd] text-black dark:bg-slate-700 dark:text-white">
+    <div className="root-layout ">
       {/* <Sidebar /> */}
       <Navbar />
       <main>
         <Outlet />
       </main>
       <footer>Transcedence &copy;</footer>
+
       <PopUp />
       <Modal isActive={[modal, setModal]} removable={false}>
         <NicknameSetter setModal={setModal} />
