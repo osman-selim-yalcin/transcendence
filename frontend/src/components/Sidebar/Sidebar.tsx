@@ -1,53 +1,76 @@
-import { useEffect, useRef, useState } from 'react'
-import FriendList from '../FriendList/FriendList'
-import UserList from '../UserList/UserList'
-import UserRoomList from '../RoomList/RoomList'
-import { SocialView, UserListType } from '../../types'
-import "./Sidebar.scss"
+import { useState } from "react"
+import { SocialView, UserListType } from "../../types"
+import FriendList from "./FriendList"
+import UserRoomList from "./RoomList"
+import UserList from "./UserList"
 
 export default function Sidebar() {
-  const [barActive, setBarActive] = useState(false)
+  const [open, setOpen] = useState(false)
   const [view, setView] = useState(SocialView.FRIENDS)
-  const sidebarRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (barActive) {
-      document.addEventListener('click', handleClickOutside)
-    } else {
-      document.removeEventListener('click', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    }
-  }, [barActive])
-
-  function handleClickOutside(event: any) {
-    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-      setBarActive(false)
-    }
-  }
+  const Tabs = [
+    { key: SocialView.FRIENDS, label: "Friends" },
+    { key: SocialView.ROOMS, label: "Rooms" },
+    { key: SocialView.USERS, label: "Add Friend" }
+  ]
 
   return (
     <>
-    <button className='bar-button' onClick={(e) => {
-      e.stopPropagation()
-      setBarActive(!barActive)
-    }}><span className={"arrow" + (barActive ? " active" : "")}>&#8680;</span></button> {/* &equiv; */}
-    <div className={"sidebar" + (barActive ? " active" : "")} ref={sidebarRef}>
-      <h2>Sidebar</h2>
-      <div className={"buttons"}>
-        <button onClick={() => {setView(SocialView.FRIENDS)}}>Friends</button>
-        <button onClick={() => {setView(SocialView.ROOMS)}}>Rooms</button>
-        <button onClick={() => {setView(SocialView.USERS)}}>Add Friend</button>
-      </div>
-      <div className="sidebar-content" style={{
-        "transform": `translate(-${view * 350}px)`
-      }}>
-        <FriendList setBarActive={setBarActive} />
-        <UserRoomList />
-        <UserList userListType={UserListType.ADD_FRIEND} />
-      </div>
-    </div>
+      {/* Toggle button */}
+      <button
+        className="fixed top-4 left-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-lg border border-neutral-300 bg-white shadow hover:bg-neutral-100"
+        onClick={() => setOpen(v => !v)}
+        aria-label="Toggle sidebar"
+      >
+        <span className={`transition-transform ${open ? "rotate-180" : ""}`}>
+          &#8680;
+        </span>
+      </button>
+
+      {/* Overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* Drawer */}
+      <aside
+        className={`fixed top-0 left-0 z-50 h-full w-[350px] bg-neutral-200 shadow-xl
+                    transition-transform duration-300 ${
+                      open ? "translate-x-0" : "-translate-x-full"
+                    }`}
+      >
+        <div className="p-4 border-b">
+          <h2 className="text-center text-2xl font-semibold">Sidebar</h2>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {Tabs.map(t => (
+              <button
+                key={t.key}
+                onClick={() => setView(t.key)}
+                className={`rounded-md border px-3 py-1 text-sm hover:bg-neutral-100
+                            ${
+                              view === t.key
+                                ? "bg-neutral-900 text-white"
+                                : "border-neutral-300"
+                            }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 h-[calc(100%-112px)] overflow-y-auto">
+          {view === SocialView.FRIENDS && <FriendList setBarActive={setOpen} />}
+          {view === SocialView.ROOMS && <UserRoomList />}
+          {view === SocialView.USERS && (
+            <UserList userListType={UserListType.ADD_FRIEND} />
+          )}
+        </div>
+      </aside>
     </>
   )
 }

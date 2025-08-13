@@ -5,7 +5,7 @@ import {
   useRef,
   useState
 } from "react"
-import { UserContext } from "../../context/UserContext.tsx"
+import { useParams } from "react-router-dom"
 import {
   changeAvatar,
   changeNickname,
@@ -15,12 +15,12 @@ import {
   getUsers,
   verifyQR
 } from "../../api/user.ts"
-import { useParams } from "react-router-dom"
-import { user, userStatus } from "../../types/index.ts"
-import UserInfo from "../../components/UserInfo/UserInfo.tsx"
-import "./Profile.scss"
+import LoadIndicator from "../../components/LoadIndicator.tsx"
+import UserInfo from "../../components/UserInfo.tsx"
 import { SocketContext } from "../../context/SocketContext.tsx"
-import LoadIndicator from "../../components/LoadIndicator/LoadIndicator.tsx"
+import { UserContext } from "../../context/UserContext.tsx"
+import { user, userStatus } from "../../types/index.ts"
+import "./Profile.scss"
 
 export default function Profile() {
   const [editView, setEditView] = useState(false)
@@ -233,10 +233,14 @@ const UploadAndDisplayImage = () => {
               >
                 Cancel
               </button>
-              <button onClick={async () => {
-                await defaultAvatar()
-                window.location.reload()
-              }}>Set to default avatar</button>
+              <button
+                onClick={async () => {
+                  await defaultAvatar()
+                  window.location.reload()
+                }}
+              >
+                Set to default avatar
+              </button>
               <br />
               <input
                 ref={fileInput}
@@ -324,13 +328,15 @@ function EnableTwoFactor() {
           {qrUrl ? (
             <div className="qr-form">
               <img src={qrUrl} alt="QR Code" />
-              <form onSubmit={async (e) => {
-                if (code.length) {
-                  e.preventDefault()
-                  await verifyQR({ token: code })
-                  window.location.reload()
-                }
-              }}>
+              <form
+                onSubmit={async e => {
+                  if (code.length) {
+                    e.preventDefault()
+                    await verifyQR({ token: code })
+                    window.location.reload()
+                  }
+                }}
+              >
                 <p>
                   Scan the QR with an authentication app and enter the code to
                   activate 2FA

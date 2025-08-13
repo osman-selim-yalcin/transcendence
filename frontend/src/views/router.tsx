@@ -1,11 +1,9 @@
 import { createBrowserRouter } from "react-router-dom"
-import Home from "../views/Home"
-import Profile from "../views/Profile/Profile"
-import RootLayout from "../layouts/RootLayout"
-import Game from "../views/Game/Game"
-import { Chat } from "../components/Chat/Chat"
-import TwoFactorForm from "../components/forms/TwoFactorForm/TwoFactorForm"
-import ErrorLanding from "../components/404/404"
+import { Chat } from "./Chat/Chat"
+import Game from "./Game/Game"
+import Home from "./Home"
+import Profile from "./Profile/Profile"
+import RootLayout from "./RootLayout"
 
 export const router = createBrowserRouter([
   {
@@ -36,12 +34,8 @@ export const router = createBrowserRouter([
         element: <Chat />
       },
       {
-        path: "/2fa",
-        element: <TwoFactorForm />
-      },
-      {
         path: "*",
-        element: <ErrorLanding />
+        element: <Home />
       }
     ]
   }

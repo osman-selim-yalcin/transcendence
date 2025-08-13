@@ -1,21 +1,18 @@
-import { SocketProvider } from "./context/SocketContext"
 import { RouterProvider } from "react-router-dom"
-import { router } from "./utils/router"
-import UserProvider from "./context/UserContext"
-import ContextMenuProvider from "./context/ContextMenuContext"
+import "./app.css"
 import PopUpProvider from "./context/PopUpContext"
+import { SocketProvider } from "./context/SocketContext"
+import UserProvider from "./context/UserContext"
+import { router } from "./views/router"
 
 function App() {
-
   return (
     <>
       <UserProvider>
         <SocketProvider>
-          <ContextMenuProvider>
-            <PopUpProvider>
-              <RouterProvider router={router} />
-            </PopUpProvider>
-          </ContextMenuProvider>
+          <PopUpProvider>
+            <RouterProvider router={router} />
+          </PopUpProvider>
         </SocketProvider>
       </UserProvider>
     </>

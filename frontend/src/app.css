@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 * {
 	margin: 0;
   box-sizing: border-box;
@@ -15,24 +17,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.4em 0.8em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 html {
@@ -68,17 +52,6 @@ main {
   background-color: rgb(224, 224, 221);
 }
 
-footer {
-  display: flex;
-  align-items: center;
-  min-height: 50px;
-  background-color: #56b6c9;
-}
-
-.hidden {
-	display: none !important;
-}
-
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -91,9 +64,4 @@ footer {
 
 dialog, button:focus{
   outline: none !important;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
 }

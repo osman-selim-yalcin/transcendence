@@ -10,7 +10,7 @@ export type user = {
   status: userStatus
   avatar: string
   lastSeen: string
-  blockList: { blockedUser: string, blockingUser: string }[]
+  blockList: { blockedUser: string; blockingUser: string }[]
   elo: number
   twoFactorEnabled: boolean
 }
@@ -66,7 +66,7 @@ export interface roomPayload {
 }
 
 export type roomCommandBody = {
-  id: number,
+  id: number
   user: {
     id: number
   }
@@ -94,16 +94,16 @@ export enum NotificationType {
   FRIEND,
   ROOM,
   GAME,
-  KICK,// single button
-  BAN,// single button
-  MOD,// single button
+  KICK, // single button
+  BAN, // single button
+  MOD // single button
 }
 
 export enum NotificationStatus {
   PENDING,
   ACCEPTED,
   DECLINED,
-  QUESTION,
+  QUESTION
 }
 
 export type notification = {
@@ -128,32 +128,6 @@ export enum SocialView {
   USERS
 }
 
-export type ContextContent = { clickedUser: user, clickedUserRank: RoomRank, currentRoomId: number, currentRoomCreator: string, canBeControlled: boolean } | null
-
-export interface NonModalContext {
-  nonModalActive: boolean
-  setNonModalActive: Function
-  position: NonModalPosition
-  setPosition: Function
-  contentType: ContextMenuContentType
-  setContentType: Function
-  contextContent: ContextContent
-  setContextContent: Function
-  openContextMenu:Function
-  closeContextMenu: Function
-}
-
-export enum ContextMenuContentType {
-  ROOM_DETAIL_USER,
-  NOTIFICATION
-}
-
-export interface NonModalPosition {
-  top?: number
-  left?: number
-  bottom?: number
-  right?: number
-}
 
 export enum UserListType {
   ADD_FRIEND,
@@ -179,7 +153,7 @@ export enum LocationPathName {
  */
 
 export type player = {
-  user: user,
+  user: user
   color: number | string
 }
 
@@ -218,12 +192,12 @@ export enum GameState {
 }
 
 export type GameInfo = {
-    id: number
-    score: number[]
-    elo: number
-    createdAt: string
-    result: boolean
-    opponent: user
+  id: number
+  score: number[]
+  elo: number
+  createdAt: string
+  result: boolean
+  opponent: user
 }
 
 /**
