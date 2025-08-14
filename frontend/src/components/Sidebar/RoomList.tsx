@@ -1,9 +1,15 @@
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from "@mui/material"
 import { useContext, useEffect, useState } from "react"
 import { getRooms } from "../../api/room"
 import { UserContext } from "../../context/UserContext"
 import { room } from "../../types"
 import LoadIndicator from "../LoadIndicator"
-import { Modal } from "../Modal/Modal"
 import GroupCreation from "../forms/GroupCreation"
 import GroupJoin from "../forms/GroupJoin"
 
@@ -26,9 +32,21 @@ export default function UserRoomList() {
 
           {userRooms ? <RoomFilter /> : <LoadIndicator />}
 
-          <Modal isActive={[modal, setModal]} removable={true}>
-            <GroupCreation setModal={setModal} />
-          </Modal>
+          {/* MUI Dialog: Create Room */}
+          <Dialog
+            open={modal}
+            onClose={() => setModal(false)}
+            fullWidth
+            maxWidth="sm"
+          >
+            <DialogTitle>Create Room</DialogTitle>
+            <DialogContent dividers>
+              <GroupCreation setModal={setModal} />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setModal(false)}>Close</Button>
+            </DialogActions>
+          </Dialog>
         </>
       ) : (
         <p className="text-neutral-600">Sign in to see the rooms</p>
@@ -94,13 +112,27 @@ function RoomFilter() {
         <p className="text-neutral-600">Type something to search</p>
       )}
 
-      <Modal isActive={[modal, setModal]} removable={true}>
-        <GroupJoin
-          room={clickedRoom}
-          setModal={setModal}
-          setSearch={setSearch}
-        />
-      </Modal>
+      {/* MUI Dialog: Join/Invite to Room */}
+      <Dialog
+        open={modal}
+        onClose={() => setModal(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          {clickedRoom ? `Invite / Join: ${clickedRoom.name}` : "Room"}
+        </DialogTitle>
+        <DialogContent dividers>
+          <GroupJoin
+            room={clickedRoom}
+            setModal={setModal}
+            setSearch={setSearch}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModal(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }

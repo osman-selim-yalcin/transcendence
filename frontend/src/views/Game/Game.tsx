@@ -8,11 +8,10 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { getOpponent } from "../../api/game"
 import LoadIndicator from "../../components/LoadIndicator"
-import { PopUpContext } from "../../context/PopUpContext"
 import { SocketContext } from "../../context/SocketContext"
 import { UserContext } from "../../context/UserContext"
-import Ball from "../../game/Ball"
-import Paddle from "../../game/Paddle"
+import Ball from "./Ball"
+import Paddle from "./Paddle"
 import { GameState, currentPositions, player, user } from "../../types"
 import "./Game.scss"
 
@@ -24,7 +23,6 @@ export default function Game() {
   const [opponent, setOpponent] = useState<user>(null)
   const [selfIndex, setSelfIndex] = useState<number>(null)
   const [searchParams, _setSearchParams] = useSearchParams()
-  const { addPopUp } = useContext(PopUpContext)
   const navigate = useNavigate()
 
   const keys = useRef({
@@ -79,7 +77,7 @@ export default function Game() {
           console.log("hello", res)
           if (res === undefined) {
             navigate("/game")
-            addPopUp("Unable to find opponent")
+            // popup Unable to find opponent
           } else {
             setOpponent(res.user)
             setSelfIndex(1 - res.index)

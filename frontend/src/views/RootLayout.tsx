@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
-import PopUp from "../components/PopUp/PopUp"
 import Sidebar from "../components/Sidebar/Sidebar"
 import { SocketContext } from "../context/SocketContext"
 import { LocationPathName } from "../types"
@@ -55,7 +54,6 @@ export default function RootLayout() {
         <Outlet />
       </main>
       <footer>Transcedence &copy;</footer>
-      <PopUp />
     </div>
   )
 }

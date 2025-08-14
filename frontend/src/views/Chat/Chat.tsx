@@ -17,7 +17,6 @@ import {
 } from "../../api/room"
 import { changeBlock } from "../../api/user"
 import LoadIndicator from "../../components/LoadIndicator"
-import { Modal } from "../../components/Modal/Modal"
 import UserList, {
   AddFriendIndexContent
 } from "../../components/Sidebar/UserList"
@@ -32,6 +31,14 @@ import {
   userStatus
 } from "../../types"
 import "./Chat.scss"
+
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
+} from "@mui/material"
 
 const getHourMinute = (date: string) => {
   const time = date.split("T")[1].split(":")
@@ -130,9 +137,23 @@ function Chatbar({
               //   return null
             })}
       </ul>
-      <Modal isActive={[modal, setModal]} removable={true}>
-        <UserList userListType={UserListType.NEW_MESSAGE} setModal={setModal} />
-      </Modal>
+      <Dialog
+        open={modal}
+        onClose={() => setModal(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>New message</DialogTitle>
+        <DialogContent dividers>
+          <UserList
+            userListType={UserListType.NEW_MESSAGE}
+            setModal={setModal}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setModal(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }
@@ -515,12 +536,23 @@ function DetailContent({
           Exit Group
         </button>
 
-        <Modal isActive={[modal, setModal]} removable={true}>
-          <UserList
-            userListType={UserListType.INVITE_USER}
-            room={currentRoom}
-          />
-        </Modal>
+        <Dialog
+          open={modal}
+          onClose={() => setModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Invite users</DialogTitle>
+          <DialogContent dividers>
+            <UserList
+              userListType={UserListType.INVITE_USER}
+              room={currentRoom}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setModal(false)}>Close</Button>
+          </DialogActions>
+        </Dialog>
 
         {/* --- Dropdown (contextsiz) --- */}
         {menuOpen && menuData && (
