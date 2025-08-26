@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar"
 import Sidebar from "../components/Sidebar/Sidebar"
 import { SocketContext } from "../context/SocketContext"
 import { LocationPathName } from "../types"
+import "./transcendence.css"
 
 export default function RootLayout() {
   const socket = useContext(SocketContext)

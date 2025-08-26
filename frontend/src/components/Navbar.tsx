@@ -58,7 +58,7 @@ export default function Navbar({
 
       {/* Right */}
       <div className="flex gap-16">
-        {user ? (
+        {!user ? (
           <button
             onClick={() =>
               window.open(SERVER_URL + "/api/auth/42/login", "_self")

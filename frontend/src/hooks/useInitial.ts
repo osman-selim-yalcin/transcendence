@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import { getToken, getUser } from "../api/user"
-import { room, user, userStatus } from "../types"
-import { getUserRooms } from "../api/room"
 import { getFriends } from "../api/friend"
 import { getNotifications } from "../api/notification"
+import { getUserRooms } from "../api/room"
+import { getToken, getUser } from "../api/user"
+import { room, user, userStatus } from "../types"
 
 const useInitial = () => {
   const [user, setUser] = useState<user>(null)
@@ -59,7 +59,6 @@ const useInitial = () => {
     } else {
       getToken()
     }
-
   }, [])
 
   return {

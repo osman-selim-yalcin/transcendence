@@ -9,7 +9,6 @@ import { useParams } from "react-router-dom"
 import {
   changeAvatar,
   changeNickname,
-  defaultAvatar,
   disable2fa,
   generateQR,
   getUsers,
@@ -233,14 +232,7 @@ const UploadAndDisplayImage = () => {
               >
                 Cancel
               </button>
-              <button
-                onClick={async () => {
-                  await defaultAvatar()
-                  window.location.reload()
-                }}
-              >
-                Set to default avatar
-              </button>
+
               <br />
               <input
                 ref={fileInput}
